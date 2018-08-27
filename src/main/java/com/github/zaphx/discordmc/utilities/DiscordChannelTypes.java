@@ -4,10 +4,11 @@ import com.github.zaphx.discordmc.Main;
 
 public enum DiscordChannelTypes {
 
-    LOG("settings.log-channel"),
-    ANNOUNCE("settings.announce-channel"),
-    RULES("settings.rules-channel"),
-    REPORTS("settings-reports-channel");
+    LOG("discord.log-channel"),
+    ANNOUNCE("discord.announce-channel"),
+    RULES("discord.rules-channel"),
+    REPORTS("discord-reports-channel"),
+    SUGGESTIONS("discord.suggestions-channel");
 
     private String path;
 

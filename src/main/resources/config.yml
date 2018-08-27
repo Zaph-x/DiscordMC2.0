@@ -7,6 +7,7 @@ discord:
   rules-channel: 0
   announce-channel: 0
   reports-channel: 0
+  suggestions-channel: 0
   mute-role: 0
   voice-mute-role: 0
   command-prefix: 'ob!'

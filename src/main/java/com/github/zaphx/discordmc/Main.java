@@ -112,8 +112,12 @@ public class Main extends JavaPlugin {
             log.warning("You must supply the plugin with a valid voice-muted-id");
             return false;
         }
-        if (config.getLong("discord.reports-channel") == 0) {
+        if (config.getLong("discord.reports-channel") == 0 && config.getBoolean("trello.enabled")) {
             log.warning("You must supply the plugin with a valid reports-channel");
+            return false;
+        }
+        if (config.getLong("discord.suggestions-channel") == 0 && config.getBoolean("trello.enabled")) {
+            log.warning("You must supply the plugin with a valid suggestions-channel");
             return false;
         }
         if (config.getBoolean("trello.enabled")) {
