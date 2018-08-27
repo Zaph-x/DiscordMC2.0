@@ -22,7 +22,10 @@ public class Main extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        // Register the Main instance
+        main = this;
         this.log = this.getLogger();
+
 
 
         // Get the plugin manager
@@ -41,10 +44,8 @@ public class Main extends JavaPlugin {
 
         // Create configuration
         createConfig();
-        this.config = this.getConfig();
+        this.config = main.getConfig();
 
-        // Register the Main instance
-        main = this;
 
         // Register events
 
