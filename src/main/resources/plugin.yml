@@ -1,7 +1,7 @@
 main: com.github.zaphx.discordmc.Main
 name: DiscordMC2.0
 version: 1.0.0
-author: Zaphoo
+authors: [Zaphoo, Mobkinz78]
 
 commands:
 

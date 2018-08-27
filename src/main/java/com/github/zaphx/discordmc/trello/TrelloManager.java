@@ -88,6 +88,7 @@ public class TrelloManager {
         } else {
 
             RequestBuffer.request(report::delete);
+            // TODO Send embed
             return false;
         }
     }
@@ -136,7 +137,7 @@ public class TrelloManager {
          */
 
 
-        // Send them a good 'ol confirmation message
+        // TODO Send them a good 'ol confirmation message
         //RequestBuffer.request(() -> reporter.getOrCreatePMChannel().sendMessage(EmbedUtils.correctReportEmbed(reporter)));
     }
 
