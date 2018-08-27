@@ -1,5 +1,7 @@
 package com.github.zaphx.discordmc.utilities;
 
+import com.github.zaphx.discordmc.Main;
+
 public enum DiscordChannelTypes {
 
     LOG("settings.log-channel"),
@@ -15,5 +17,9 @@ public enum DiscordChannelTypes {
 
     public String getPath() {
         return this.path;
+    }
+
+    public long getID() {
+        return Main.getInstance().getConfig().getLong(this.path);
     }
 }
