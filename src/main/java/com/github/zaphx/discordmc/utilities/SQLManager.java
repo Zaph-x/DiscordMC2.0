@@ -2,6 +2,7 @@ package com.github.zaphx.discordmc.utilities;
 
 import com.github.zaphx.discordmc.Main;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
 
 import java.sql.*;
@@ -64,6 +65,17 @@ public class SQLManager {
         }
         // Close connection to prevent too many open connections
         return tExists;
+    }
+
+
+    public void executeStatementAndPost(@Language("sql")String sql, Object... parameters) {
+        try {
+            Connection connection = getConnection();
+            PreparedStatement ps = connection.prepareCall(String.format(sql, parameters));
+            ps.execute();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
 
