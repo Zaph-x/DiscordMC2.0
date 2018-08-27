@@ -32,6 +32,10 @@ public class ConsoleReader implements ConsoleCommandSender {
         this.event = event;
         try {
             main.getServer().dispatchCommand(this, command);
+            getMessage();
+        } catch (Exception e) {
+            RequestBuffer.request(() -> event.getChannel().sendMessage(":x: An error occurred and has been reported to the owner!"));
+            // TODO report error
         }
     }
 
@@ -72,7 +76,7 @@ public class ConsoleReader implements ConsoleCommandSender {
 
     @Override
     public Spigot spigot() {
-        return null;
+        return new Spigot();
     }
 
     @Override
@@ -102,27 +106,27 @@ public class ConsoleReader implements ConsoleCommandSender {
 
     @Override
     public void sendRawMessage(String message) {
-
+        RequestBuffer.request(() -> event.getChannel().sendMessage(":white_check_mark: Command executed with response: ```\n" + message + "\n```"));
     }
 
     @Override
     public boolean isPermissionSet(String name) {
-        return false;
+        return true;
     }
 
     @Override
     public boolean isPermissionSet(Permission perm) {
-        return false;
+        return true;
     }
 
     @Override
     public boolean hasPermission(String name) {
-        return false;
+        return true;
     }
 
     @Override
     public boolean hasPermission(Permission perm) {
-        return false;
+        return true;
     }
 
     @Override
@@ -162,7 +166,7 @@ public class ConsoleReader implements ConsoleCommandSender {
 
     @Override
     public boolean isOp() {
-        return false;
+        return true;
     }
 
     @Override
