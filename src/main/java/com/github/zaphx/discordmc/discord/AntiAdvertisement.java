@@ -3,7 +3,7 @@ package com.github.zaphx.discordmc.discord;
 import com.github.zaphx.discordmc.Main;
 import com.github.zaphx.discordmc.utilities.DiscordChannelTypes;
 import com.github.zaphx.discordmc.utilities.Loggable;
-import com.github.zaphx.discordmc.utilities.RegexPatterns;
+import com.github.zaphx.discordmc.utilities.RegexUtils;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
@@ -36,8 +36,8 @@ public class AntiAdvertisement implements Loggable {
     }
 
     private boolean matches(IMessage message) {
-        return RegexPatterns.isMatch(RegexPatterns.SERVER_ADVERTISEMENT_MATCH, message.getContent())
-                || RegexPatterns.isMatch(RegexPatterns.IP_MATCH, message.getContent());
+        return RegexUtils.isMatch(RegexUtils.SERVER_ADVERTISEMENT_MATCH, message.getContent())
+                || RegexUtils.isMatch(RegexUtils.IP_MATCH, message.getContent());
     }
 
     private boolean isAllowed(IUser user) {
