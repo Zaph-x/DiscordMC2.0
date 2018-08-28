@@ -1,0 +1,65 @@
+package com.github.zaphx.discordbot.utilities;
+
+import com.github.zaphx.discordbot.Main;
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
+import sx.blah.discord.api.IDiscordClient;
+import sx.blah.discord.handle.obj.IExtendedInvite;
+import sx.blah.discord.handle.obj.IUser;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
+
+public class InviteManager {
+
+    private static InviteManager instance;
+    private Map<String, Integer> inviteMap = new TreeMap<>();
+    private Map<String, Integer> tempInviteMap = new TreeMap<>();
+    private Map<String, IExtendedInvite> inviteObjectMap = new TreeMap<>();
+    private DiscordClientManager clientManager = DiscordClientManager.getInstance();
+    private IDiscordClient client = clientManager.getClient();
+    private Main main = Main.getInstance();
+    private FileConfiguration config = main.getConfig();
+
+    private InviteManager() {
+    }
+
+    public static InviteManager getInstance() {
+        return instance == null ? instance = new InviteManager() : instance;
+    }
+
+    public void update() {
+        List<IExtendedInvite> invites = client.getGuildByID(config.getLong("discord.guild-id")).getExtendedInvites();
+        for (IExtendedInvite inv : invites) {
+            inviteMap.put(inv.getCode(), inv.getUses());
+            inviteObjectMap.put(inv.getCode(), inv);
+        }
+    }
+
+    private IExtendedInvite getInviteChange() {
+        List<IExtendedInvite> invites = client.getGuildByID(config.getLong("discord.guild-id")).getExtendedInvites();
+
+        for (IExtendedInvite inv : invites) {
+            tempInviteMap.put(inv.getCode(), inv.getUses());
+            inviteObjectMap.put(inv.getCode(), inv);
+        }
+        for (Map.Entry<String, Integer> entry : inviteMap.entrySet()) {
+            if (!inviteMap.get(entry.getKey()).equals(tempInviteMap.get(entry.getKey()))) {
+                return inviteObjectMap.get(entry.getKey());
+            }
+        }
+        Bukkit.getScheduler().runTaskLater(main, new Runnable() {
+            @Override
+            public void run() {
+                getInviteChange();
+            }
+        }, 40L);
+        return null;
+    }
+
+    public IUser getUserCreated() {
+        return Objects.requireNonNull(getInviteChange()).getInviter();
+    }
+}
