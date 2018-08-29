@@ -36,28 +36,6 @@ public class MessageManager {
         return instance == null ? instance = new MessageManager() : instance;
     }
 
-    public Object[] getDeleter(MessageDeleteEvent event) {
-        AuditLog log = event.getGuild().getAuditLog(ActionType.MESSAGE_DELETE); // get the audit log of message deletes
-        DiscordObjectEntry<IUser> entry = log.getDiscordObjectEntries(IUser.class).stream() // get the entries with IUser targets
-                .filter(it -> it.getOptionByKey(OptionKey.CHANNEL_ID) == event.getChannel().getLongID()).max(Comparator.comparing(TargetedEntry::getTargetID).reversed()) // find the one whose channel ID matches the event's
-                .orElseThrow(IllegalStateException::new); // it must exist because the event was dispatched
-
-        IUser deleter = entry.getResponsibleUser();
-        IChannel channel = event.getGuild().getChannelByID(event.getChannel().getLongID());
-        return new Object[]{deleter, channel};
-    }
-
-    public Object[] test(MessageDeleteEvent event) {
-        AuditLog log = event.getGuild().getAuditLog(ActionType.MESSAGE_DELETE); // get the audit log of message deletes
-        AuditLogEntry entry = event.getGuild().getAuditLog(ActionType.MESSAGE_DELETE)
-                .getEntries()
-                .stream()
-                .sorted(Comparator.comparing(AuditLogEntry::getLongID).reversed())
-                .findFirst()
-                .get();
-        return new Object[]{entry.getResponsibleUser(), event.getChannel()};
-    }
-
     public void setDeleteLog() {
         log = client.getGuildByID(config.getLong("discord.guild-id")).getAuditLog(ActionType.MESSAGE_DELETE); // get the audit log of message deletes
     }

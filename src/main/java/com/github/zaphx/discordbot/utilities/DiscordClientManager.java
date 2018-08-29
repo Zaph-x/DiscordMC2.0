@@ -3,6 +3,8 @@ package com.github.zaphx.discordbot.utilities;
 import com.github.zaphx.discordbot.Main;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
+import sx.blah.discord.handle.obj.IGuild;
+import sx.blah.discord.handle.obj.Permissions;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.RateLimitException;
 
@@ -93,14 +95,10 @@ public class DiscordClientManager {
         return uptime;
     }
 
-    /*
-    ClientBuilder builder = new ClientBuilder()
-                            .withToken(token)
-                            .withRecommendedShardCount()
-                            .setMaxReconnectAttempts(200);
-                    return client = builder.build();
-
-     */
+    public boolean clientHasPermission(Permissions permission) {
+        IGuild guild = client.getGuildByID(Main.getInstance().getConfig().getLong("discord.guild-id"));
+        return getClient().getOurUser().getPermissionsForGuild(guild).contains(permission);
+    }
 
     public IDiscordClient getClient() {
         return client == null ? client = new ClientBuilder().withToken(TOKEN).withRecommendedShardCount().setMaxReconnectAttempts(200).build() : client;
