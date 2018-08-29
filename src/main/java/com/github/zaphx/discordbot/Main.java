@@ -3,6 +3,7 @@ package com.github.zaphx.discordbot;
 import com.github.zaphx.discordbot.discord.listeners.ChatDeleteEvent;
 import com.github.zaphx.discordbot.discord.listeners.MemberJoinEvent;
 import com.github.zaphx.discordbot.discord.listeners.OnReadyEvent;
+import com.github.zaphx.discordbot.discord.listeners.OnUserBanEvent;
 import com.github.zaphx.discordbot.utilities.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -70,6 +71,7 @@ public class Main extends JavaPlugin {
         client.getDispatcher().registerListener(new OnReadyEvent());
         client.getDispatcher().registerListener(new MemberJoinEvent());
         client.getDispatcher().registerListener(new ChatDeleteEvent());
+        client.getDispatcher().registerListener(new OnUserBanEvent());
 
 
         sql.createMutesIfNotExists();

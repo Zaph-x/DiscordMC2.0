@@ -2,7 +2,6 @@ package com.github.zaphx.discordbot.utilities;
 
 import sx.blah.discord.handle.audit.ActionType;
 import sx.blah.discord.handle.audit.entry.AuditLogEntry;
-import sx.blah.discord.handle.audit.entry.TargetedEntry;
 import sx.blah.discord.handle.impl.events.guild.member.UserBanEvent;
 import sx.blah.discord.handle.obj.IUser;
 

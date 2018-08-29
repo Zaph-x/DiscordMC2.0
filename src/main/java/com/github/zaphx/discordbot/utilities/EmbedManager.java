@@ -36,7 +36,7 @@ public class EmbedManager {
                         "\nYou were warned by: **" + warnee.getName() + "#" + warnee.getDiscriminator() + "**. " +
                         "\nPlease make sure you have read the rules in " + rulesChan.mention() + "." +
                         "\nIf you think this is a mistake, please report it to the owner of the server, with a screenshot of this message.");
-        eb.withColor(new Color(145, 145, 145))
+        eb.withColor(new Color(133, 150, 211))
                 .withFooterText(warned.getName())
                 .withFooterIcon(warned.getAvatarURL())
                 .withTimestamp(Instant.now())
@@ -54,7 +54,7 @@ public class EmbedManager {
                         "\n**User ID:** " + warned.getStringID() +
                         "\n**Warned by:** " + warnee.getName() + "#" + warnee.getDiscriminator() + ". " +
                         "\n**Reason:** " + reason + ".")
-                .withColor(new Color(145, 145, 145))
+                .withColor(new Color(133, 150, 211))
                 .withFooterText(warned.getName())
                 .withFooterIcon(warned.getAvatarURL())
                 .withTimestamp(Instant.now())
@@ -92,5 +92,17 @@ public class EmbedManager {
                 .withThumbnail(author.getAvatarURL())
                 .withColor(new Color(242, 56, 79));
         return builder.build();
+    }
+
+    public EmbedObject banToChannel(IUser banned, IUser bannee, String reason) {
+        EmbedBuilder eb = new EmbedBuilder();
+        eb.withTitle("**A user was banned**")
+                .withColor(new Color(133, 150, 211))
+                .withTimestamp(Instant.now())
+                .withThumbnail(banned.getAvatarURL())
+                .appendField("User banned", banned.mention(),true)
+                .appendField("User banning", bannee.mention(), true)
+                .appendField("With reason",reason,false);
+        return eb.build();
     }
 }
