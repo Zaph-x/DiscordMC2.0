@@ -24,6 +24,7 @@ public class InviteManager {
     private FileConfiguration config = main.getConfig();
 
     private InviteManager() {
+        System.out.println("In");
     }
 
     public static InviteManager getInstance() {
@@ -32,6 +33,7 @@ public class InviteManager {
 
     public void update() {
         List<IExtendedInvite> invites = client.getGuildByID(config.getLong("discord.guild-id")).getExtendedInvites();
+        System.out.println(invites.size());
         for (IExtendedInvite inv : invites) {
             inviteMap.put(inv.getCode(), inv.getUses());
             inviteObjectMap.put(inv.getCode(), inv);
@@ -40,26 +42,33 @@ public class InviteManager {
 
     private IExtendedInvite getInviteChange() {
         List<IExtendedInvite> invites = client.getGuildByID(config.getLong("discord.guild-id")).getExtendedInvites();
-
+        if (invites.size() > inviteObjectMap.size()) {
+            // new invite created
+            for (IExtendedInvite invite : invites) {
+                if (inviteObjectMap.get(invite.getCode()) == null) {
+                    update();
+                    return invite;
+                }
+            }
+        }
         for (IExtendedInvite inv : invites) {
             tempInviteMap.put(inv.getCode(), inv.getUses());
             inviteObjectMap.put(inv.getCode(), inv);
         }
         for (Map.Entry<String, Integer> entry : inviteMap.entrySet()) {
-            if (!inviteMap.get(entry.getKey()).equals(tempInviteMap.get(entry.getKey()))) {
+            if (!tempInviteMap.get(entry.getKey()).equals(inviteMap.get(entry.getKey()))) {
                 return inviteObjectMap.get(entry.getKey());
             }
         }
-        Bukkit.getScheduler().runTaskLater(main, new Runnable() {
-            @Override
-            public void run() {
-                getInviteChange();
-            }
-        }, 40L);
+        Bukkit.getScheduler().runTaskLater(main, this::getInviteChange, 40L);
         return null;
     }
 
     public IUser getUserCreated() {
         return Objects.requireNonNull(getInviteChange()).getInviter();
+    }
+
+    public IExtendedInvite getInvite() {
+        return getInviteChange();
     }
 }

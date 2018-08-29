@@ -3,9 +3,7 @@ package com.github.zaphx.discordbot.utilities;
 import com.github.zaphx.discordbot.Main;
 import org.bukkit.configuration.file.FileConfiguration;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IUser;
+import sx.blah.discord.handle.obj.*;
 import sx.blah.discord.util.EmbedBuilder;
 
 import java.awt.*;
@@ -13,6 +11,7 @@ import java.time.Instant;
 
 public class EmbedManager {
 
+    private MessageManager mm = MessageManager.getInstance();
     private static EmbedManager instance;
     private SQLManager sql = SQLManager.getInstance();
     private Main main = Main.getInstance();
@@ -62,5 +61,36 @@ public class EmbedManager {
                 .withAuthorName(guild.getName())
                 .withAuthorIcon(guild.getIconURL());
         return eb.build();
+    }
+
+    public EmbedObject joinEmbed(IExtendedInvite invite, IUser joined) {
+        EmbedBuilder eb = new EmbedBuilder();
+        eb.withTimestamp(Instant.now())
+                .withTitle("**A user joined the guild**")
+                .withThumbnail(joined.getAvatarURL())
+                .appendField("User:", joined.mention(), false)
+                .appendField("With invite", invite.getCode(), true)
+                .appendField("Invite by user", invite.getInviter().mention(), true)
+                .withColor(new Color(120, 193, 82));
+
+        return eb.build();
+    }
+
+    public EmbedObject messageDeleteEmbed(IUser author, IChannel channel, IMessage message) {
+        EmbedBuilder builder = new EmbedBuilder();
+        String content = message.getFormattedContent();
+        if (content.isEmpty()) {
+            content = "Embed";
+        }
+        builder.withTimestamp(Instant.now())
+                .withTitle("**A message was deleted**")
+                .appendField("Author", author.mention(),true)
+                //.appendField("Deleter", deleter.mention(), true)
+                .appendField("Channel", channel.mention(),true)
+                .appendField("Message id", message.getStringID(), true)
+                .appendField("Message content", content, false)
+                .withThumbnail(author.getAvatarURL())
+                .withColor(new Color(242, 56, 79));
+        return builder.build();
     }
 }

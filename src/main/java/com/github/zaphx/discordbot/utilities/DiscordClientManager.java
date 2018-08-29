@@ -1,5 +1,7 @@
 package com.github.zaphx.discordbot.utilities;
 
+import com.github.zaphx.discordbot.Main;
+import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.RateLimitException;
@@ -15,6 +17,8 @@ public class DiscordClientManager {
     public List<String> commandResponses = new ArrayList<>();
     private IDiscordClient client;
     private static DiscordClientManager instance;
+
+    private final String TOKEN = Main.getInstance().getConfig().getString("discord.token");
 
     private DiscordClientManager() {
     }
@@ -89,12 +93,16 @@ public class DiscordClientManager {
         return uptime;
     }
 
+    /*
+    ClientBuilder builder = new ClientBuilder()
+                            .withToken(token)
+                            .withRecommendedShardCount()
+                            .setMaxReconnectAttempts(200);
+                    return client = builder.build();
+
+     */
+
     public IDiscordClient getClient() {
-        return client;
+        return client == null ? client = new ClientBuilder().withToken(TOKEN).withRecommendedShardCount().setMaxReconnectAttempts(200).build() : client;
     }
-
-    public void setClient(IDiscordClient client) {
-        this.client = client;
-    }
-
 }
