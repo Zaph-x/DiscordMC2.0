@@ -38,9 +38,15 @@ public class CommandHandler {
             if (s.length() == commandprefix.length()) return;
             System.out.println("Succeed");
             if (commandMap.get(command) != null) {
-                boolean success = ((CommandListener) commandMap.get(command)).onCommand(sender, command, args, channel);
-                if (!success) {
+                CommandExitCode exitCode = ((CommandListener) commandMap.get(command)).onCommand(sender, command, args, channel);
+                if (exitCode.equals(CommandExitCode.ERROR)) {
+                    // Should not happen, but it means command not found
                     channel.sendMessage(s);
+                } else if (exitCode.equals(CommandExitCode.INVALID_SYNTAX)) {
+                    // Should only happen if the user doesn't provide enough arguments or invalid arguments
+                    // channel.sendMessage(HELP EMBED)
+                } else {
+                    // Exit the loop
                 }
             }
         }

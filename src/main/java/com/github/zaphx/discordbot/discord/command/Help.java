@@ -1,5 +1,6 @@
 package com.github.zaphx.discordbot.discord.command;
 
+import com.github.zaphx.discordbot.discord.commandhandler.CommandExitCode;
 import com.github.zaphx.discordbot.discord.commandhandler.CommandListener;
 import org.jetbrains.annotations.NotNull;
 import sx.blah.discord.handle.obj.IChannel;
@@ -10,14 +11,14 @@ import java.util.List;
 public class Help implements CommandListener {
 
     @Override
-    public boolean onCommand(IUser sender, String command, List<String> args, IChannel destination) {
+    public CommandExitCode onCommand(IUser sender, String command, List<String> args, IChannel destination) {
 
 
-        return false;
+        return CommandExitCode.ERROR;
     }
 
     @Override
     public @NotNull String getCommandDescription() {
-        return null;
+        return "";
     }
 }

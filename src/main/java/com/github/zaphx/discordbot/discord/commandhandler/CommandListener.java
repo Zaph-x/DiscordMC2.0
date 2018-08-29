@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface CommandListener {
 
-    boolean onCommand(IUser sender, String command, List<String> args, IChannel destination);
+    CommandExitCode onCommand(IUser sender, String command, List<String> args, IChannel destination);
 
     @NotNull
     String getCommandDescription();
