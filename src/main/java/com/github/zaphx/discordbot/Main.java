@@ -1,14 +1,13 @@
 package com.github.zaphx.discordbot;
 
-import com.github.zaphx.discordbot.discord.listeners.ChatDeleteEvent;
-import com.github.zaphx.discordbot.discord.listeners.MemberJoinEvent;
-import com.github.zaphx.discordbot.discord.listeners.OnReadyEvent;
-import com.github.zaphx.discordbot.discord.listeners.OnUserBanEvent;
-import com.github.zaphx.discordbot.utilities.*;
+import com.github.zaphx.discordbot.discord.command.Help;
+import com.github.zaphx.discordbot.discord.commandhandler.CommandHandler;
+import com.github.zaphx.discordbot.discord.listeners.*;
+import com.github.zaphx.discordbot.managers.DiscordClientManager;
+import com.github.zaphx.discordbot.managers.SQLManager;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import sx.blah.discord.Discord4J;
-import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.modules.Configuration;
 import sx.blah.discord.util.DiscordException;
@@ -72,12 +71,19 @@ public class Main extends JavaPlugin {
         client.getDispatcher().registerListener(new MemberJoinEvent());
         client.getDispatcher().registerListener(new ChatDeleteEvent());
         client.getDispatcher().registerListener(new OnUserBanEvent());
+        client.getDispatcher().registerListener(new ChatListener());
+        client.getDispatcher().registerListener(new OnChannelCreateEvent());
+        client.getDispatcher().registerListener(new OnChannelDeleteEvent());
 
 
         sql.createMutesIfNotExists();
         sql.createRemindersIfNotExists();
         sql.createWarningsIfNotExists();
         sql.countTickets();
+
+        CommandHandler commandHandler = CommandHandler.getInstance();
+        commandHandler.registerCommand("help", new Help());
+
 
         getLogger().log(Level.INFO, "DiscordMC2.0 has successfully been enabled!");
     }

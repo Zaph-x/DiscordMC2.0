@@ -1,6 +1,7 @@
-package com.github.zaphx.discordbot.utilities;
+package com.github.zaphx.discordbot.managers;
 
 import com.github.zaphx.discordbot.Main;
+import com.github.zaphx.discordbot.utilities.DiscordChannelTypes;
 import org.bukkit.configuration.file.FileConfiguration;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.impl.events.guild.channel.ChannelCreateEvent;
@@ -54,6 +55,14 @@ public class ChannelManager {
 
     public IChannel getChannelForType(DiscordChannelTypes type) {
         return client.getChannelByID(config.getLong(type.getPath()));
+    }
+
+    public boolean isChannel(IChannel channel, long ID) {
+        return channel.getLongID() == ID;
+    }
+
+    public boolean isChannel(IChannel target, IChannel channel) {
+        return target == channel;
     }
 
 }

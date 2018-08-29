@@ -1,4 +1,4 @@
-package com.github.zaphx.discordbot.utilities;
+package com.github.zaphx.discordbot.managers;
 
 import sx.blah.discord.handle.audit.ActionType;
 import sx.blah.discord.handle.audit.entry.AuditLogEntry;

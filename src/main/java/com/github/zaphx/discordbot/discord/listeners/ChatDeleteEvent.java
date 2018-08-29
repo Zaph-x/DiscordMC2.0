@@ -1,9 +1,7 @@
 package com.github.zaphx.discordbot.discord.listeners;
 
-import com.github.zaphx.discordbot.Main;
-import com.github.zaphx.discordbot.utilities.EmbedManager;
-import com.github.zaphx.discordbot.utilities.MessageManager;
-import org.bukkit.Bukkit;
+import com.github.zaphx.discordbot.managers.EmbedManager;
+import com.github.zaphx.discordbot.managers.MessageManager;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageDeleteEvent;
 import sx.blah.discord.handle.obj.IMessage;
@@ -20,14 +18,11 @@ public class ChatDeleteEvent {
         if (content.getAuthor().isBot()) {
             return;
         } else {
-            Bukkit.getScheduler().runTaskLaterAsynchronously(Main.getInstance(), () -> {
-                messageManager.auditlog(em.messageDeleteEmbed(content.getAuthor(), event.getChannel(), content));
-                messageManager.destroyMessages();
-                messageManager.setMessages();
-            }, 40L);
+            messageManager.auditlog(em.messageDeleteEmbed(content.getAuthor(), event.getChannel(), content));
+            messageManager.destroyMessages();
+            messageManager.setMessages();
         }
     }
-
 
 
 }

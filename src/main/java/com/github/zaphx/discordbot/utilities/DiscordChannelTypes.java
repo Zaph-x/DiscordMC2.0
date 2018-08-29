@@ -1,6 +1,7 @@
 package com.github.zaphx.discordbot.utilities;
 
 import com.github.zaphx.discordbot.Main;
+import com.github.zaphx.discordbot.managers.DiscordClientManager;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.obj.IChannel;
 
@@ -10,7 +11,7 @@ public enum DiscordChannelTypes {
     AUDIT_LOG("discord.audit-log-channel"),
     ANNOUNCE("discord.announce-channel"),
     RULES("discord.rules-channel"),
-    REPORTS("discord-reports-channel"),
+    REPORTS("discord.reports-channel"),
     SUGGESTIONS("discord.suggestions-channel");
 
     private String path;
@@ -18,11 +19,10 @@ public enum DiscordChannelTypes {
 
     DiscordChannelTypes(String path) {
         this.path = path;
-
     }
 
     public IChannel getChannel() {
-        return client.getChannelByID(getID());
+        return client.getChannelByID(Main.getInstance().getConfig().getLong(this.path));
     }
 
     public String getPath() {

@@ -1,4 +1,4 @@
-package com.github.zaphx.discordbot.utilities;
+package com.github.zaphx.discordbot.managers;
 
 import com.github.zaphx.discordbot.Main;
 import org.bukkit.Bukkit;

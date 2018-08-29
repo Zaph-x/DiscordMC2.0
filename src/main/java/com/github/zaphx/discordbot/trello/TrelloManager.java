@@ -1,14 +1,18 @@
 package com.github.zaphx.discordbot.trello;
 
 import com.github.zaphx.discordbot.Main;
+import com.github.zaphx.discordbot.managers.ChannelManager;
 import com.github.zaphx.discordbot.utilities.DiscordChannelTypes;
-import com.github.zaphx.discordbot.utilities.SQLManager;
+import com.github.zaphx.discordbot.managers.EmbedManager;
+import com.github.zaphx.discordbot.managers.SQLManager;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.trello4j.Trello;
 import org.trello4j.TrelloImpl;
 import org.trello4j.model.Card;
+import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.RequestBuffer;
 
 import java.util.ArrayList;
@@ -23,7 +27,9 @@ public class TrelloManager {
     private FileConfiguration config = Main.getInstance().getConfig();
     private final String API_KEY = config.getString("trello.API-key");
     private final String API_TOKEN = config.getString("trello.API-token");
-    protected Trello botTrello = new TrelloImpl(API_KEY, API_TOKEN);
+    private Trello botTrello = new TrelloImpl(API_KEY, API_TOKEN);
+    private EmbedManager em = EmbedManager.getInstance();
+    private ChannelManager channelManager = ChannelManager.getInstance();
 
 
     private TrelloManager() {
@@ -33,10 +39,32 @@ public class TrelloManager {
         return instance == null ? new TrelloManager() : instance;
     }
 
-    public boolean checkValidity(TrelloEventBuilder eventBuilder) {
+    public void checkAndSend(MessageReceivedEvent event, TrelloType trelloType) {
+        if (trelloType.equals(TrelloType.ISSUE)) {
+            if (channelManager.isChannel(event.getChannel(), DiscordChannelTypes.REPORTS.getID())) {
+                if (isEnabled()) {
+                    new TrelloEventBuilder(event)
+                            .setType(TrelloType.ISSUE)
+                            .addAttachments()
+                            .build();
+                }
+            }
+        } else if (trelloType.equals(TrelloType.SUGGESTION)) {
+            if (channelManager.isChannel(event.getChannel(),DiscordChannelTypes.SUGGESTIONS.getID())) {
+                if (isEnabled()) {
+                    new TrelloEventBuilder(event)
+                            .setType(TrelloType.SUGGESTION)
+                            .build();
+                }
+            }
+        } else throw new IllegalStateException("Not a valid trello type");
+    }
+
+    boolean checkValidity(TrelloEventBuilder eventBuilder) {
         boolean isValidReport;
         IChannel channel = eventBuilder.getChannel();
         IMessage message = eventBuilder.getMessage();
+        IUser sender = eventBuilder.getSender();
         List<String> falseFlags = new ArrayList<>();
         if (eventBuilder.getType().equals(TrelloType.ISSUE)) {
 
@@ -78,7 +106,7 @@ public class TrelloManager {
             } else {
 
                 RequestBuffer.request(message::delete);
-                // TODO Send embed
+                RequestBuffer.request(() -> sender.getOrCreatePMChannel().sendMessage(em.incorrectReportEmbed(falseFlags, message)));
                 return false;
             }
         } else if (eventBuilder.getType().equals(TrelloType.SUGGESTION)) {
@@ -98,6 +126,10 @@ public class TrelloManager {
                 falseFlags.add("Suggestion name");
                 isValidReport = false;
             }
+            if (!suggestion.toLowerCase().contains("mc username:")) {
+                falseFlags.add("In-game username");
+                isValidReport = false;
+            }
             if (!suggestion.toLowerCase().contains("mc or discord:")) {
                 falseFlags.add("Relation");
                 isValidReport = false;
@@ -113,13 +145,13 @@ public class TrelloManager {
             } else {
 
                 RequestBuffer.request(message::delete);
-                // TODO Send embed
+                RequestBuffer.request(() -> sender.getOrCreatePMChannel().sendMessage(em.incorrectSuggestionEmbed(falseFlags, message)));
                 return false;
             }
         } else return false;
     }
 
-    public void officiallyFileReport(TrelloEventBuilder eventBuilder, TrelloType type) {
+    void officiallyFileReport(TrelloEventBuilder eventBuilder, TrelloType type) {
         if (type.equals(TrelloType.ISSUE)) {
             IMessage report = eventBuilder.getMessage();
 
@@ -156,14 +188,7 @@ public class TrelloManager {
             // Create card
             Card card = botTrello.createCard(reportsID, cardName, descMap);
 
-            /* TODO: Add label support
-             * private void createCardInReports(String name, String desc, int labelChoice){}
-             * Where labelChoice is in the discord message and we've pre-assigned them
-             */
-
-
-            // TODO Send them a good 'ol confirmation message
-            //RequestBuffer.request(() -> reporter.getOrCreatePMChannel().sendMessage(EmbedManager.correctReportEmbed(reporter)));
+            RequestBuffer.request(() -> eventBuilder.getSender().getOrCreatePMChannel().sendMessage(em.correctReportEmbed(report)));
         } else if (type.equals(TrelloType.SUGGESTION)) {
             IMessage suggestion = eventBuilder.getMessage();
 
@@ -171,10 +196,12 @@ public class TrelloManager {
 
             String fullSuggestion = suggestion.getContent();
             int indexOfTitle = fullSuggestion.toLowerCase().indexOf("suggestion name:"); // 16 chars
+            int indexOfUsername = fullSuggestion.toLowerCase().indexOf("mc username:"); // 14 chars
             int indexOfRelated = fullSuggestion.toLowerCase().indexOf("mc or discord:"); // 14 chars
             int indexOfDescription = fullSuggestion.toLowerCase().indexOf("description:"); // 12 chars
             String cardName = fullSuggestion.substring(indexOfTitle + 16, indexOfRelated);
-            StringBuilder cardDesc = new StringBuilder(fullSuggestion.substring(indexOfRelated, indexOfDescription)
+            StringBuilder cardDesc = new StringBuilder(fullSuggestion.substring(indexOfUsername, indexOfRelated)
+                    + "\n" + fullSuggestion.indexOf(indexOfRelated, indexOfDescription)
                     + "\n" + fullSuggestion.substring(indexOfDescription));
             if (eventBuilder.getAttachments().size() > 0) {
                 for (String s : eventBuilder.getAttachments()) {
@@ -188,8 +215,11 @@ public class TrelloManager {
             descMap.put("desc", desc);
 
             Card card = botTrello.createCard(suggestID, cardName, descMap);
-            // TODO Send them a good 'ol confirmation message
-            //RequestBuffer.request(() -> reporter.getOrCreatePMChannel().sendMessage(EmbedManager.correctReportEmbed(reporter)));
+            RequestBuffer.request(() -> eventBuilder.getSender().getOrCreatePMChannel().sendMessage(em.correctSuggestionEmbed(suggestion)));
         }
+    }
+
+    public boolean isEnabled() {
+        return config.getBoolean("trello.enabled");
     }
 }

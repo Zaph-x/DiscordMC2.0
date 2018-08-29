@@ -4,6 +4,7 @@ import com.github.zaphx.discordbot.utilities.DiscordChannelTypes;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.IUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,11 +20,13 @@ public class TrelloEventBuilder {
     private TrelloType trelloType;
     private IMessage message;
     private IChannel channel;
+    private IUser sender;
 
     public TrelloEventBuilder(MessageReceivedEvent event) {
         this.event = event;
         this.message = event.getMessage();
         this.channel = event.getChannel();
+        this.sender = event.getAuthor();
     }
 
     public TrelloEventBuilder setType(TrelloType type) {
@@ -32,7 +35,7 @@ public class TrelloEventBuilder {
     }
 
     public TrelloEventBuilder checkChannel(DiscordChannelTypes channelType) {
-        if (this.channel != channelType.getChannel()) {
+        if (this.channel.getLongID() != channelType.getID()) {
             this.isValidReport = false;
         }
         return this;
@@ -49,36 +52,43 @@ public class TrelloEventBuilder {
 
     public void build() {
         if (!isValidReport) {
+            System.out.println(false);
             return;
         }
         isValidReport = trelloManager.checkValidity(this);
         if (!isValidReport) {
+            System.out.println(false);
             return;
         }
+        System.out.println(true);
         trelloManager.officiallyFileReport(this, this.trelloType);
     }
 
-    public IMessage getMessage() {
+    IMessage getMessage() {
         return message;
     }
 
-    public MessageReceivedEvent getEvent() {
+    MessageReceivedEvent getEvent() {
         return event;
     }
 
-    public TrelloType getType() {
+    TrelloType getType() {
         return trelloType;
     }
 
-    public IChannel getChannel() {
+    IChannel getChannel() {
         return channel;
     }
 
-    public boolean getValidity() {
+    boolean getValidity() {
         return isValidReport;
     }
 
-    public List<String> getAttachments() {
+    List<String> getAttachments() {
         return attachments;
+    }
+
+    IUser getSender() {
+        return sender;
     }
 }

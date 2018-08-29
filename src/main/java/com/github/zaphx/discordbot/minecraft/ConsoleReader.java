@@ -1,7 +1,7 @@
 package com.github.zaphx.discordbot.minecraft;
 
 import com.github.zaphx.discordbot.Main;
-import com.github.zaphx.discordbot.utilities.DiscordClientManager;
+import com.github.zaphx.discordbot.managers.DiscordClientManager;
 import com.github.zaphx.discordbot.utilities.RegexPattern;
 import com.github.zaphx.discordbot.utilities.RegexUtils;
 import org.bukkit.Bukkit;

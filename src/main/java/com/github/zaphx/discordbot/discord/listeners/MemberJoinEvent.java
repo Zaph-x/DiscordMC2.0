@@ -1,6 +1,6 @@
 package com.github.zaphx.discordbot.discord.listeners;
 
-import com.github.zaphx.discordbot.utilities.*;
+import com.github.zaphx.discordbot.managers.*;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.member.UserJoinEvent;
 

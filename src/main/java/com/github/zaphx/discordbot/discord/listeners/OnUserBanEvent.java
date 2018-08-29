@@ -1,7 +1,10 @@
 package com.github.zaphx.discordbot.discord.listeners;
 
 import com.github.zaphx.discordbot.Main;
-import com.github.zaphx.discordbot.utilities.*;
+import com.github.zaphx.discordbot.managers.DiscordClientManager;
+import com.github.zaphx.discordbot.managers.EmbedManager;
+import com.github.zaphx.discordbot.managers.InternalsManager;
+import com.github.zaphx.discordbot.managers.MessageManager;
 import org.bukkit.Bukkit;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.member.UserBanEvent;

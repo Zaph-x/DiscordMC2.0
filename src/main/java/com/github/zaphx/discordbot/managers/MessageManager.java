@@ -1,20 +1,14 @@
-package com.github.zaphx.discordbot.utilities;
+package com.github.zaphx.discordbot.managers;
 
 import com.github.zaphx.discordbot.Main;
+import com.github.zaphx.discordbot.utilities.DiscordChannelTypes;
 import gnu.trove.map.hash.THashMap;
 import org.bukkit.configuration.file.FileConfiguration;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.audit.ActionType;
 import sx.blah.discord.handle.audit.AuditLog;
-import sx.blah.discord.handle.audit.entry.AuditLogEntry;
-import sx.blah.discord.handle.audit.entry.DiscordObjectEntry;
-import sx.blah.discord.handle.audit.entry.TargetedEntry;
-import sx.blah.discord.handle.audit.entry.option.OptionKey;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageDeleteEvent;
-import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.RequestBuffer;
 
 import java.util.*;

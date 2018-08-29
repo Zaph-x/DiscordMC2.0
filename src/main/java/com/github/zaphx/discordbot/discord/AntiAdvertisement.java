@@ -1,10 +1,9 @@
 package com.github.zaphx.discordbot.discord;
 
 import com.github.zaphx.discordbot.Main;
-import com.github.zaphx.discordbot.utilities.DiscordChannelTypes;
-import com.github.zaphx.discordbot.utilities.Loggable;
-import com.github.zaphx.discordbot.utilities.RegexPattern;
-import com.github.zaphx.discordbot.utilities.RegexUtils;
+import com.github.zaphx.discordbot.managers.EmbedManager;
+import com.github.zaphx.discordbot.managers.MessageManager;
+import com.github.zaphx.discordbot.utilities.*;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageEvent;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
@@ -14,10 +13,12 @@ import sx.blah.discord.util.RequestBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AntiAdvertisement implements Loggable {
+public class AntiAdvertisement {
 
     private static List<IUser> allowedUsers = new ArrayList<>();
     private static Main main = Main.getInstance();
+    private MessageManager messageManager = MessageManager.getInstance();
+    private EmbedManager embedManager = EmbedManager.getInstance();
 
     public AntiAdvertisement() {
     }
@@ -32,7 +33,8 @@ public class AntiAdvertisement implements Loggable {
             }
             RequestBuffer.request(message::delete);
             message.reply(":eyes: Advertising isn't cool man...");
-            sendLogMessage(event);
+            // Send ad log
+            messageManager.log(embedManager.reportAdvertisementEmbed(event));
         }
     }
 
@@ -59,22 +61,4 @@ public class AntiAdvertisement implements Loggable {
             RequestBuffer.request(() -> channel.sendMessage(":x: You must tag at least one user to allow them to post an advertisement."));
         }
     }
-
-    @Override
-    public void sendLogMessage(MessageEvent event) {
-        IChannel logChannel = DiscordChannelTypes.LOG.getID() != 0 ? event.getGuild().getChannelByID(DiscordChannelTypes.LOG.getID()) : null;
-        if (logChannel == null) {
-           RequestBuffer.request(() -> event
-                   .getGuild()
-                   .getOwner()
-                   .getOrCreatePMChannel()
-                   .sendMessage(":warning: Please set the log channel. An advertisement from "
-                           + event.getAuthor().mention() + " was blocked"));
-        } else {
-            // TODO Send embed
-            // RequestBuffer.request(() -> logChannel.sendMessage(EMBED HERE);
-        }
-    }
-
-
 }
