@@ -7,6 +7,7 @@ import com.github.zaphx.discordbot.discord.commandhandler.CommandHandler;
 import com.github.zaphx.discordbot.discord.listeners.*;
 import com.github.zaphx.discordbot.managers.DiscordClientManager;
 import com.github.zaphx.discordbot.managers.SQLManager;
+import com.github.zaphx.discordbot.minecraft.commands.ActivateCommand;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import sx.blah.discord.Discord4J;
@@ -68,7 +69,7 @@ public class Main extends JavaPlugin {
 
         SQLManager sql = SQLManager.getInstance();
 
-        System.out.println("Registering listeners");
+        getLogger().log(Level.INFO, "Registering listeners");
         client.getDispatcher().registerListener(new OnReadyEvent());
         client.getDispatcher().registerListener(new MemberJoinEvent());
         client.getDispatcher().registerListener(new ChatDeleteEvent());
@@ -79,7 +80,6 @@ public class Main extends JavaPlugin {
 
 
         sql.createMutesIfNotExists();
-        sql.createRemindersIfNotExists();
         sql.createWarningsIfNotExists();
 
         CommandHandler commandHandler = CommandHandler.getInstance();
@@ -87,6 +87,7 @@ public class Main extends JavaPlugin {
         commandHandler.registerCommand("warn", new Warn());
         commandHandler.registerCommand("mute", new Mute());
 
+        getCommand("dmc").setExecutor(new ActivateCommand());
 
         getLogger().log(Level.INFO, "DiscordMC2.0 has successfully been enabled!");
     }

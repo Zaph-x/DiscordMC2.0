@@ -245,4 +245,19 @@ public class EmbedManager {
                 .appendField("Muted for", time, true)
                 .appendField("Reason", reason, false).build();
     }
+
+    public EmbedObject exception() {
+        return new EmbedBuilder()
+                .withDescription("The bot encountered an error and it has been reported!")
+                .withColor(new Color(242, 56, 79))
+                .build();
+    }
+
+    public EmbedObject exceptionToOwner(String type, String stacktrace) {
+        return new EmbedBuilder()
+                .withDescription("The bot encountered an error and it has been reported!")
+                .appendField(type,stacktrace.substring(0,1024),false)
+                .withColor(new Color(242, 56, 79))
+                .build();
+    }
 }

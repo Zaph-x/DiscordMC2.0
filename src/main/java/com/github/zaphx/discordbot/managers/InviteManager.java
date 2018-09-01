@@ -24,7 +24,6 @@ public class InviteManager {
     private FileConfiguration config = main.getConfig();
 
     private InviteManager() {
-        System.out.println("In");
     }
 
     public static InviteManager getInstance() {
@@ -33,7 +32,7 @@ public class InviteManager {
 
     public void update() {
         List<IExtendedInvite> invites = client.getGuildByID(config.getLong("discord.guild-id")).getExtendedInvites();
-        System.out.println(invites.size());
+        System.out.println("Found " + invites.size() + " invites. They are now registered");
         for (IExtendedInvite inv : invites) {
             inviteMap.put(inv.getCode(), inv.getUses());
             inviteObjectMap.put(inv.getCode(), inv);

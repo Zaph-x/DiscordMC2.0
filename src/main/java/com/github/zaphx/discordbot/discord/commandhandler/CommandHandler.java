@@ -2,9 +2,11 @@ package com.github.zaphx.discordbot.discord.commandhandler;
 
 import com.github.zaphx.discordbot.Main;
 import com.github.zaphx.discordbot.managers.ChannelManager;
+import com.github.zaphx.discordbot.managers.DiscordClientManager;
 import com.github.zaphx.discordbot.managers.EmbedManager;
 import gnu.trove.map.TMap;
 import gnu.trove.map.hash.THashMap;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageEvent;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IChannel;
@@ -14,6 +16,7 @@ import sx.blah.discord.handle.obj.Permissions;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
 
 /**
  * This class is the command handler for the bot. This is where all commands are handled when received.
@@ -68,11 +71,11 @@ public class CommandHandler {
             List<String> args = new ArrayList<>(Arrays.asList(fullCommand));
             args.remove(0);
             if (s.length() == commandPrefix.length()) return;
-            System.out.println("Succeed");
             if (commandMap.get(command) != null) {
                 CommandExitCode exitCode = ((CommandListener) commandMap.get(command)).onCommand(sender, command, args, channel, event);
                 switch (exitCode) {
                     case ERROR:
+                        channelManager.sendMessageToChannel(event,embedManager.exception());
                         // Should tell the user that the command encountered an exception
                         break;
                     case INVALID_SYNTAX:
@@ -94,7 +97,7 @@ public class CommandHandler {
                         // Nothing
                         break;
                     default:
-
+                        // This will never happen
                 }
             } else {
                 channelManager.sendMessageToChannel(event, embedManager.invalidCommandEmbed());
@@ -110,20 +113,49 @@ public class CommandHandler {
      */
     public void registerCommand(String commandName, Object command) {
         if (command instanceof CommandListener) {
-            System.out.println("Registering " + commandName + " as a command!");
+            Main.getInstance().getLogger().log(Level.INFO, "Registering " + commandName + " as a command!");
             commandMap.put(commandName.toLowerCase(), command);
         } else throw new IllegalStateException("Object " + command + " is not an instance of CommandListener");
     }
 
+    /**
+     * Gets the command list for the bot
+     * @return The command list
+     */
     public TMap<String, Object> getCommandMap() {
         return commandMap;
     }
 
+    /**
+     * Checks if the user has permission to perform certain actions
+     * @param event The event to listen to
+     * @param permission The permission to check for
+     * @return True if the user has permission
+     */
     public boolean userHasPermission(MessageEvent event, Permissions permission) {
         return event.getAuthor().getPermissionsForGuild(event.getGuild()).contains(permission);
     }
 
+    /**
+     * Checks if the bot has permission to perform a certain action
+     * @param event The event to listen to
+     * @param permission The permission to check for
+     * @return True if the client has permission
+     */
     public boolean clientHasPermission(MessageEvent event, Permissions permission) {
         return event.getClient().getOurUser().getPermissionsForGuild(event.getGuild()).contains(permission);
+    }
+
+    /**
+     * Will send any error to the owner of the bot. This should generally be placed within a catch clause
+     * @param e The exception thrown.
+     */
+    public void handleException(Exception e) {
+        DiscordClientManager
+                .getInstance()
+                .getClient()
+                .getApplicationOwner()
+                .getOrCreatePMChannel()
+                .sendMessage(embedManager.exceptionToOwner(ExceptionUtils.getMessage(e), ExceptionUtils.getStackTrace(e)));
     }
 }

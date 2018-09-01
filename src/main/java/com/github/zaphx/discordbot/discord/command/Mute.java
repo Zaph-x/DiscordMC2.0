@@ -50,7 +50,7 @@ public class Mute implements CommandListener {
 
                     return CommandExitCode.SUCCESS;
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    commandHandler.handleException(e);
                     return CommandExitCode.ERROR;
                 }
             case "chat":
@@ -74,7 +74,7 @@ public class Mute implements CommandListener {
                     channelManager.sendMessageToChannel(target.getOrCreatePMChannel(), embedManager.muteEmbed(reason,expiry,sender));
                     return CommandExitCode.SUCCESS;
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    commandHandler.handleException(e);
                     return CommandExitCode.ERROR;
                 }
             default:

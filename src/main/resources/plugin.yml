@@ -4,6 +4,11 @@ version: 1.0.0
 authors: [Zaphoo, Mobkinz78]
 
 commands:
-
+  dmc:
+    usage: /<command> login|logout
+    aliases: [discordmc, dismc]
 
 permissions:
+  discord.mc:
+    default: op
+    description: The base in game permission

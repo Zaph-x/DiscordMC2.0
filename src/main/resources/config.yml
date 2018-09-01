@@ -12,6 +12,8 @@ discord:
   mute-role: 0
   voice-mute-role: 0
   command-prefix: 'ob!'
+  # Intervals are in minutes
+  mute-check-interval: 60
 
 trello:
   enabled: true
