@@ -12,6 +12,10 @@ public class RegexUtils {
         return patternToFind.matcher(stringToMatch).find();
     }
 
+    public static boolean isMatch(RegexPattern patternToFind, String stringToMatch) {
+        return patternToFind.getPattern().matcher(stringToMatch).find();
+    }
+
     public static boolean lesserThanOrEqualOfLength(int length, Pattern patternToFind, String stringToMatch) {
         Matcher m = patternToFind.matcher(stringToMatch);
         return m.find() && m.group(0).split(" ").length <= length;

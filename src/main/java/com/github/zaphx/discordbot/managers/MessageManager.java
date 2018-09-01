@@ -2,26 +2,29 @@ package com.github.zaphx.discordbot.managers;
 
 import com.github.zaphx.discordbot.Main;
 import com.github.zaphx.discordbot.utilities.DiscordChannelTypes;
+import gnu.trove.map.TMap;
 import gnu.trove.map.hash.THashMap;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.audit.ActionType;
 import sx.blah.discord.handle.audit.AuditLog;
+import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.util.RequestBuffer;
-
-import java.util.*;
 
 public class MessageManager {
 
     private DiscordClientManager clientManager = DiscordClientManager.getInstance();
     private IDiscordClient client = clientManager.getClient();
     private FileConfiguration config = Main.getInstance().getConfig();
-    private Map<Long,IMessage> messages = new THashMap<>();
+    private TMap<Long, IMessage> messages = new THashMap<>();
     private AuditLog log;
 
     private static MessageManager instance;
+    private EmbedManager embedManager;
 
     private MessageManager() {
     }
@@ -51,7 +54,7 @@ public class MessageManager {
     }
 
     public void setMessages() {
-        client.getGuildByID(config.getLong("discord.guild-id")).getChannels().forEach(channel -> channel.getMessageHistory(200).forEach(message -> messages.put(message.getLongID(),message)));
+        client.getGuildByID(config.getLong("discord.guild-id")).getChannels().forEach(channel -> channel.getMessageHistory(200).forEach(message -> messages.put(message.getLongID(), message)));
     }
 
     public IMessage getMessageFromLog(long id) {
@@ -60,5 +63,12 @@ public class MessageManager {
 
     public void destroyMessages() {
         messages.clear();
+    }
+
+    public void updatePeriodically() {
+        Bukkit.getScheduler().runTaskTimerAsynchronously(Main.getInstance(), () -> {
+            destroyMessages();
+            setMessages();
+        }, 1200, 1200);
     }
 }

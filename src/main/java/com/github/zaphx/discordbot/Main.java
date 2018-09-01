@@ -1,6 +1,8 @@
 package com.github.zaphx.discordbot;
 
 import com.github.zaphx.discordbot.discord.command.Help;
+import com.github.zaphx.discordbot.discord.command.Mute;
+import com.github.zaphx.discordbot.discord.command.Warn;
 import com.github.zaphx.discordbot.discord.commandhandler.CommandHandler;
 import com.github.zaphx.discordbot.discord.listeners.*;
 import com.github.zaphx.discordbot.managers.DiscordClientManager;
@@ -79,10 +81,11 @@ public class Main extends JavaPlugin {
         sql.createMutesIfNotExists();
         sql.createRemindersIfNotExists();
         sql.createWarningsIfNotExists();
-        sql.countTickets();
 
         CommandHandler commandHandler = CommandHandler.getInstance();
         commandHandler.registerCommand("help", new Help());
+        commandHandler.registerCommand("warn", new Warn());
+        commandHandler.registerCommand("mute", new Mute());
 
 
         getLogger().log(Level.INFO, "DiscordMC2.0 has successfully been enabled!");

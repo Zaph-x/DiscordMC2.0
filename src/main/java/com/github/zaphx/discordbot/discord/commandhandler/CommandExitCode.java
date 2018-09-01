@@ -3,11 +3,11 @@ package com.github.zaphx.discordbot.discord.commandhandler;
 public enum CommandExitCode {
 
     /**
-     * This means the command was successfully executed with correct arguments
+     * This is returned if the command was successfully executed with the correct arguments
      */
     SUCCESS(0),
     /**
-     * This is when something goes wrong in every possible way
+     * This is returned when an exception is caught
      */
     ERROR(1),
     /**
@@ -15,9 +15,18 @@ public enum CommandExitCode {
      */
     INVALID_SYNTAX(2),
     /**
-     * This should only be return if the user doesn't have permission
+     * This should only be returned if the user doesn't have permission
      */
-    INSUFFICIENT_PERMISSIONS(3);
+    INSUFFICIENT_PERMISSIONS(3),
+    /**
+     * This is returned if the bot does not have permission to perform an action
+     */
+    CLIENT_INSUFFICIENT_PERMISSIONS(4),
+    /**
+     * Returned when there is no command with that name
+     */
+    NO_SUCH_COMMAND(5)
+    ;
 
     private int code;
 

@@ -29,7 +29,6 @@ public class EmbedManager {
     }
 
     public EmbedObject warningToUser(IUser warned, IUser warnee, String reason, IGuild guild) {
-        sql.executeStatementAndPost("INSERT INTO " + prefix + "%s (id, reason, warnee) VALUES ('%s','%s','%s')", "warnings", warned.getStringID(), reason, warned.getName());
         long ticketID = sql.countTickets("warnings");
         IChannel rulesChan = guild.getChannelByID(DiscordChannelTypes.RULES.getID());
         EmbedBuilder eb = new EmbedBuilder();
@@ -64,6 +63,42 @@ public class EmbedManager {
                 .withAuthorName(guild.getName())
                 .withAuthorIcon(guild.getIconURL());
         return eb.build();
+    }
+
+    public EmbedObject invalidCommandEmbed() {
+        return new EmbedBuilder()
+                .withTitle("Invalid command")
+                .withDesc("There is no command with that name! See the help list for all valid commands.")
+                .withColor(new Color(242, 56, 79))
+                .withTimestamp(Instant.now())
+                .build();
+    }
+
+    public EmbedObject invalidSyntaxEmbed(String command) {
+        return new EmbedBuilder()
+                .withTitle("Invalid command format")
+                .withDesc("The command was not formatted right! See `ob!help " + command + "` for correct usage.")
+                .withColor(new Color(242, 56, 79))
+                .withTimestamp(Instant.now())
+                .build();
+    }
+
+    public EmbedObject insufficientPermissions() {
+        return new EmbedBuilder()
+                .withTitle("Insufficient permissions")
+                .withDesc("You are lacking one or more permissions to perform this command! Sorry.")
+                .withColor(new Color(242, 56, 79))
+                .withTimestamp(Instant.now())
+                .build();
+    }
+
+    public EmbedObject insufficientClientPermissions() {
+        return new EmbedBuilder()
+                .withTitle("Insufficient permissions")
+                .withDesc("The bot is missing one or more permissions to perform that command! Please contact the server administrator.")
+                .withColor(new Color(242, 56, 79))
+                .withTimestamp(Instant.now())
+                .build();
     }
 
     public EmbedObject joinEmbed(IExtendedInvite invite, IUser joined) {
@@ -183,5 +218,31 @@ public class EmbedManager {
                         "Please note that we are not doing this full time, so your suggestion might take a while to be reviewed.")
                 .appendField("Your suggestion was:", message.getFormattedContent(), false)
                 .build();
+    }
+
+    public EmbedObject consoleCommandEmbed(String result) {
+        return new EmbedBuilder().withColor(new Color(120, 193, 82))
+                .withAuthorName("Command successfully executed!")
+                .appendField("Result", result, false)
+                .withTimestamp(Instant.now()).build();
+    }
+
+    public EmbedObject muteEmbed(String reason, String time, IUser muter) {
+        return new EmbedBuilder().withColor(new Color(133, 150, 211))
+                .withTimestamp(Instant.now())
+                .withTitle("You have been muted!")
+                .appendField("Muted by", muter.mention(), true)
+                .appendField("Muted for", time, true)
+                .appendField("Reason", reason, false).build();
+    }
+
+    public EmbedObject logMuteEmbed(String reason, String time, IUser muter, IUser muted) {
+        return new EmbedBuilder().withColor(new Color(133, 150, 211))
+                .withTimestamp(Instant.now())
+                .withTitle("A user has been muted!")
+                .appendField("Muted", muted.mention(), true)
+                .appendField("Muted by", muter.mention(), true)
+                .appendField("Muted for", time, true)
+                .appendField("Reason", reason, false).build();
     }
 }

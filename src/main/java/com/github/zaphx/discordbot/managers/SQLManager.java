@@ -1,6 +1,7 @@
 package com.github.zaphx.discordbot.managers;
 
 import com.github.zaphx.discordbot.Main;
+import gnu.trove.map.hash.THashMap;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
@@ -13,11 +14,11 @@ import java.util.concurrent.Future;
 
 public class SQLManager {
 
+    private DiscordClientManager clientManager = DiscordClientManager.getInstance();
+
     private FileConfiguration config = Main.getInstance().getConfig();
     private static SQLManager instance;
     private String prefix = config.getString("sql.prefix");
-    private long ticketWarning; // TODO use this
-    private long ticketMute;
 
     private final int PORT = config.getInt("sql.port");
     private final String USERNAME = config.getString("sql.username");
@@ -54,7 +55,7 @@ public class SQLManager {
     }
 
     // Check if the given table exists
-    public boolean tableExist(String tableName) {
+    private boolean tableExist(String tableName) {
         Connection connection = getConnection();
         boolean tExists = false;
         try (ResultSet rs = connection.getMetaData().getTables(null, null, tableName, null)) {
@@ -93,7 +94,7 @@ public class SQLManager {
         }
     }
 
-    public long countTickets(String table) {
+    long countTickets(String table) {
         Future<Long> future = CompletableFuture.supplyAsync(() -> {
             try {
                 Connection connection = getConnection();
@@ -157,7 +158,8 @@ public class SQLManager {
                             "id BIGINT UNSIGNED NOT NULL, \n" +
                             "time DATETIME NOT NULL DEFAULT NOW(), \n" +
                             "muter BIGINT UNSIGNED NOT NULL, \n" +
-                            "expires BIGINT UNSIGNED NOT NULL" +
+                            "expires BIGINT UNSIGNED NOT NULL, \n" +
+                            "type BIGINT UNSIGNED NOT NULL" +
                             ")");
                     connection.close();
                 } catch (SQLException e) {
@@ -200,8 +202,26 @@ public class SQLManager {
         }
     }
 
-    public void countTickets() {
-        this.ticketMute = countTickets("mutes");
-        this.ticketWarning = countTickets("warnings");
+    // UserID, Type
+    public void unmute() {
+        Future<Void> future = CompletableFuture.supplyAsync(() -> {
+            try {
+                Connection connection = getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM " + prefix + "mutes WHERE expires < UNIX_TIMESTAMP()");
+                ResultSet rs = preparedStatement.executeQuery();
+                while (rs.next()) {
+                    clientManager.getClient().getUserByID(rs.getLong("id")).removeRole(clientManager.getClient().getRoleByID(rs.getLong("type")));
+                    executeStatementAndPost("DELETE FROM %smutes WHERE id = %s", prefix, rs.getLong("id"));
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return null;
+        });
+        try {
+            future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
     }
 }
