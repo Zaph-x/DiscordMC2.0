@@ -1,6 +1,5 @@
 package com.github.zaphx.discordbot.minecraft.commands;
 
-import com.github.zaphx.discordbot.Main;
 import com.github.zaphx.discordbot.managers.DiscordClientManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;

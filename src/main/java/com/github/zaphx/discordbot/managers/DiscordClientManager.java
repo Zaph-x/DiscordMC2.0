@@ -1,6 +1,7 @@
 package com.github.zaphx.discordbot.managers;
 
-import com.github.zaphx.discordbot.Main;
+import com.github.zaphx.discordbot.Dizcord;
+import org.bukkit.Bukkit;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.obj.IGuild;
@@ -20,7 +21,7 @@ public class DiscordClientManager {
     private IDiscordClient client;
     private static DiscordClientManager instance;
 
-    private final String TOKEN = Main.getInstance().getConfig().getString("discord.token");
+    private final String TOKEN = Dizcord.getInstance().getConfig().getString("discord.token");
 
     private DiscordClientManager() {
     }
@@ -37,6 +38,8 @@ public class DiscordClientManager {
      */
     public boolean logout(IDiscordClient client) {
         try {
+            Bukkit.getScheduler().cancelTasks(Dizcord.getInstance());
+
             client.logout();
             return true;
         } catch (DiscordException ignored) {
@@ -96,7 +99,7 @@ public class DiscordClientManager {
     }
 
     public boolean clientHasPermission(Permissions permission) {
-        IGuild guild = client.getGuildByID(Main.getInstance().getConfig().getLong("discord.guild-id"));
+        IGuild guild = client.getGuildByID(Dizcord.getInstance().getConfig().getLong("discord.guild-id"));
         return getClient().getOurUser().getPermissionsForGuild(guild).contains(permission);
     }
 

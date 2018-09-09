@@ -1,9 +1,8 @@
 package com.github.zaphx.discordbot.discord.command;
 
-import com.github.zaphx.discordbot.Main;
-import com.github.zaphx.discordbot.discord.commandhandler.CommandExitCode;
-import com.github.zaphx.discordbot.discord.commandhandler.CommandHandler;
-import com.github.zaphx.discordbot.discord.commandhandler.CommandListener;
+import com.github.zaphx.discordbot.api.commandhandler.CommandExitCode;
+import com.github.zaphx.discordbot.api.commandhandler.CommandHandler;
+import com.github.zaphx.discordbot.api.commandhandler.CommandListener;
 import gnu.trove.map.TMap;
 import org.jetbrains.annotations.NotNull;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;

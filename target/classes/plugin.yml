@@ -1,6 +1,7 @@
-main: com.github.zaphx.discordbot.Main
+main: com.github.zaphx.discordbot.Dizcord
 name: DiscordMC2.0
-version: 1.0.0
+version: 2.0.1
+load: STARTUP
 authors: [Zaphoo, Mobkinz78]
 
 commands:

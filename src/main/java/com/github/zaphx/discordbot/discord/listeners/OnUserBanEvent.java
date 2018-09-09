@@ -1,6 +1,6 @@
 package com.github.zaphx.discordbot.discord.listeners;
 
-import com.github.zaphx.discordbot.Main;
+import com.github.zaphx.discordbot.Dizcord;
 import com.github.zaphx.discordbot.managers.DiscordClientManager;
 import com.github.zaphx.discordbot.managers.EmbedManager;
 import com.github.zaphx.discordbot.managers.InternalsManager;
@@ -21,7 +21,7 @@ public class OnUserBanEvent {
     @EventSubscriber
     public void onUserBan(UserBanEvent event) {
         if (clientManager.clientHasPermission(Permissions.VIEW_AUDIT_LOG)) {
-            Bukkit.getScheduler().runTaskLaterAsynchronously(Main.getInstance(), () -> {
+            Bukkit.getScheduler().runTaskLaterAsynchronously(Dizcord.getInstance(), () -> {
                 IUser banner = internalsManager.getBanner(event);
                 String reason = internalsManager.getReason(event);
                 messageManager.log(embedManager.banToChannel(event.getUser(),banner,reason));

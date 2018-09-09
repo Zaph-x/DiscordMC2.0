@@ -1,6 +1,6 @@
 package com.github.zaphx.discordbot.trello;
 
-import com.github.zaphx.discordbot.Main;
+import com.github.zaphx.discordbot.Dizcord;
 import com.github.zaphx.discordbot.managers.ChannelManager;
 import com.github.zaphx.discordbot.utilities.DiscordChannelTypes;
 import com.github.zaphx.discordbot.managers.EmbedManager;
@@ -24,7 +24,7 @@ public class TrelloManager {
 
     private static TrelloManager instance;
     private SQLManager sql = SQLManager.getInstance();
-    private FileConfiguration config = Main.getInstance().getConfig();
+    private FileConfiguration config = Dizcord.getInstance().getConfig();
     private final String API_KEY = config.getString("trello.API-key");
     private final String API_TOKEN = config.getString("trello.API-token");
     private Trello botTrello = new TrelloImpl(API_KEY, API_TOKEN);
@@ -199,9 +199,9 @@ public class TrelloManager {
             int indexOfUsername = fullSuggestion.toLowerCase().indexOf("mc username:"); // 14 chars
             int indexOfRelated = fullSuggestion.toLowerCase().indexOf("mc or discord:"); // 14 chars
             int indexOfDescription = fullSuggestion.toLowerCase().indexOf("description:"); // 12 chars
-            String cardName = fullSuggestion.substring(indexOfTitle + 16, indexOfRelated);
+            String cardName = fullSuggestion.substring(indexOfTitle + 16, indexOfUsername);
             StringBuilder cardDesc = new StringBuilder(fullSuggestion.substring(indexOfUsername, indexOfRelated)
-                    + "\n" + fullSuggestion.indexOf(indexOfRelated, indexOfDescription)
+                    + "\n" + fullSuggestion.substring(indexOfRelated, indexOfDescription)
                     + "\n" + fullSuggestion.substring(indexOfDescription));
             if (eventBuilder.getAttachments().size() > 0) {
                 for (String s : eventBuilder.getAttachments()) {

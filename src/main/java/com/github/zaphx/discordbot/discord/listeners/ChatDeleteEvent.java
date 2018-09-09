@@ -17,11 +17,9 @@ public class ChatDeleteEvent {
         IMessage content = messageManager.getMessageFromLog(id);
         if (content.getContent().toLowerCase().startsWith("ob!")) return;
         if (!content.getAuthor().isBot()) {
-            messageManager.auditlog(em.messageDeleteEmbed(content.getAuthor(), event.getChannel(), content));
+            messageManager.auditlog(em.messageDeleteEmbed(content));
             messageManager.destroyMessages();
             messageManager.setMessages();
         }
     }
-
-
 }

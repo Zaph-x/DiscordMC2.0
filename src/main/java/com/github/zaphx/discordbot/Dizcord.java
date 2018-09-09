@@ -3,7 +3,7 @@ package com.github.zaphx.discordbot;
 import com.github.zaphx.discordbot.discord.command.Help;
 import com.github.zaphx.discordbot.discord.command.Mute;
 import com.github.zaphx.discordbot.discord.command.Warn;
-import com.github.zaphx.discordbot.discord.commandhandler.CommandHandler;
+import com.github.zaphx.discordbot.api.commandhandler.CommandHandler;
 import com.github.zaphx.discordbot.discord.listeners.*;
 import com.github.zaphx.discordbot.managers.DiscordClientManager;
 import com.github.zaphx.discordbot.managers.SQLManager;
@@ -22,18 +22,18 @@ import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class Main extends JavaPlugin {
+public class Dizcord extends JavaPlugin {
 
     // PLUGIN DESCRIPTION
     private String prefix = "§";
     private Logger log;
-    private static Main main;
+    private static Dizcord dizcord;
     private FileConfiguration config;
     IDiscordClient client;
 
     @Override
     public void onEnable() {
-        main = this;
+        dizcord = this;
         this.log = this.getLogger();
         DiscordClientManager clientManager = DiscordClientManager.getInstance();
 
@@ -41,7 +41,7 @@ public class Main extends JavaPlugin {
         Configuration.AUTOMATICALLY_ENABLE_MODULES = false;
 
         createConfig();
-        this.config = main.getConfig();
+        this.config = dizcord.getConfig();
 
         if (!validateConfig()) {
             log.warning("The bot could not be started. Please fill in the config properly and try again.");
@@ -84,16 +84,20 @@ public class Main extends JavaPlugin {
 
         CommandHandler commandHandler = CommandHandler.getInstance();
         commandHandler.registerCommand("help", new Help());
-        commandHandler.registerCommand("warn", new Warn());
         commandHandler.registerCommand("mute", new Mute());
+        commandHandler.registerCommand("warn", new Warn());
 
         getCommand("dmc").setExecutor(new ActivateCommand());
+
+        getLogger().log(Level.INFO,"Loading external bot plugins!");
+
 
         getLogger().log(Level.INFO, "DiscordMC2.0 has successfully been enabled!");
     }
 
     @Override
     public void onDisable() {
+
         getLogger().log(Level.INFO, "DiscordMC2.0 has successfully been disabled!");
     }
 
@@ -110,8 +114,8 @@ public class Main extends JavaPlugin {
         }
     }
 
-    public static Main getInstance() {
-        return main;
+    public static Dizcord getInstance() {
+        return dizcord;
     }
 
     private boolean validateConfig() {

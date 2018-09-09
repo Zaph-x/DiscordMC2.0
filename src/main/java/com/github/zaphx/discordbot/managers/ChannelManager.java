@@ -1,6 +1,6 @@
 package com.github.zaphx.discordbot.managers;
 
-import com.github.zaphx.discordbot.Main;
+import com.github.zaphx.discordbot.Dizcord;
 import com.github.zaphx.discordbot.utilities.DiscordChannelTypes;
 import gnu.trove.map.TMap;
 import gnu.trove.map.hash.THashMap;
@@ -15,16 +15,13 @@ import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IPrivateChannel;
 import sx.blah.discord.util.RequestBuffer;
 
-import java.util.Map;
-import java.util.TreeMap;
-
 public class ChannelManager {
 
     private static ChannelManager instance;
     private IDiscordClient client = DiscordClientManager.getInstance().getClient();
     private TMap<String, Long> channelMap = new THashMap<>();
-    private Main main = Main.getInstance();
-    private FileConfiguration config = main.getConfig();
+    private Dizcord dizcord = Dizcord.getInstance();
+    private FileConfiguration config = dizcord.getConfig();
 
     private ChannelManager() {
     }

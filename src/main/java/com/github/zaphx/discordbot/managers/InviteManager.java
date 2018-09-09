@@ -1,6 +1,6 @@
 package com.github.zaphx.discordbot.managers;
 
-import com.github.zaphx.discordbot.Main;
+import com.github.zaphx.discordbot.Dizcord;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import sx.blah.discord.api.IDiscordClient;
@@ -20,8 +20,8 @@ public class InviteManager {
     private Map<String, IExtendedInvite> inviteObjectMap = new TreeMap<>();
     private DiscordClientManager clientManager = DiscordClientManager.getInstance();
     private IDiscordClient client = clientManager.getClient();
-    private Main main = Main.getInstance();
-    private FileConfiguration config = main.getConfig();
+    private Dizcord dizcord = Dizcord.getInstance();
+    private FileConfiguration config = dizcord.getConfig();
 
     private InviteManager() {
     }
@@ -59,7 +59,7 @@ public class InviteManager {
                 return inviteObjectMap.get(entry.getKey());
             }
         }
-        Bukkit.getScheduler().runTaskLater(main, this::getInviteChange, 40L);
+        Bukkit.getScheduler().runTaskLater(dizcord, this::getInviteChange, 40L);
         return null;
     }
 

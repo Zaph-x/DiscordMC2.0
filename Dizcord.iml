@@ -59,7 +59,6 @@
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.apache.logging.log4j:log4j-api:2.0-beta9" level="project" />
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-classic:1.1.7" level="project" />
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-core:1.1.7" level="project" />
-    <orderEntry type="library" name="Maven: net.sf.trove4j:trove4j:3.0.3" level="project" />
     <orderEntry type="library" name="Maven: org.trello4j:trello4j:1.0-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: org.jetbrains:annotations:15.0" level="project" />
   </component>

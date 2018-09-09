@@ -1,6 +1,6 @@
 package com.github.zaphx.discordbot.discord;
 
-import com.github.zaphx.discordbot.Main;
+import com.github.zaphx.discordbot.Dizcord;
 import com.github.zaphx.discordbot.managers.EmbedManager;
 import com.github.zaphx.discordbot.managers.MessageManager;
 import com.github.zaphx.discordbot.utilities.*;
@@ -16,7 +16,7 @@ import java.util.List;
 public class AntiAdvertisement {
 
     private static List<IUser> allowedUsers = new ArrayList<>();
-    private static Main main = Main.getInstance();
+    private static Dizcord dizcord = Dizcord.getInstance();
     private MessageManager messageManager = MessageManager.getInstance();
     private EmbedManager embedManager = EmbedManager.getInstance();
 
@@ -53,7 +53,7 @@ public class AntiAdvertisement {
         RequestBuffer.request(message::delete);
         if (message.getMentions().size() > 0) {
             allowedUsers.addAll(message.getMentions());
-            main.getServer().getScheduler().runTaskLaterAsynchronously(main, () -> {
+            dizcord.getServer().getScheduler().runTaskLaterAsynchronously(dizcord, () -> {
                 RequestBuffer.request(() -> channel.sendMessage(":white_check_mark: The mentioned users have been allowed to post an advertisement."));
                 allowedUsers.removeAll(message.getMentions());
             },30L * 20);

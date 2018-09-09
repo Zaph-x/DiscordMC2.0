@@ -1,6 +1,6 @@
 package com.github.zaphx.discordbot.managers;
 
-import com.github.zaphx.discordbot.Main;
+import com.github.zaphx.discordbot.Dizcord;
 import com.github.zaphx.discordbot.utilities.DiscordChannelTypes;
 import org.bukkit.configuration.file.FileConfiguration;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
@@ -17,8 +17,8 @@ public class EmbedManager {
     private MessageManager mm = MessageManager.getInstance();
     private static EmbedManager instance;
     private SQLManager sql = SQLManager.getInstance();
-    private Main main = Main.getInstance();
-    private FileConfiguration config = main.getConfig();
+    private Dizcord dizcord = Dizcord.getInstance();
+    private FileConfiguration config = dizcord.getConfig();
     private String prefix = config.getString("sql.prefix");
 
     private EmbedManager() {
@@ -114,9 +114,11 @@ public class EmbedManager {
         return eb.build();
     }
 
-    public EmbedObject messageDeleteEmbed(IUser author, IChannel channel, IMessage message) {
+    public EmbedObject messageDeleteEmbed(IMessage message) {
         EmbedBuilder builder = new EmbedBuilder();
         String content = message.getFormattedContent();
+        IUser author = message.getAuthor();
+        IChannel channel = message.getChannel();
         if (content.isEmpty()) {
             content = "Embed";
         }

@@ -1,7 +1,6 @@
 package com.github.zaphx.discordbot.managers;
 
-import com.github.zaphx.discordbot.Main;
-import gnu.trove.map.hash.THashMap;
+import com.github.zaphx.discordbot.Dizcord;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +15,7 @@ public class SQLManager {
 
     private DiscordClientManager clientManager = DiscordClientManager.getInstance();
 
-    private FileConfiguration config = Main.getInstance().getConfig();
+    private FileConfiguration config = Dizcord.getInstance().getConfig();
     private static SQLManager instance;
     private String prefix = config.getString("sql.prefix");
 

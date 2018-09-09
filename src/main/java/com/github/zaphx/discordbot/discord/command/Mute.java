@@ -1,8 +1,8 @@
 package com.github.zaphx.discordbot.discord.command;
 
-import com.github.zaphx.discordbot.Main;
-import com.github.zaphx.discordbot.discord.commandhandler.CommandExitCode;
-import com.github.zaphx.discordbot.discord.commandhandler.CommandListener;
+import com.github.zaphx.discordbot.Dizcord;
+import com.github.zaphx.discordbot.api.commandhandler.CommandExitCode;
+import com.github.zaphx.discordbot.api.commandhandler.CommandListener;
 import com.github.zaphx.discordbot.utilities.DateUtils;
 import org.jetbrains.annotations.NotNull;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
@@ -36,11 +36,11 @@ public class Mute implements CommandListener {
                     String expiry = DateUtils.formatDateDiff(timestamp);
                     String reason = DateUtils.removeTimePattern(time);
 
-                    mute = clientManager.getClient().getRoleByID(Main.getInstance().getConfig().getLong("discord.voice-mute-role"));
+                    mute = clientManager.getClient().getRoleByID(Dizcord.getInstance().getConfig().getLong("discord.voice-mute-role"));
 
                     target.addRole(mute);
                     sql.executeStatementAndPost("INSERT INTO %smutes (id, muter, expires, type) VALUES ('%s','%s','%s','%s')",
-                            Main.getInstance().getConfig().getString("sql.prefix"),
+                            Dizcord.getInstance().getConfig().getString("sql.prefix"),
                             target.getStringID(),
                             sender.getStringID(),
                             timestamp,
@@ -61,11 +61,11 @@ public class Mute implements CommandListener {
                     String expiry = DateUtils.formatDateDiff(timestamp);
                     String reason = DateUtils.removeTimePattern(time);
 
-                    mute = clientManager.getClient().getRoleByID(Main.getInstance().getConfig().getLong("discord.mute-role"));
+                    mute = clientManager.getClient().getRoleByID(Dizcord.getInstance().getConfig().getLong("discord.mute-role"));
 
                     target.addRole(mute);
                     sql.executeStatementAndPost("INSERT INTO %smutes (id, muter, expires, type) VALUES ('%s','%s','%s','%s')",
-                            Main.getInstance().getConfig().getString("sql.prefix"),
+                            Dizcord.getInstance().getConfig().getString("sql.prefix"),
                             target.getStringID(),
                             sender.getStringID(),
                             timestamp,

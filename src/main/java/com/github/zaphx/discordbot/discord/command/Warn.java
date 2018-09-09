@@ -1,8 +1,8 @@
 package com.github.zaphx.discordbot.discord.command;
 
-import com.github.zaphx.discordbot.Main;
-import com.github.zaphx.discordbot.discord.commandhandler.CommandExitCode;
-import com.github.zaphx.discordbot.discord.commandhandler.CommandListener;
+import com.github.zaphx.discordbot.Dizcord;
+import com.github.zaphx.discordbot.api.commandhandler.CommandExitCode;
+import com.github.zaphx.discordbot.api.commandhandler.CommandListener;
 import com.github.zaphx.discordbot.utilities.RegexPattern;
 import com.github.zaphx.discordbot.utilities.RegexUtils;
 import org.jetbrains.annotations.NotNull;
@@ -37,7 +37,7 @@ public class Warn implements CommandListener {
             } else {
                 return CommandExitCode.INVALID_SYNTAX;
             }
-            String sqlprefix = Main.getInstance().getConfig().getString("sql.prefix");
+            String sqlprefix = Dizcord.getInstance().getConfig().getString("sql.prefix");
             sql.executeStatementAndPost("INSERT INTO %s" + "%s (id, reason, warnee) VALUES ('%s','%s','%s')", sqlprefix, "warnings", warned.getStringID(), reason, warned.getStringID());
             messageManager.log(embedManager.warningToChannel(warned, sender, reason, event.getGuild()));
             channelManager.sendMessageToChannel(warned.getOrCreatePMChannel(), embedManager.warningToUser(warned, sender, reason, event.getGuild()));

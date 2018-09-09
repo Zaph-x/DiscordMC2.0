@@ -1,6 +1,6 @@
 package com.github.zaphx.discordbot.utilities;
 
-import com.github.zaphx.discordbot.Main;
+import com.github.zaphx.discordbot.Dizcord;
 import com.github.zaphx.discordbot.managers.DiscordClientManager;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.handle.obj.IChannel;
@@ -22,7 +22,7 @@ public enum DiscordChannelTypes {
     }
 
     public IChannel getChannel() {
-        return client.getChannelByID(Main.getInstance().getConfig().getLong(this.path));
+        return client.getChannelByID(Dizcord.getInstance().getConfig().getLong(this.path));
     }
 
     public String getPath() {
@@ -30,6 +30,6 @@ public enum DiscordChannelTypes {
     }
 
     public long getID() {
-        return Main.getInstance().getConfig().getLong(this.path);
+        return Dizcord.getInstance().getConfig().getLong(this.path);
     }
 }
