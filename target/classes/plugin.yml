@@ -1,6 +1,6 @@
 main: com.github.zaphx.discordbot.Dizcord
-name: DiscordMC2.0
-version: 2.0.1
+name: Dizcord
+version: 2.0.2
 load: STARTUP
 authors: [Zaphoo, Mobkinz78]
 

@@ -1,7 +1,6 @@
 package com.github.zaphx.discordbot.discord.listeners;
 
 import com.github.zaphx.discordbot.Dizcord;
-import com.github.zaphx.discordbot.api.plugin.PluginManager;
 import com.github.zaphx.discordbot.managers.InviteManager;
 import com.github.zaphx.discordbot.managers.MessageManager;
 import com.github.zaphx.discordbot.managers.SQLManager;
