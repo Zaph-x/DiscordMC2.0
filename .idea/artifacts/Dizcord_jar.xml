@@ -1,7 +1,7 @@
 <component name="ArtifactManager">
-  <artifact type="jar" build-on-make="true" name="DiscordMC2.0:jar">
+  <artifact type="jar" build-on-make="true" name="Dizcord:jar">
     <output-path>E:/Server/Spigot/plugins/update</output-path>
-    <root id="archive" name="DiscordMC2.0.jar">
+    <root id="archive" name="Dizcord.jar">
       <element id="module-output" name="Dizcord" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/koloboke/koloboke-impl-common-jdk8/1.0.0/koloboke-impl-common-jdk8-1.0.0.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/commons-logging/commons-logging/1.2/commons-logging-1.2.jar" path-in-jar="/" />
