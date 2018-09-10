@@ -36,49 +36,16 @@
     </repositories>
 
     <build>
-        <finalName>dateutils</finalName>
+        <sourceDirectory>src</sourceDirectory>
         <plugins>
-
-            <!-- download source code in Eclipse, best practice -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-eclipse-plugin</artifactId>
-                <version>2.9</version>
-                <configuration>
-                    <downloadSources>true</downloadSources>
-                    <downloadJavadocs>false</downloadJavadocs>
-                </configuration>
-            </plugin>
-
-            <!-- Set a JDK compiler level -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
+                <version>3.8.0</version>
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
                 </configuration>
             </plugin>
-
-            <!-- Make this jar executable -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <configuration>
-                    <!-- DO NOT include log4j.properties file in your Jar -->
-                    <excludes>
-                        <exclude>**/log4j.properties</exclude>
-                    </excludes>
-                    <archive>
-                        <manifest>
-                            <!-- Jar file entry point -->
-                            <mainClass>com.github.zaphx.discordbot.Dizcord</mainClass>
-                        </manifest>
-                    </archive>
-                </configuration>
-            </plugin>
-
         </plugins>
     </build>
 
