@@ -73,7 +73,7 @@
                     <archive>
                         <manifest>
                             <!-- Jar file entry point -->
-                            <mainClass>com.mkyong.core.utils.App</mainClass>
+                            <mainClass>com.github.zaphx.discordbot.Dizcord</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
