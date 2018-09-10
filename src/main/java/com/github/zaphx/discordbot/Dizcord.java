@@ -103,6 +103,7 @@ public class Dizcord extends JavaPlugin {
 
     private void createConfig() {
         if (!getDataFolder().exists()) {
+            //noinspection ResultOfMethodCallIgnored
             getDataFolder().mkdirs();
         }
         File file = new File(getDataFolder(), "config.yml");
@@ -112,6 +113,10 @@ public class Dizcord extends JavaPlugin {
         } else {
             getLogger().log(Level.INFO, "Configuration found for DiscordMC2.0 v" + getDescription().getVersion() + "!");
         }
+    }
+
+    public String getDiscordPrefix() {
+        return this.getConfig().getString("discord.command-prefix");
     }
 
     public static Dizcord getInstance() {
@@ -195,5 +200,9 @@ public class Dizcord extends JavaPlugin {
 
     public String getPrefix() {
         return prefix;
+    }
+
+    public Logger getLog() {
+        return this.log;
     }
 }
