@@ -29,7 +29,7 @@ public class Dizcord extends JavaPlugin {
     private Logger log;
     private static Dizcord dizcord;
     private FileConfiguration config;
-    IDiscordClient client;
+    private IDiscordClient client;
 
     @Override
     public void onEnable() {
