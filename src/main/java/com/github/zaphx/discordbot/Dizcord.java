@@ -1,5 +1,6 @@
 package com.github.zaphx.discordbot;
 
+import com.github.zaphx.discordbot.discord.command.AdAllow;
 import com.github.zaphx.discordbot.discord.command.Help;
 import com.github.zaphx.discordbot.discord.command.Mute;
 import com.github.zaphx.discordbot.discord.command.Warn;
@@ -86,19 +87,20 @@ public class Dizcord extends JavaPlugin {
         commandHandler.registerCommand("help", new Help());
         commandHandler.registerCommand("mute", new Mute());
         commandHandler.registerCommand("warn", new Warn());
+        commandHandler.registerCommand("adallow", new AdAllow());
 
         getCommand("dmc").setExecutor(new ActivateCommand());
 
         getLogger().log(Level.INFO,"Loading external bot plugins!");
 
 
-        getLogger().log(Level.INFO, "DiscordMC2.0 has successfully been enabled!");
+        getLogger().log(Level.INFO, "Dizcord has successfully been enabled!");
     }
 
     @Override
     public void onDisable() {
 
-        getLogger().log(Level.INFO, "DiscordMC2.0 has successfully been disabled!");
+        getLogger().log(Level.INFO, "Dizcord has successfully been disabled!");
     }
 
     private void createConfig() {
@@ -115,14 +117,23 @@ public class Dizcord extends JavaPlugin {
         }
     }
 
+
     public String getDiscordPrefix() {
         return this.getConfig().getString("discord.command-prefix");
     }
 
+    /**
+     * Returns the instance of the Dizcord bot
+     * @return The Dizcord instance
+     */
     public static Dizcord getInstance() {
         return dizcord;
     }
 
+    /**
+     * This method will validate the plugin config.
+     * @return True if config is valid
+     */
     private boolean validateConfig() {
         if (config.getString("discord.token").equalsIgnoreCase("")) {
             log.warning("You must supply the plugin with a valid discord bot token");
@@ -202,6 +213,10 @@ public class Dizcord extends JavaPlugin {
         return prefix;
     }
 
+    /**
+     * Returns an instance of the Dizcord logger
+     * @return The Dizcord logger
+     */
     public Logger getLog() {
         return this.log;
     }

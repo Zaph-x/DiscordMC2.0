@@ -28,14 +28,18 @@ public class SQLManager {
     // Not public constructor
     private SQLManager() {
     }
-
-    // Return our instance
+    /**
+     * Gets the instance of the SQLManager
+     * @return A new instance if one does not exist, else the instance
+     */
     public static SQLManager getInstance() {
         return instance == null ? instance = new SQLManager() : instance;
     }
 
-
-    // Create the connection to the SQL server
+    /**
+     * Gets an SQL connection to the SQL server of the spigot server
+     * @return The connection to the SQL server the server uses
+     */
     @NotNull
     private Connection getConnection() {
         String driver = "com.mysql.jdbc.Driver";
@@ -53,7 +57,11 @@ public class SQLManager {
         return null;
     }
 
-    // Check if the given table exists
+    /**
+     * Checks if a table exits
+     * @param tableName The table to look for
+     * @return True if the table exists, else false
+     */
     private boolean tableExist(String tableName) {
         Connection connection = getConnection();
         boolean tExists = false;
@@ -74,6 +82,11 @@ public class SQLManager {
         return tExists;
     }
 
+    /**
+     * Executes an SQL statement
+     * @param sql
+     * @param parameters
+     */
     public void executeStatementAndPost(@Language("sql") String sql, Object... parameters) {
         Future<Void> future = CompletableFuture.supplyAsync(() -> {
             try {
@@ -93,6 +106,11 @@ public class SQLManager {
         }
     }
 
+    /**
+     * Count the entries in a table
+     * @param table The table to look in
+     * @return The amount of entries in the table
+     */
     long countTickets(String table) {
         Future<Long> future = CompletableFuture.supplyAsync(() -> {
             try {
@@ -120,6 +138,9 @@ public class SQLManager {
 
     }
 
+    /**
+     * Create the warnings table if it does not exist
+     */
     public void createWarningsIfNotExists() {
         Future<Boolean> future = CompletableFuture.supplyAsync(() -> {
             if (!tableExist("warnings")) {
@@ -146,6 +167,9 @@ public class SQLManager {
 
     }
 
+    /**
+     * Creates a mute table if it does not exist
+     */
     public void createMutesIfNotExists() {
         Future<Boolean> future = CompletableFuture.supplyAsync(() -> {
             Connection connection = getConnection();
@@ -174,6 +198,9 @@ public class SQLManager {
         }
     }
 
+    /**
+     * Creates a reminder table if it does not exist
+     */
     public void createRemindersIfNotExists() {
         Future<Boolean> future = CompletableFuture.supplyAsync(() -> {
             Connection connection = getConnection();
@@ -201,7 +228,9 @@ public class SQLManager {
         }
     }
 
-    // UserID, Type
+    /**
+     * Removes a user from the mute table when unmuted.
+     */
     public void unmute() {
         Future<Void> future = CompletableFuture.supplyAsync(() -> {
             try {

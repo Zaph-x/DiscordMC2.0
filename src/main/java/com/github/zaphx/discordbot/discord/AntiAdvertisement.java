@@ -23,6 +23,10 @@ public class AntiAdvertisement {
     public AntiAdvertisement() {
     }
 
+    /**
+     * Checks and handles an advertisement. This means the bot will delete a message, if it contains either a Discord link or an IP.
+     * @param event The event to look in
+     */
     public void checkAndHandle(MessageEvent event) {
         IMessage message = event.getMessage();
         IUser user = event.getAuthor();
@@ -38,15 +42,29 @@ public class AntiAdvertisement {
         }
     }
 
+    /**
+     * Checks if the message provided matches a ad pattern
+     * @param message Event to look in
+     * @return True if the message matches, else false
+     */
     private boolean matches(IMessage message) {
         return RegexUtils.isMatch(RegexPattern.SERVER_ADVERTISEMENT.getPattern(), message.getContent())
                 || RegexUtils.isMatch(RegexPattern.IP.getPattern(), message.getContent());
     }
 
+    /**
+     * Checks if a user is allowed to post an advertisement
+     * @param user The user to check
+     * @return True if the user is allowed to advertise, else false
+     */
     private boolean isAllowed(IUser user) {
         return allowedUsers.contains(user);
     }
 
+    /**
+     * Allows users to advertise.
+     * @param event The message to look in
+     */
     public static void allow(MessageEvent event) {
         IMessage message = event.getMessage();
         IChannel channel = event.getChannel();

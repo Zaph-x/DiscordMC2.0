@@ -26,6 +26,10 @@ public class ChannelManager {
     private ChannelManager() {
     }
 
+    /**
+     * Gets the instance of the ChannelManager
+     * @return A new instance if one does not exist, else the instance
+     */
     public static ChannelManager getInstance() {
         return instance == null ? instance = new ChannelManager() : instance;
     }
@@ -70,6 +74,15 @@ public class ChannelManager {
     }
 
     /**
+     * This method gets a channel by its ID, from the THashMap channels.
+     * @param ID The ID of the channel to look for
+     * @return The channel from the ID provided.
+     */
+    public IChannel getChannel(long ID) {
+        return client.getChannelByID(ID);
+    }
+
+    /**
      * This method gets a channel by type, from the THashMap channels.
      * @param types The DiscordChannelTypes type
      * @return The channel from name if it exists. Else null
@@ -78,10 +91,22 @@ public class ChannelManager {
         return client.getChannelByID(types.getID());
     }
 
+    /**
+     * This method checks if the ID provided is the channel also provided
+     * @param channel The channel to check
+     * @param ID The ID to check
+     * @return True if ID and channel match
+     */
     public boolean isChannel(IChannel channel, long ID) {
         return channel.getLongID() == ID;
     }
 
+    /**
+     * This method checks if the two channels provided are the same
+     * @param channel The channel to check
+     * @param target The other channel to check
+     * @return True if channels match
+     */
     public boolean isChannel(IChannel target, IChannel channel) {
         return target == channel;
     }
@@ -118,7 +143,25 @@ public class ChannelManager {
      * @param channel The channel to send a message to
      * @param message The message to send
      */
+    public void sendMessageToChannel(IChannel channel, String message) {
+        RequestBuffer.request(() -> channel.sendMessage(message));
+    }
+
+    /**
+     * Sends a message to a channel provided by the MessageEvent
+     * @param channel The channel to send a message to
+     * @param message The message to send
+     */
     public void sendMessageToChannel(DiscordChannelTypes channel, EmbedObject message) {
+        RequestBuffer.request(() -> channel.getChannel().sendMessage(message));
+    }
+
+    /**
+     * Sends a message to a channel provided by the MessageEvent
+     * @param channel The channel to send a message to
+     * @param message The message to send
+     */
+    public void sendMessageToChannel(DiscordChannelTypes channel, String message) {
         RequestBuffer.request(() -> channel.getChannel().sendMessage(message));
     }
 
@@ -133,10 +176,46 @@ public class ChannelManager {
 
     /**
      * Sends a message to a channel provided by the MessageEvent
+     * @param id The id of the channel to send a message to
+     * @param message The message to send
+     */
+    public void sendMessageToChannel(long id, String message) {
+        RequestBuffer.request(() -> client.getChannelByID(id).sendMessage(message));
+    }
+
+    /**
+     * Sends a message to a channel provided by the MessageEvent
+     * @param name The name of the channel to send a message to
+     * @param message The message to send
+     */
+    public void sendMessageToChannel(String name, EmbedObject message) {
+        RequestBuffer.request(() -> client.getChannelByID(channelMap.get(name)).sendMessage(message));
+    }
+
+    /**
+     * Sends a message to a channel provided by the MessageEvent
+     * @param name The name of the channel to send a message to
+     * @param message The message to send
+     */
+    public void sendMessageToChannel(String name, String message) {
+        RequestBuffer.request(() -> client.getChannelByID(channelMap.get(name)).sendMessage(message));
+    }
+
+    /**
+     * Sends a message to a channel provided by the MessageEvent
      * @param channel The private channel you are sending a message to
      * @param message The message to send
      */
     public void sendMessageToChannel(IPrivateChannel channel, EmbedObject message) {
+        RequestBuffer.request(() -> channel.sendMessage(message));
+    }
+
+    /**
+     * Sends a message to a channel provided by the MessageEvent
+     * @param channel The private channel you are sending a message to
+     * @param message The message to send
+     */
+    public void sendMessageToChannel(IPrivateChannel channel, String message) {
         RequestBuffer.request(() -> channel.sendMessage(message));
     }
 

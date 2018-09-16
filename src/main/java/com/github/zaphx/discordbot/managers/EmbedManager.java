@@ -106,7 +106,7 @@ public class EmbedManager {
         eb.withTimestamp(Instant.now())
                 .withTitle("**A user joined the guild**")
                 .withThumbnail(joined.getAvatarURL())
-                .appendField("User:", joined.mention(), false)
+                .appendField("User:", joined.mention() + " (" + joined.getName() + ")", false)
                 .appendField("With invite", invite.getCode(), true)
                 .appendField("Invite by user", invite.getInviter().mention(), true)
                 .withColor(new Color(120, 193, 82));
@@ -124,7 +124,7 @@ public class EmbedManager {
         }
         builder.withTimestamp(Instant.now())
                 .withTitle("**A message was deleted**")
-                .appendField("Author", author.mention(), true)
+                .appendField("Author", author.mention() + " (" + author.getName() + ")", true)
                 //.appendField("Deleter", deleter.mention(), true)
                 .appendField("Channel", channel.mention(), true)
                 .appendField("Message id", message.getStringID(), true)
@@ -140,7 +140,7 @@ public class EmbedManager {
                 .withColor(new Color(133, 150, 211))
                 .withTimestamp(Instant.now())
                 .withThumbnail(banned.getAvatarURL())
-                .appendField("User banned", banned.mention(), true)
+                .appendField("User banned", banned.mention() + " (" + banned.getName() + ")", true)
                 .appendField("User banning", bannee.mention(), true)
                 .appendField("With reason", reason, false);
         return eb.build();
@@ -150,7 +150,7 @@ public class EmbedManager {
         EmbedBuilder builder = new EmbedBuilder();
         builder.withTitle("**A user tried to advertise**")
                 .withTimestamp(Instant.now())
-                .appendField("User advertising", e.getAuthor().mention(), false)
+                .appendField("User advertising", e.getAuthor().mention() + " (" + e.getAuthor().getName() + ")", false)
                 .appendField("Original message", e.getMessage().getFormattedContent(), false)
                 .withFooterIcon(e.getAuthor().getAvatarURL());
         return builder.build();
@@ -222,13 +222,6 @@ public class EmbedManager {
                 .build();
     }
 
-    public EmbedObject consoleCommandEmbed(String result) {
-        return new EmbedBuilder().withColor(new Color(120, 193, 82))
-                .withAuthorName("Command successfully executed!")
-                .appendField("Result", result, false)
-                .withTimestamp(Instant.now()).build();
-    }
-
     public EmbedObject muteEmbed(String reason, String time, IUser muter) {
         return new EmbedBuilder().withColor(new Color(133, 150, 211))
                 .withTimestamp(Instant.now())
@@ -258,7 +251,7 @@ public class EmbedManager {
     public EmbedObject exceptionToOwner(String type, String stacktrace) {
         return new EmbedBuilder()
                 .withDescription("The bot encountered an error and it has been reported!")
-                .appendField(type,stacktrace.substring(0,1024),false)
+                .appendField(type, stacktrace.substring(0, 1024), false)
                 .withColor(new Color(242, 56, 79))
                 .build();
     }

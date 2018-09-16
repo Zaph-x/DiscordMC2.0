@@ -21,11 +21,17 @@ public class DiscordClientManager {
     private IDiscordClient client;
     private static DiscordClientManager instance;
 
+    /**
+     * The token for the bot
+     */
     private final String TOKEN = Dizcord.getInstance().getConfig().getString("discord.token");
 
     private DiscordClientManager() {
     }
-
+    /**
+     * Gets the instance of the DiscordClientManager
+     * @return A new instance if one does not exist, else the instance
+     */
     public static DiscordClientManager getInstance() {
         return instance == null ? instance = new DiscordClientManager() : instance;
     }
@@ -62,14 +68,26 @@ public class DiscordClientManager {
         }
     }
 
+    /**
+     * Sets the uptime of the bot
+     * @param uptime The time of the startup
+     */
     public void setUptime(LocalDateTime uptime) {
         this.uptime = uptime;
     }
 
+    /**
+     * Gets the current time
+     * @return The current time
+     */
     private LocalDateTime getTimeNow() {
         return LocalDateTime.now();
     }
 
+    /**
+     * Gets a string representation of the current uptime of the bot
+     * @return The current uptime
+     */
     public String getTotalUptime() {
         String uptime = "";
         long day, hour, minute;
@@ -98,11 +116,20 @@ public class DiscordClientManager {
         return uptime;
     }
 
+    /**
+     * Checks if the client has a specific permission
+     * @param permission The permission to check for
+     * @return True if the client has permission, else false
+     */
     public boolean clientHasPermission(Permissions permission) {
         IGuild guild = client.getGuildByID(Dizcord.getInstance().getConfig().getLong("discord.guild-id"));
         return getClient().getOurUser().getPermissionsForGuild(guild).contains(permission);
     }
 
+    /**
+     * Gets the client
+     * @return The client
+     */
     public IDiscordClient getClient() {
         return client == null ? client = new ClientBuilder().withToken(TOKEN).withRecommendedShardCount().setMaxReconnectAttempts(200).build() : client;
     }

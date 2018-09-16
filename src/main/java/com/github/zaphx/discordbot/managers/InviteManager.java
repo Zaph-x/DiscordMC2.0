@@ -26,10 +26,17 @@ public class InviteManager {
     private InviteManager() {
     }
 
+    /**
+     * Gets the instance of the InviteManager
+     * @return A new instance if one does not exist, else the instance
+     */
     public static InviteManager getInstance() {
         return instance == null ? instance = new InviteManager() : instance;
     }
 
+    /**
+     * Updates the stored guild invites
+     */
     public void update() {
         List<IExtendedInvite> invites = client.getGuildByID(config.getLong("discord.guild-id")).getExtendedInvites();
         System.out.println("Found " + invites.size() + " invites. They are now registered");
@@ -39,6 +46,10 @@ public class InviteManager {
         }
     }
 
+    /**
+     * Gets the change in invites
+     * @return A newly created invite
+     */
     private IExtendedInvite getInviteChange() {
         List<IExtendedInvite> invites = client.getGuildByID(config.getLong("discord.guild-id")).getExtendedInvites();
         if (invites.size() > inviteObjectMap.size()) {
@@ -63,10 +74,18 @@ public class InviteManager {
         return null;
     }
 
+    /**
+     * Get who created an invite
+     * @return User who created invite
+     */
     public IUser getUserCreated() {
         return Objects.requireNonNull(getInviteChange()).getInviter();
     }
 
+    /**
+     * Gets an invite
+     * @return An invite
+     */
     public IExtendedInvite getInvite() {
         return getInviteChange();
     }

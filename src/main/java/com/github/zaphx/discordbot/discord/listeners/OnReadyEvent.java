@@ -1,6 +1,7 @@
 package com.github.zaphx.discordbot.discord.listeners;
 
 import com.github.zaphx.discordbot.Dizcord;
+import com.github.zaphx.discordbot.managers.ChannelManager;
 import com.github.zaphx.discordbot.managers.InviteManager;
 import com.github.zaphx.discordbot.managers.MessageManager;
 import com.github.zaphx.discordbot.managers.SQLManager;
@@ -15,8 +16,8 @@ public class OnReadyEvent {
     private MessageManager messageManager = MessageManager.getInstance();
     private InviteManager inviteManager = InviteManager.getInstance();
     private SQLManager sql = SQLManager.getInstance();
+    private ChannelManager channelManager = ChannelManager.getInstance();
     private long interval = Dizcord.getInstance().getConfig().getLong("discord.mute-check-interval",60);
-//    private PluginManager pluginManager = new PluginManager();
 
     @EventSubscriber
     public void onReady(ReadyEvent event) {
@@ -27,5 +28,7 @@ public class OnReadyEvent {
         Bukkit.getScheduler().runTaskAsynchronously(Dizcord.getInstance(), () -> sql.unmute());
         Dizcord.getInstance().getLogger().log(Level.INFO, "Setting mute check interval to " + interval + " minutes");
         Bukkit.getScheduler().runTaskTimerAsynchronously(Dizcord.getInstance(), () -> sql.unmute(), 20*60L * interval, 20*60L * interval);
+        Dizcord.getInstance().getLog().info("Mapping current channels");
+        channelManager.mapChannels();
     }
 }

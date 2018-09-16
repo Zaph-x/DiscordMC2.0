@@ -87,7 +87,7 @@ public class CommandHandler {
                         channelManager.sendMessageToChannel(event, embedManager.insufficientPermissions());
                         break;
                     case CLIENT_INSUFFICIENT_PERMISSIONS:
-                        channelManager.sendMessageToChannel(event, embedManager.insufficientPermissions());
+                        channelManager.sendMessageToChannel(event, embedManager.insufficientClientPermissions());
                         // Should tell the user the client doesn't have the permissions to perform that action
                         break;
                     case NO_SUCH_COMMAND:
@@ -97,7 +97,7 @@ public class CommandHandler {
                         // Nothing
                         break;
                     default:
-                        // This will never happen
+                        throw new IllegalStateException("An exit code must be provided in command.");
                 }
             } else {
                 channelManager.sendMessageToChannel(event, embedManager.invalidCommandEmbed());

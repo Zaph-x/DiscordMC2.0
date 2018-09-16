@@ -89,7 +89,7 @@ public class Mute implements CommandListener {
 
     @Override
     public @NotNull String getCommandUsage() {
-        return prefix+"mute @<user> <time> <reason>";
+        return prefix+"mute @<user> <time> <reason> - Mutes a user with the provided reason";
     }
 
     public static String getFinalArg(final List<String> args, final int start) {

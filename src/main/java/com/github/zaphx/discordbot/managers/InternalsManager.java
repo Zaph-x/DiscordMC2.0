@@ -13,11 +13,19 @@ public class InternalsManager {
 
     private InternalsManager() {
     }
-
+    /**
+     * Gets the instance of the InternalsManager
+     * @return A new instance if one does not exist, else the instance
+     */
     public static InternalsManager getInstance() {
         return instance == null ? instance = new InternalsManager() : instance;
     }
 
+    /**
+     * Gets an audit log ban entry for the Discord Ban event
+     * @param event The event to look in
+     * @return The Auditlog entry of the ban
+     */
     private AuditLogEntry getBanEntries(UserBanEvent event) {
         return event.getGuild().getAuditLog(ActionType.MEMBER_BAN_ADD)
                 .getEntries()
@@ -27,11 +35,21 @@ public class InternalsManager {
                 .get();
     }
 
+    /**
+     * Gets the banned user
+     * @param event The event to look in
+     * @return The user banned
+     */
     public IUser getBanner(UserBanEvent event) {
         AuditLogEntry entry = getBanEntries(event);
         return entry.getResponsibleUser();
     }
 
+    /**
+     * Gets the reason for a ban
+     * @param event The event to look in
+     * @return The reason of the ban
+     */
     public String getReason(UserBanEvent event) {
         AuditLogEntry entry = getBanEntries(event);
         return entry.getReason().orElse("No reason was provided.");

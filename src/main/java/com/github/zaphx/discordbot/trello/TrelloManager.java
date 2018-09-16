@@ -34,12 +34,23 @@ public class TrelloManager {
 
     private TrelloManager() {
     }
-
+    /**
+     * Gets the instance of the TrelloManager
+     * @return A new instance if one does not exist, else the instance
+     */
     public static TrelloManager getInstance() {
         return instance == null ? new TrelloManager() : instance;
     }
 
+    /**
+     * Checks if the message is either an issue or a suggestion. If the trello module is not enabled, this will return right away
+     * @param event The event to look in
+     * @param trelloType The type of trello event to look for
+     */
     public void checkAndSend(MessageReceivedEvent event, TrelloType trelloType) {
+        if (!isEnabled()) {
+            return;
+        }
         if (trelloType.equals(TrelloType.ISSUE)) {
             if (channelManager.isChannel(event.getChannel(), DiscordChannelTypes.REPORTS.getID())) {
                 if (isEnabled()) {
@@ -60,6 +71,11 @@ public class TrelloManager {
         } else throw new IllegalStateException("Not a valid trello type");
     }
 
+    /**
+     * Checks the validity of a trello event
+     * @param eventBuilder The event to look in
+     * @return True if the trello event is valid, else false
+     */
     boolean checkValidity(TrelloEventBuilder eventBuilder) {
         boolean isValidReport;
         IChannel channel = eventBuilder.getChannel();
@@ -151,6 +167,11 @@ public class TrelloManager {
         } else return false;
     }
 
+    /**
+     * Submits the final report or issue
+     * @param eventBuilder The trello event to look in
+     * @param type The type of event to use
+     */
     void officiallyFileReport(TrelloEventBuilder eventBuilder, TrelloType type) {
         if (type.equals(TrelloType.ISSUE)) {
             IMessage report = eventBuilder.getMessage();
@@ -219,7 +240,7 @@ public class TrelloManager {
         }
     }
 
-    public boolean isEnabled() {
+    private boolean isEnabled() {
         return config.getBoolean("trello.enabled");
     }
 }

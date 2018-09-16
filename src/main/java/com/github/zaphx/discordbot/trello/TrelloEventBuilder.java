@@ -22,14 +22,14 @@ public class TrelloEventBuilder {
     private IChannel channel;
     private IUser sender;
 
-    public TrelloEventBuilder(MessageReceivedEvent event) {
+    TrelloEventBuilder(MessageReceivedEvent event) {
         this.event = event;
         this.message = event.getMessage();
         this.channel = event.getChannel();
         this.sender = event.getAuthor();
     }
 
-    public TrelloEventBuilder setType(TrelloType type) {
+    TrelloEventBuilder setType(TrelloType type) {
         this.trelloType = type;
         return this;
     }
@@ -41,7 +41,7 @@ public class TrelloEventBuilder {
         return this;
     }
 
-    public TrelloEventBuilder addAttachments() {
+    TrelloEventBuilder addAttachments() {
         if (this.message.getAttachments().size() > 0) {
             this.message.getAttachments().forEach(attachment -> {
                 attachments.add("![Attachment](" + attachment.getUrl() + ")");
@@ -50,7 +50,7 @@ public class TrelloEventBuilder {
         return this;
     }
 
-    public void build() {
+    void build() {
         if (!isValidReport) {
             System.out.println(false);
             return;
