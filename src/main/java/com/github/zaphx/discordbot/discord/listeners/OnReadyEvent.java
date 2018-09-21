@@ -1,10 +1,7 @@
 package com.github.zaphx.discordbot.discord.listeners;
 
 import com.github.zaphx.discordbot.Dizcord;
-import com.github.zaphx.discordbot.managers.ChannelManager;
-import com.github.zaphx.discordbot.managers.InviteManager;
-import com.github.zaphx.discordbot.managers.MessageManager;
-import com.github.zaphx.discordbot.managers.SQLManager;
+import com.github.zaphx.discordbot.managers.*;
 import org.bukkit.Bukkit;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.ReadyEvent;
@@ -23,12 +20,12 @@ public class OnReadyEvent {
     public void onReady(ReadyEvent event) {
         messageManager.setMessages();
         inviteManager.update();
-        messageManager.updatePeriodically();
         Dizcord.getInstance().getLogger().log(Level.INFO, "Checking for any mutes.");
         Bukkit.getScheduler().runTaskAsynchronously(Dizcord.getInstance(), () -> sql.unmute());
         Dizcord.getInstance().getLogger().log(Level.INFO, "Setting mute check interval to " + interval + " minutes");
         Bukkit.getScheduler().runTaskTimerAsynchronously(Dizcord.getInstance(), () -> sql.unmute(), 20*60L * interval, 20*60L * interval);
         Dizcord.getInstance().getLog().info("Mapping current channels");
         channelManager.mapChannels();
+        Dizcord.getInstance().getLog().info("Ready");
     }
 }

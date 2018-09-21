@@ -1,9 +1,6 @@
 package com.github.zaphx.discordbot;
 
-import com.github.zaphx.discordbot.discord.command.AdAllow;
-import com.github.zaphx.discordbot.discord.command.Help;
-import com.github.zaphx.discordbot.discord.command.Mute;
-import com.github.zaphx.discordbot.discord.command.Warn;
+import com.github.zaphx.discordbot.discord.command.*;
 import com.github.zaphx.discordbot.api.commandhandler.CommandHandler;
 import com.github.zaphx.discordbot.discord.listeners.*;
 import com.github.zaphx.discordbot.managers.DiscordClientManager;
@@ -47,23 +44,18 @@ public class Dizcord extends JavaPlugin {
         if (!validateConfig()) {
             log.warning("The bot could not be started. Please fill in the config properly and try again.");
         } else {
-            Future<IDiscordClient> future = CompletableFuture.supplyAsync(() -> {
-                try {
-                    System.out.println("Building client");
-                    return clientManager.getClient();
-                } catch (DiscordException e) {
-                    log.severe("No client built");
-                    e.printStackTrace();
-                }
-                log.warning("No client built");
-                return null;
-            });
+
             try {
-                client = future.get();
-            } catch (InterruptedException | ExecutionException e) {
+                log.info("Building client");
+                client = clientManager.getClient();
+            } catch (DiscordException e) {
+                log.severe("No client built");
                 e.printStackTrace();
             }
+
+
         }
+        log.info("Logging client in");
         clientManager.login(client);
 
         Discord4J.disableAudio();
@@ -78,20 +70,23 @@ public class Dizcord extends JavaPlugin {
         client.getDispatcher().registerListener(new ChatListener());
         client.getDispatcher().registerListener(new OnChannelCreateEvent());
         client.getDispatcher().registerListener(new OnChannelDeleteEvent());
+        client.getDispatcher().registerListener(new OnChatEditEvent());
 
 
         sql.createMutesIfNotExists();
         sql.createWarningsIfNotExists();
+        sql.createMessagesIfNotExists();
 
         CommandHandler commandHandler = CommandHandler.getInstance();
         commandHandler.registerCommand("help", new Help());
         commandHandler.registerCommand("mute", new Mute());
         commandHandler.registerCommand("warn", new Warn());
         commandHandler.registerCommand("adallow", new AdAllow());
+        commandHandler.registerCommand("mapmessages", new MapMessages());
 
         getCommand("dmc").setExecutor(new ActivateCommand());
 
-        getLogger().log(Level.INFO,"Loading external bot plugins!");
+        getLogger().log(Level.INFO, "Loading external bot plugins!");
 
 
         getLogger().log(Level.INFO, "Dizcord has successfully been enabled!");
@@ -124,6 +119,7 @@ public class Dizcord extends JavaPlugin {
 
     /**
      * Returns the instance of the Dizcord bot
+     *
      * @return The Dizcord instance
      */
     public static Dizcord getInstance() {
@@ -132,6 +128,7 @@ public class Dizcord extends JavaPlugin {
 
     /**
      * This method will validate the plugin config.
+     *
      * @return True if config is valid
      */
     private boolean validateConfig() {
@@ -215,6 +212,7 @@ public class Dizcord extends JavaPlugin {
 
     /**
      * Returns an instance of the Dizcord logger
+     *
      * @return The Dizcord logger
      */
     public Logger getLog() {

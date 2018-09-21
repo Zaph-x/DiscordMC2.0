@@ -53,6 +53,6 @@ public class Warn implements CommandListener {
 
     @Override
     public @NotNull String getCommandUsage() {
-        return prefix + "warn @<user> <reason> - Warns a user";
+        return prefix + "warn @<user> <reason> - Warns a user.";
     }
 }

@@ -10,6 +10,7 @@ import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.audit.ActionType;
 import sx.blah.discord.handle.audit.AuditLog;
+import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.util.RequestBuffer;
 
@@ -20,6 +21,7 @@ public class MessageManager {
     private FileConfiguration config = Dizcord.getInstance().getConfig();
     private TMap<Long, IMessage> messages = new THashMap<>();
     private AuditLog log;
+    private SQLManager sqlManager = SQLManager.getInstance();
 
     private static MessageManager instance;
     private EmbedManager embedManager;
@@ -77,40 +79,33 @@ public class MessageManager {
      * 200 messages from every channel. This is to retrieve them when a message is deleted
      */
     public void setMessages() {
-        client.getGuildByID(config.getLong("discord.guild-id")).getChannels().forEach(channel -> channel.getMessageHistory(200).forEach(message -> messages.put(message.getLongID(), message)));
+        for (IChannel channel : client.getGuildByID(config.getLong("discord.guild-id")).getChannels()) {
+            for (IMessage message : channel.getMessageHistory(200)) {
+                sqlManager.executeStatementAndPost("INSERT INTO " + sqlManager.prefix + "messages (id, content, author, author_name, channel) VALUES ('%s','%s','%s','%s','%s') \nON DUPLICATE KEY UPDATE content = '%s'",
+                        message.getStringID(),
+                        message.getContent().replaceAll("'", "¼"),
+                        message.getAuthor().getStringID(),
+                        message.getAuthor().getName(),
+                        message.getChannel().getStringID(),
+                        message.getContent().replaceAll("'", "¼"));
+            }
+        }
     }
 
     /**
-     * Gets a message from the internal message cache
-     * @param id The ID of the message to look for
-     * @return The message specified by ID
+     * Gets a deleted message and the information associated with it
+     * @param id The id of the message to look for
+     * @return A THashMap with the information associated with the message
      */
-    public IMessage getMessageFromLog(long id) {
-        return messages.get(id);
+    public THashMap<String, String> getDeletedMessage(String id) {
+        return sqlManager.getDeletedMessage(id);
     }
 
     /**
-     * Clears the message cache
-     */
-    public void destroyMessages() {
-        messages.clear();
-    }
-
-    /**
-     * Called once, to set a timer to update message cache
-     */
-    public void updatePeriodically() {
-        Bukkit.getScheduler().runTaskTimerAsynchronously(Dizcord.getInstance(), () -> {
-            destroyMessages();
-            setMessages();
-        }, 1200, 1200);
-    }
-
-    /**
-     * Adds a message to the message cache
-     * @param message The message to add
+     * Adds a message to the SQL database
+     * @param message the message to add
      */
     public void addMessage(IMessage message) {
-        messages.put(message.getLongID(), message);
+        sqlManager.addMessage(message);
     }
 }

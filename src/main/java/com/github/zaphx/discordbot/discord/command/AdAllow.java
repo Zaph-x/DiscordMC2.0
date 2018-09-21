@@ -38,11 +38,11 @@ public class AdAllow implements CommandListener {
 
     @Override
     public @NotNull String getCommandDescription() {
-        return "Allows one or more users to advertise in the global chat. Their right to advertise will be revoked after 30 seconds";
+        return "Allows one or more users to advertise in the global chat. Their right to advertise will be revoked after 30 seconds.";
     }
 
     @Override
     public @NotNull String getCommandUsage() {
-        return prefix + "AdAllow @<list of users> - Allows the listed users to advertise";
+        return prefix + "AdAllow @<list of users> - Allows the listed users to advertise.";
     }
 }

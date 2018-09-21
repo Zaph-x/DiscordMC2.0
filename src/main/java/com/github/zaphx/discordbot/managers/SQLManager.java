@@ -1,9 +1,12 @@
 package com.github.zaphx.discordbot.managers;
 
 import com.github.zaphx.discordbot.Dizcord;
+import gnu.trove.map.TMap;
+import gnu.trove.map.hash.THashMap;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
+import sx.blah.discord.handle.obj.IMessage;
 
 import java.sql.*;
 import java.util.*;
@@ -17,7 +20,7 @@ public class SQLManager {
 
     private FileConfiguration config = Dizcord.getInstance().getConfig();
     private static SQLManager instance;
-    private String prefix = config.getString("sql.prefix");
+    public final String prefix = config.getString("sql.prefix");
 
     private final int PORT = config.getInt("sql.port");
     private final String USERNAME = config.getString("sql.username");
@@ -28,8 +31,10 @@ public class SQLManager {
     // Not public constructor
     private SQLManager() {
     }
+
     /**
      * Gets the instance of the SQLManager
+     *
      * @return A new instance if one does not exist, else the instance
      */
     public static SQLManager getInstance() {
@@ -38,6 +43,7 @@ public class SQLManager {
 
     /**
      * Gets an SQL connection to the SQL server of the spigot server
+     *
      * @return The connection to the SQL server the server uses
      */
     @NotNull
@@ -59,6 +65,7 @@ public class SQLManager {
 
     /**
      * Checks if a table exits
+     *
      * @param tableName The table to look for
      * @return True if the table exists, else false
      */
@@ -84,6 +91,7 @@ public class SQLManager {
 
     /**
      * Executes an SQL statement
+     *
      * @param sql
      * @param parameters
      */
@@ -99,6 +107,7 @@ public class SQLManager {
             }
             return null;
         });
+        // always replace this -> ¼
         try {
             future.get();
         } catch (InterruptedException | ExecutionException e) {
@@ -108,6 +117,7 @@ public class SQLManager {
 
     /**
      * Count the entries in a table
+     *
      * @param table The table to look in
      * @return The amount of entries in the table
      */
@@ -151,6 +161,36 @@ public class SQLManager {
                             "id BIGINT UNSIGNED NOT NULL,\n" +
                             "reason VARCHAR(255) NOT NULL, \n" +
                             "warnee BIGINT UNSIGNED NOT NULL" +
+                            ")");
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+            return true;
+        });
+        try {
+            future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * Create the warnings table if it does not exist
+     */
+    public void createMessagesIfNotExists() {
+        Future<Boolean> future = CompletableFuture.supplyAsync(() -> {
+            if (!tableExist("messages")) {
+                try {
+                    Connection connection = getConnection();
+                    connection.createStatement().execute("CREATE TABLE IF NOT EXISTS " + prefix + "messages (\n" +
+                            "id BIGINT UNSIGNED PRIMARY KEY NOT NULL,\n" +
+                            "content text, \n" +
+                            "author BIGINT UNSIGNED NOT NULL, \n" +
+                            "author_name VARCHAR(255) NOT NULL, \n" +
+                            "channel BIGINT UNSIGNED NOT NULL" +
                             ")");
                     connection.close();
                 } catch (SQLException e) {
@@ -232,9 +272,9 @@ public class SQLManager {
      * Removes a user from the mute table when unmuted.
      */
     public void unmute() {
+        Connection connection = getConnection();
         Future<Void> future = CompletableFuture.supplyAsync(() -> {
             try {
-                Connection connection = getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM " + prefix + "mutes WHERE expires < UNIX_TIMESTAMP()");
                 ResultSet rs = preparedStatement.executeQuery();
                 while (rs.next()) {
@@ -251,5 +291,49 @@ public class SQLManager {
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
+    }
+
+    /**
+     * This method will get a deleted message and the information associated with that message
+     * @param id The ID of the message
+     * @return A THashMap containing the information about the message
+     */
+    THashMap<String, String> getDeletedMessage(String id) {
+        Connection connection = getConnection();
+        Future<THashMap<String, String>> future = CompletableFuture.supplyAsync(() -> {
+            THashMap<String, String> message = new THashMap<>();
+            try {
+                PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + prefix + "messages WHERE id = '" + id + "'");
+
+                ResultSet set = statement.executeQuery();
+                while (set.next()) {
+                    message.put("id", id);
+                    message.put("content", set.getString("content"));
+                    message.put("author", set.getString("author"));
+                    message.put("authorName", set.getString("author_name"));
+                    message.put("channel", set.getString("channel"));
+                }
+                connection.close();
+                return message;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return null;
+        });
+        try {
+            return future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Adds a message to the SQL database
+     * @param message The message to add
+     */
+    void addMessage(IMessage message) {
+        executeStatementAndPost("INSERT INTO " + prefix + "messages (id, content, author, author_name, channel) values ('%s','%s','%s','%s','%s')",
+                message.getStringID(), message.getContent().replaceAll("'", "¼"), message.getAuthor().getStringID(), message.getAuthor().getName(), message.getChannel().getStringID());
     }
 }

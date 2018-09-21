@@ -17,7 +17,6 @@ import java.util.List;
 public class DiscordClientManager {
 
     private LocalDateTime uptime;
-    public List<String> commandResponses = new ArrayList<>();
     private IDiscordClient client;
     private static DiscordClientManager instance;
 
@@ -131,6 +130,6 @@ public class DiscordClientManager {
      * @return The client
      */
     public IDiscordClient getClient() {
-        return client == null ? client = new ClientBuilder().withToken(TOKEN).withRecommendedShardCount().setMaxReconnectAttempts(200).build() : client;
+        return client == null ? client = new ClientBuilder().withToken(TOKEN).setMaxReconnectAttempts(200).build() : client;
     }
 }

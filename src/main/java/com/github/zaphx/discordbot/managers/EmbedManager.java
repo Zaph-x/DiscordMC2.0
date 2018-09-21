@@ -2,6 +2,7 @@ package com.github.zaphx.discordbot.managers;
 
 import com.github.zaphx.discordbot.Dizcord;
 import com.github.zaphx.discordbot.utilities.DiscordChannelTypes;
+import gnu.trove.map.hash.THashMap;
 import org.bukkit.configuration.file.FileConfiguration;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageEvent;
@@ -20,6 +21,7 @@ public class EmbedManager {
     private Dizcord dizcord = Dizcord.getInstance();
     private FileConfiguration config = dizcord.getConfig();
     private String prefix = config.getString("sql.prefix");
+    private DiscordClientManager clientManager = DiscordClientManager.getInstance();
 
     private EmbedManager() {
     }
@@ -114,11 +116,12 @@ public class EmbedManager {
         return eb.build();
     }
 
-    public EmbedObject messageDeleteEmbed(IMessage message) {
+    public EmbedObject messageDeleteEmbed(THashMap message) {
         EmbedBuilder builder = new EmbedBuilder();
-        String content = message.getFormattedContent();
-        IUser author = message.getAuthor();
-        IChannel channel = message.getChannel();
+        String content = ((String) message.get("content")).replaceAll("¼", "'");
+        IUser author = clientManager.getClient().getUserByID(Long.parseLong((String) message.get("author")));
+        IChannel channel = clientManager.getClient().getChannelByID(Long.parseLong((String) message.get("channel")));
+        String ID = (String) message.get("id");
         if (content.isEmpty()) {
             content = "Embed";
         }
@@ -127,7 +130,7 @@ public class EmbedManager {
                 .appendField("Author", author.mention() + " (" + author.getName() + ")", true)
                 //.appendField("Deleter", deleter.mention(), true)
                 .appendField("Channel", channel.mention(), true)
-                .appendField("Message id", message.getStringID(), true)
+                .appendField("Message id", ID, true)
                 .appendField("Message content", content, false)
                 .withThumbnail(author.getAvatarURL())
                 .withColor(new Color(242, 56, 79));
