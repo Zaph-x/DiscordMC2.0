@@ -10,7 +10,7 @@ public class OnChatEditEvent {
 
     @EventSubscriber
     public void onEdit(MessageEditEvent e) {
-        sqlManager.executeStatementAndPost("UPDATE " + sqlManager.prefix + "messages SET content = '%s' WHERE id = '%s'", e.getMessage().getContent(), e.getMessage().getStringID());
+        sqlManager.executeStatementAndPost("UPDATE " + sqlManager.prefix + "messages SET content = '%s' WHERE id = '%s'", e.getMessage().getContent().replaceAll("'", "¼"), e.getMessage().getStringID());
     }
 
 }
