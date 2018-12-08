@@ -16,7 +16,6 @@ import java.util.List;
 
 public class DiscordClientManager {
 
-    private LocalDateTime uptime;
     private IDiscordClient client;
     private static DiscordClientManager instance;
 
@@ -65,54 +64,6 @@ public class DiscordClientManager {
         } catch (DiscordException | RateLimitException ignored) {
             return false;
         }
-    }
-
-    /**
-     * Sets the uptime of the bot
-     * @param uptime The time of the startup
-     */
-    public void setUptime(LocalDateTime uptime) {
-        this.uptime = uptime;
-    }
-
-    /**
-     * Gets the current time
-     * @return The current time
-     */
-    private LocalDateTime getTimeNow() {
-        return LocalDateTime.now();
-    }
-
-    /**
-     * Gets a string representation of the current uptime of the bot
-     * @return The current uptime
-     */
-    public String getTotalUptime() {
-        String uptime = "";
-        long day, hour, minute;
-        day = ChronoUnit.DAYS.between(this.uptime, getTimeNow());
-        hour = ChronoUnit.HOURS.between(this.uptime, getTimeNow());
-        minute = ChronoUnit.MINUTES.between(this.uptime, getTimeNow());
-        if (day > 0) {
-            if (day == 1) {
-                uptime += day + " day, ";
-            } else {
-                uptime += day + " days, ";
-            }
-        }
-        if ((hour % 24) > 0) {
-            if (hour == 1) {
-                uptime += (hour % 24) + " hour, and ";
-            } else {
-                uptime += (hour % 24) + " hours, and ";
-            }
-        }
-        if ((minute % 60) == 1) {
-            uptime += (minute % 60) + " minute.";
-        } else if ((minute % 60) != 1) {
-            uptime += (minute % 60) + " minutes.";
-        }
-        return uptime;
     }
 
     /**

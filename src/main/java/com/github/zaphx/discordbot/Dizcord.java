@@ -6,6 +6,7 @@ import com.github.zaphx.discordbot.discord.listeners.*;
 import com.github.zaphx.discordbot.managers.DiscordClientManager;
 import com.github.zaphx.discordbot.managers.SQLManager;
 import com.github.zaphx.discordbot.minecraft.commands.ActivateCommand;
+import com.github.zaphx.discordbot.minecraft.commands.ToDiscord;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import sx.blah.discord.Discord4J;
@@ -84,7 +85,8 @@ public class Dizcord extends JavaPlugin {
         commandHandler.registerCommand("adallow", new AdAllow());
         commandHandler.registerCommand("mapmessages", new MapMessages());
 
-        getCommand("dmc").setExecutor(new ActivateCommand());
+        getCommand("dizcord").setExecutor(new ActivateCommand());
+        getCommand("todiscord").setExecutor(new ToDiscord());
 
         getLogger().log(Level.INFO, "Loading external bot plugins!");
 
