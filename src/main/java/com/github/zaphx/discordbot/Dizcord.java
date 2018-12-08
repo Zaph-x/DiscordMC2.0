@@ -3,6 +3,7 @@ package com.github.zaphx.discordbot;
 import com.github.zaphx.discordbot.discord.command.*;
 import com.github.zaphx.discordbot.api.commandhandler.CommandHandler;
 import com.github.zaphx.discordbot.discord.listeners.*;
+import com.github.zaphx.discordbot.managers.AntiSwearManager;
 import com.github.zaphx.discordbot.managers.DiscordClientManager;
 import com.github.zaphx.discordbot.managers.SQLManager;
 import com.github.zaphx.discordbot.minecraft.commands.ActivateCommand;
@@ -35,6 +36,7 @@ public class Dizcord extends JavaPlugin {
         dizcord = this;
         this.log = this.getLogger();
         DiscordClientManager clientManager = DiscordClientManager.getInstance();
+        AntiSwearManager antiSwearManager = AntiSwearManager.getInstance();
 
         Configuration.LOAD_EXTERNAL_MODULES = false;
         Configuration.AUTOMATICALLY_ENABLE_MODULES = false;

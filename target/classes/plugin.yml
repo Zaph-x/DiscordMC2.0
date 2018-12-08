@@ -3,13 +3,19 @@ name: Dizcord
 version: 2.0.4
 load: STARTUP
 authors: [Zaphoo, Mobkinz78]
+api-version: 1.13
 
 commands:
-  dmc:
+  dizcord:
     usage: /<command> login|logout
-    aliases: [discordmc, dismc]
+  todiscord:
+    usage: /<command> <channel> <message>
+
 
 permissions:
-  discord.mc:
+  dizcord.mc:
     default: op
     description: The base in game permission
+  dizcord.admin:
+    default: op
+    description: The default admin permission

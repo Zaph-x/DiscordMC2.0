@@ -103,6 +103,15 @@ public class EmbedManager {
                 .build();
     }
 
+    public EmbedObject swearEmbed() {
+        return new EmbedBuilder()
+                .withTitle("Oopsie. That's a no-go!")
+                .withDesc("We like to keep a nice tone here. Please do not swear, thank you.")
+                .withColor(new Color(242, 56, 79))
+                .withTimestamp(Instant.now())
+                .build();
+    }
+
     public EmbedObject joinEmbed(IExtendedInvite invite, IUser joined) {
         EmbedBuilder eb = new EmbedBuilder();
         eb.withTimestamp(Instant.now())
