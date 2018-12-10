@@ -23,13 +23,16 @@ public class AntiSwearManager {
 
     public void handleMessage(IMessage message) {
         String url = "https://www.purgomalum.com/service/containsprofanity?text=";
+        String emote_regex = "([\\u20a0-\\u32ff\\ud83c\\udc00-\\ud83d\\udeff\\udbb9\\udce5-\\udbb9\\udcee])";
+        if (message.getContent().matches(emote_regex))
+            return;
 
         try {
-            URL filter = new URL(url+message.getContent());
+            URL filter = new URL(url + message.getContent());
             URLConnection connection = filter.openConnection();
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             String result;
-            while ((result = reader.readLine())!= null) {
+            while ((result = reader.readLine()) != null) {
                 boolean isSwear = Boolean.valueOf(result);
 
                 if (isSwear) {
