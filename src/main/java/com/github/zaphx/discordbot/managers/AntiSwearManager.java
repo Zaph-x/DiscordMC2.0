@@ -28,7 +28,7 @@ public class AntiSwearManager {
             return;
 
         try {
-            URL filter = new URL(url + message.getContent());
+            URL filter = new URL(url + message.getContent().replaceAll(" ", "%20"));
             URLConnection connection = filter.openConnection();
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             String result;
