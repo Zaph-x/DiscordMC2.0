@@ -12,10 +12,16 @@ import sx.blah.discord.handle.audit.ActionType;
 import sx.blah.discord.handle.audit.AuditLog;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.IUser;
 import sx.blah.discord.util.RequestBuffer;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.TreeMap;
 
 public class MessageManager {
 
+    public TreeMap<Integer, IUser> hashes = new TreeMap<>();
     private DiscordClientManager clientManager = DiscordClientManager.getInstance();
     private IDiscordClient client = clientManager.getClient();
     private FileConfiguration config = Dizcord.getInstance().getConfig();

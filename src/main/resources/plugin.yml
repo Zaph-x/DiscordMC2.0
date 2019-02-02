@@ -7,7 +7,7 @@ api-version: 1.13
 
 commands:
   dizcord:
-    usage: /<command> login|logout
+    usage: /<command> link <code>
   todiscord:
     usage: /<command> <channel> <message>
 

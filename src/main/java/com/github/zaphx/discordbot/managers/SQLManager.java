@@ -241,18 +241,18 @@ public class SQLManager {
     /**
      * Creates a reminder table if it does not exist
      */
-    public void createRemindersIfNotExists() {
+    public void createAccountLinkIfNotExists() {
         Future<Boolean> future = CompletableFuture.supplyAsync(() -> {
             Connection connection = getConnection();
             if (!tableExist("reminders")) {
                 try {
                     String prefix = config.getString("sql.prefix");
-                    connection.createStatement().execute("CREATE TABLE IF NOT EXISTS " + prefix + "reminders (\n" +
-                            "ticket INTEGER NOT NULL AUTO_INCREMENT PRIMARY KEY, \n" +
-                            "id BIGINT UNSIGNED NOT NULL, \n" +
+                    connection.createStatement().execute("CREATE TABLE IF NOT EXISTS " + prefix + "links (\n" +
+                            "id INTEGER NOT NULL PRIMARY KEY, \n" +
+                            "hash BIGINT UNSIGNED NOT NULL, \n" +
                             "time DATETIME NOT NULL DEFAULT NOW(), \n" +
-                            "remind VARCHAR(255) NOT NULL, \n" +
-                            "expires BIGINT UNSIGNED NOT NULL" +
+                            "discord VARCHAR(255) NOT NULL, \n" +
+                            "minecraft VARCHAR(255) NOT NULL" +
                             ")");
                     connection.close();
                 } catch (SQLException e) {

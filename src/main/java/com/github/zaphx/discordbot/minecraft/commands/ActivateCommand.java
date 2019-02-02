@@ -13,7 +13,17 @@ public class ActivateCommand implements CommandExecutor {
     DiscordClientManager clientManager = DiscordClientManager.getInstance();
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (sender.hasPermission("dizcord.admin")) {
+        if (args[0].equalsIgnoreCase("link") && args.length == 2) {
+            int hash;
+            try {
+                hash = Integer.parseInt(args[1]);
+            } catch (NumberFormatException ex) {
+                sender.sendMessage(RED + "You did not provide a valid hash.");
+                return true;
+            }
+            // Pull hash from TreeMap and link accounts. Then add the link to the database.
+
+        } else if (sender.hasPermission("dizcord.admin")) {
             if (args.length > 1) {
                 sender.sendMessage("Invalid command");
                 return true;

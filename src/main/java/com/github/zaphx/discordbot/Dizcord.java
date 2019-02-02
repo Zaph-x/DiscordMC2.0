@@ -77,6 +77,7 @@ public class Dizcord extends JavaPlugin {
 
 
         sql.createMutesIfNotExists();
+        sql.createAccountLinkIfNotExists();
         sql.createWarningsIfNotExists();
         sql.createMessagesIfNotExists();
 
