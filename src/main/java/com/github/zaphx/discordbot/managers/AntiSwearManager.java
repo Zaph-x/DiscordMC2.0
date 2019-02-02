@@ -1,5 +1,6 @@
 package com.github.zaphx.discordbot.managers;
 
+import com.github.zaphx.discordbot.utilities.RegexPattern;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.util.RequestBuffer;
 
@@ -8,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 
 public class AntiSwearManager {
 
@@ -22,13 +24,15 @@ public class AntiSwearManager {
     }
 
     public void handleMessage(IMessage message) {
+        String handledMessage;
+
         String url = "https://www.purgomalum.com/service/containsprofanity?text=";
-        String emote_regex = "([\\u20a0-\\u32ff\\ud83c\\udc00-\\ud83d\\udeff\\udbb9\\udce5-\\udbb9\\udcee])";
-        if (message.getContent().matches(emote_regex))
-            return;
+
+        handledMessage = message.getContent().replaceAll(RegexPattern.USER.toString(),"");
+        handledMessage = handledMessage.replaceAll(RegexPattern.EMOTES.toString(),"");
 
         try {
-            URL filter = new URL(url + message.getContent().replaceAll(" ", "%20"));
+            URL filter = new URL(url + URLEncoder.encode(handledMessage, "UTF-8"));
             URLConnection connection = filter.openConnection();
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             String result;

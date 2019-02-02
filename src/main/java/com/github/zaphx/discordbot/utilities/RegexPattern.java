@@ -9,7 +9,8 @@ public enum RegexPattern {
     DATE("([0]?[1-9]|[1|2][0-9]|[3][0|1])[\\s./-]([0]?[1-9]|[1][0-2])[\\s./-]([0-9]{4}|[0-9]{2})(\\s([0-2][0-9])\\s?([0-5][0-9]))?"),
     SERVER_ADVERTISEMENT("((http(s)?://)?((www.)?discord.gg/|(www.)?discordapp.com/invite))"),
     IP("(?:[0-9]{1,3}([\\.]|dot|\\(dot\\)|\\(\\))){3}[0-9]{1,3}(:[0-9]{5})?"),
-    TOKEN("([a-zA-Z0-9]{24}\\.[a-zA-Z0-9]{6}\\.[a-zA-Z0-9_\\-]{27}|mfa\\.[a-zA-Z0-9_\\-]{84})");
+    TOKEN("([a-zA-Z0-9]{24}\\.[a-zA-Z0-9]{6}\\.[a-zA-Z0-9_\\-]{27}|mfa\\.[a-zA-Z0-9_\\-]{84})"),
+    EMOTES("([\\u20a0-\\u32ff\\ud83c\\udc00-\\ud83d\\udeff\\udbb9\\udce5-\\udbb9\\udcee])");
 
     private Pattern pattern;
 
