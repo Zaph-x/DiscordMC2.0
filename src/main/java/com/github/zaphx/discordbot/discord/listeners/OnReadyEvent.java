@@ -12,6 +12,7 @@ public class OnReadyEvent {
 
     private MessageManager messageManager = MessageManager.getInstance();
     private InviteManager inviteManager = InviteManager.getInstance();
+    private RolesManager rolesManager = RolesManager.getInstance();
     private SQLManager sql = SQLManager.getInstance();
     private ChannelManager channelManager = ChannelManager.getInstance();
     private long interval = Dizcord.getInstance().getConfig().getLong("discord.mute-check-interval",60);
@@ -26,6 +27,8 @@ public class OnReadyEvent {
         Bukkit.getScheduler().runTaskTimerAsynchronously(Dizcord.getInstance(), () -> sql.unmute(), 20*60L * interval, 20*60L * interval);
         Dizcord.getInstance().getLog().info("Mapping current channels");
         channelManager.mapChannels();
+        Dizcord.getInstance().getLog().info("Mapping current roles");
+        rolesManager.mapRoles();
         Dizcord.getInstance().getLog().info("Ready");
     }
 }

@@ -38,13 +38,12 @@ public class ChannelManager {
      * This method maps all available channels to a map.
      * @return The TreeMap of channels.
      */
-    public TMap<String, Long> mapChannels() {
+    public void mapChannels() {
         IGuild guild = client.getGuildByID(config.getLong("discord.guild-id"));
         channelMap.clear();
         for (IChannel channel : guild.getChannels()) {
             channelMap.put(channel.getName(), channel.getLongID());
         }
-        return channelMap;
     }
 
     /**

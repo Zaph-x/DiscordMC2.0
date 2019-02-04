@@ -6,6 +6,7 @@ import gnu.trove.map.TMap;
 import gnu.trove.map.hash.THashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import sx.blah.discord.api.IDiscordClient;
 import sx.blah.discord.api.internal.json.objects.EmbedObject;
 import sx.blah.discord.handle.audit.ActionType;
@@ -21,7 +22,8 @@ import java.util.TreeMap;
 
 public class MessageManager {
 
-    public TreeMap<Integer, IUser> hashes = new TreeMap<>();
+    public TMap<Integer, Player> hashes = new THashMap<>();
+    public TMap<Integer, IUser> discord = new THashMap<>();
     private DiscordClientManager clientManager = DiscordClientManager.getInstance();
     private IDiscordClient client = clientManager.getClient();
     private FileConfiguration config = Dizcord.getInstance().getConfig();

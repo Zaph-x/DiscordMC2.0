@@ -19,6 +19,7 @@ public interface CommandListener {
     EmbedManager embedManager = EmbedManager.getInstance();
     MessageManager messageManager = MessageManager.getInstance();
     ChannelManager channelManager = ChannelManager.getInstance();
+    RolesManager rolesManager = RolesManager.getInstance();
     SQLManager sql = SQLManager.getInstance();
 
     String prefix = Dizcord.getInstance().getConfig().getString("discord.command-prefix");

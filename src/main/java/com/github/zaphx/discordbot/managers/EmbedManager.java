@@ -201,6 +201,104 @@ public class EmbedManager {
                 .build();
     }
 
+    public EmbedObject noPlayerEmbed(String name) {
+        return new EmbedBuilder().withColor(new Color(242, 56, 79))
+                .withAuthorName("That player is not present!")
+                .withTimestamp(Instant.now())
+                .withTitle("The player, " + name + ", does not seem to be online at the moment.").build();
+    }
+
+    public EmbedObject userAlreadyLinked() {
+        return new EmbedBuilder().withColor(new Color(242, 56, 79))
+                .withDescription("It seems that account has already been linked!")
+                .withTimestamp(Instant.now()).build();
+    }
+
+    public EmbedObject userNotLinked() {
+        return new EmbedBuilder().withColor(new Color(242, 56, 79))
+                .withDescription("It seems that account has not been linked!")
+                .withTimestamp(Instant.now()).build();
+    }
+
+    public EmbedObject selfNotLinked() {
+        return new EmbedBuilder().withColor(new Color(242, 56, 79))
+                .withDescription("It seems your account has not been linked!")
+                .withTimestamp(Instant.now()).build();
+    }
+
+    public EmbedObject userUnlinked() {
+        return new EmbedBuilder().withColor(new Color(120, 193, 82))
+                .withDescription("The user was successfully unlinked!")
+                .withTimestamp(Instant.now()).build();
+    }
+
+    public EmbedObject selfUnlinked() {
+        return new EmbedBuilder().withColor(new Color(120, 193, 82))
+                .withDescription("Your account was successfully unlinked!")
+                .withTimestamp(Instant.now()).build();
+    }
+
+    public EmbedObject whoIsEmbed(IUser user, String name) {
+        return new EmbedBuilder().withColor(new Color(120, 193, 82))
+                .withDescription("The account linked to user, " + user.getName() + ", is " + name)
+                .withTimestamp(Instant.now()).build();
+    }
+
+    public EmbedObject roleJoinEmbed(String name) {
+        return new EmbedBuilder().withColor(new Color(120, 193, 82))
+                .withDescription("You joined the " + name + " role!")
+                .withTimestamp(Instant.now()).build();
+    }
+
+    public EmbedObject roleLeaveEmbed(String name) {
+        return new EmbedBuilder().withColor(new Color(120, 193, 82))
+                .withDescription("You left the " + name + " role!")
+                .withTimestamp(Instant.now()).build();
+    }
+
+    public EmbedObject roleAddedToEveryone(String name) {
+        return new EmbedBuilder().withColor(new Color(120, 193, 82))
+                .withDescription("Everyone got the " + name + " role!")
+                .withTimestamp(Instant.now()).build();
+    }
+
+    public EmbedObject roleMentionableChanged(String name, boolean changed) {
+        return new EmbedBuilder().withColor(new Color(120, 193, 82))
+                .withDescription(name + " role had mentionable changed to " + changed)
+                .withTimestamp(Instant.now()).build();
+    }
+
+    public EmbedObject roleAlreadyActive(String name) {
+        return new EmbedBuilder().withColor(new Color(242, 56, 79))
+                .withDescription("You already have the " + name + " role!")
+                .withTimestamp(Instant.now()).build();
+    }
+
+    public EmbedObject roleNotActive(String name) {
+        return new EmbedBuilder().withColor(new Color(242, 56, 79))
+                .withDescription("You don't have the " + name + " role!")
+                .withTimestamp(Instant.now()).build();
+    }
+
+    public EmbedObject userLinked(IUser user, String username) {
+        return new EmbedBuilder().withColor(new Color(133, 150, 211))
+                .withTitle("A user linked their account")
+                .appendField("Discord name", user.mention(), true)
+                .appendField("Minecraft name", username, true)
+                .appendField("Discord ID", user.getStringID(), false)
+                .withTimestamp(Instant.now()).build();
+
+    }
+
+    public EmbedObject userUnLinked(IUser user, String username) {
+        return new EmbedBuilder().withColor(new Color(133, 150, 211))
+                .withTitle("A user unlinked their account")
+                .appendField("Discord name", user.mention(), true)
+                .appendField("Minecraft name", username, true)
+                .appendField("Discord ID", user.getStringID(), false)
+                .withTimestamp(Instant.now()).build();
+    }
+
     /*
      * Sends a message to a user regarding proper report criteria.
      * Method used in checkValidity()

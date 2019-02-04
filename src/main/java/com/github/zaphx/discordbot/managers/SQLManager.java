@@ -4,9 +4,11 @@ import com.github.zaphx.discordbot.Dizcord;
 import gnu.trove.map.TMap;
 import gnu.trove.map.hash.THashMap;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
 import sx.blah.discord.handle.obj.IMessage;
+import sx.blah.discord.handle.obj.IUser;
 
 import java.sql.*;
 import java.util.*;
@@ -246,13 +248,11 @@ public class SQLManager {
             Connection connection = getConnection();
             if (!tableExist("reminders")) {
                 try {
-                    String prefix = config.getString("sql.prefix");
                     connection.createStatement().execute("CREATE TABLE IF NOT EXISTS " + prefix + "links (\n" +
-                            "id INTEGER NOT NULL PRIMARY KEY, \n" +
+                            "id VARCHAR(255) NOT NULL PRIMARY KEY, \n" +
                             "hash BIGINT UNSIGNED NOT NULL, \n" +
                             "time DATETIME NOT NULL DEFAULT NOW(), \n" +
-                            "discord VARCHAR(255) NOT NULL, \n" +
-                            "minecraft VARCHAR(255) NOT NULL" +
+                            "discord BIGINT NOT NULL" +
                             ")");
                     connection.close();
                 } catch (SQLException e) {
@@ -295,6 +295,7 @@ public class SQLManager {
 
     /**
      * This method will get a deleted message and the information associated with that message
+     *
      * @param id The ID of the message
      * @return A THashMap containing the information about the message
      */
@@ -329,7 +330,97 @@ public class SQLManager {
     }
 
     /**
+     * Checks if a user has linked their discord account to their minecraft account
+     *
+     * @param discordID     The string representation of the Discord ID
+     * @param minecraftUUID The UUID of the player we are looking for
+     * @return The truth value of the existence of a link in the database
+     */
+    public boolean isUserLinked(String discordID, UUID minecraftUUID) {
+        Connection connection = getConnection();
+        Future<Boolean> future = CompletableFuture.supplyAsync(() -> {
+            boolean isLinked;
+
+            try {
+                PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + prefix + "links WHERE id = '" + minecraftUUID.toString() + "' OR discord = '" + discordID + "'");
+                ResultSet resultSet = statement.executeQuery();
+
+                isLinked = resultSet.next();
+                return isLinked;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return null;
+        });
+
+        try {
+            return future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    /**
+     * Checks if a user has linked their discord account to their minecraft account
+     *
+     * @param discordID The string representation of the Discord ID
+     * @return The truth value of the existence of a link in the database
+     */
+    public boolean isUserLinked(String discordID) {
+        Connection connection = getConnection();
+        Future<Boolean> future = CompletableFuture.supplyAsync(() -> {
+            boolean isLinked;
+
+            try {
+                PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + prefix + "links WHERE discord = '" + discordID + "'");
+                ResultSet resultSet = statement.executeQuery();
+
+                isLinked = resultSet.next();
+                return isLinked;
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return null;
+        });
+
+        try {
+            return future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public String getPlayerFromLink(IUser user) {
+        Connection connection = getConnection();
+        Future<String> future = CompletableFuture.supplyAsync(() -> {
+
+            try {
+                PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + prefix + "links WHERE discord = '" + user.getStringID() + "'");
+                ResultSet set = statement.executeQuery();
+
+                while (set.next()) {
+                    return set.getString("id");
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return null;
+
+        });
+
+        try {
+            return future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
      * Adds a message to the SQL database
+     *
      * @param message The message to add
      */
     void addMessage(IMessage message) {

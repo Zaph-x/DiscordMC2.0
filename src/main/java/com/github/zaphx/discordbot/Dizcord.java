@@ -6,7 +6,7 @@ import com.github.zaphx.discordbot.discord.listeners.*;
 import com.github.zaphx.discordbot.managers.AntiSwearManager;
 import com.github.zaphx.discordbot.managers.DiscordClientManager;
 import com.github.zaphx.discordbot.managers.SQLManager;
-import com.github.zaphx.discordbot.minecraft.commands.ActivateCommand;
+import com.github.zaphx.discordbot.minecraft.commands.MainCommand;
 import com.github.zaphx.discordbot.minecraft.commands.ToDiscord;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -16,9 +16,6 @@ import sx.blah.discord.modules.Configuration;
 import sx.blah.discord.util.DiscordException;
 
 import java.io.File;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -74,6 +71,9 @@ public class Dizcord extends JavaPlugin {
         client.getDispatcher().registerListener(new OnChannelCreateEvent());
         client.getDispatcher().registerListener(new OnChannelDeleteEvent());
         client.getDispatcher().registerListener(new OnChatEditEvent());
+        client.getDispatcher().registerListener(new OnRoleCreateEvent());
+        client.getDispatcher().registerListener(new OnRoleDeleteEvent());
+        client.getDispatcher().registerListener(new OnRoleEditEvent());
 
 
         sql.createMutesIfNotExists();
@@ -87,8 +87,12 @@ public class Dizcord extends JavaPlugin {
         commandHandler.registerCommand("warn", new Warn());
         commandHandler.registerCommand("adallow", new AdAllow());
         commandHandler.registerCommand("mapmessages", new MapMessages());
+        commandHandler.registerCommand("linkaccounts", new AccountLink());
+        commandHandler.registerCommand("unlinkaccount", new AccountUnlink());
+        commandHandler.registerCommand("whois", new WhoIs());
+        commandHandler.registerCommand("events", new Event());
 
-        getCommand("dizcord").setExecutor(new ActivateCommand());
+        getCommand("dizcord").setExecutor(new MainCommand());
         getCommand("todiscord").setExecutor(new ToDiscord());
 
         getLogger().log(Level.INFO, "Loading external bot plugins!");

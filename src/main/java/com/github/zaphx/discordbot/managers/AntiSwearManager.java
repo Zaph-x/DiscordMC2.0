@@ -29,10 +29,14 @@ public class AntiSwearManager {
         String url = "https://www.purgomalum.com/service/containsprofanity?text=";
 
         handledMessage = message.getContent().replaceAll(RegexPattern.USER.toString(),"");
+        handledMessage = handledMessage.replaceAll(RegexPattern.ROLE.toString(),"");
         handledMessage = handledMessage.replaceAll(RegexPattern.EMOTES.toString(),"");
+        handledMessage = handledMessage.replaceFirst("(ob!\\s)", "");
+        handledMessage = handledMessage.replaceFirst("assign", "");
 
         try {
             URL filter = new URL(url + URLEncoder.encode(handledMessage, "UTF-8"));
+            System.out.println(filter.toString());
             URLConnection connection = filter.openConnection();
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             String result;
