@@ -36,7 +36,6 @@ public class AntiSwearManager {
 
         try {
             URL filter = new URL(url + URLEncoder.encode(handledMessage, "UTF-8"));
-            System.out.println(filter.toString());
             URLConnection connection = filter.openConnection();
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             String result;
