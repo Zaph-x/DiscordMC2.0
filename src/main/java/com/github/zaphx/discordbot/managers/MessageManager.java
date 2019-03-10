@@ -2,32 +2,23 @@ package com.github.zaphx.discordbot.managers;
 
 import com.github.zaphx.discordbot.Dizcord;
 import com.github.zaphx.discordbot.utilities.DiscordChannelTypes;
+import discord4j.core.DiscordClient;
+import discord4j.core.object.audit.ActionType;
+import discord4j.core.object.entity.Message;
 import gnu.trove.map.TMap;
 import gnu.trove.map.hash.THashMap;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import sx.blah.discord.api.IDiscordClient;
-import sx.blah.discord.api.internal.json.objects.EmbedObject;
-import sx.blah.discord.handle.audit.ActionType;
-import sx.blah.discord.handle.audit.AuditLog;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.util.RequestBuffer;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.TreeMap;
+import discord4j.core.object.entity.Member;
 
 public class MessageManager {
 
     public TMap<Integer, Player> hashes = new THashMap<>();
-    public TMap<Integer, IUser> discord = new THashMap<>();
+    public TMap<Integer, Member> discord = new THashMap<>();
     private DiscordClientManager clientManager = DiscordClientManager.getInstance();
-    private IDiscordClient client = clientManager.getClient();
+    private DiscordClient client = clientManager.getClient();
     private FileConfiguration config = Dizcord.getInstance().getConfig();
-    private TMap<Long, IMessage> messages = new THashMap<>();
+    private TMap<Long, Message> messages = new THashMap<>();
     private AuditLog log;
     private SQLManager sqlManager = SQLManager.getInstance();
 
@@ -113,7 +104,7 @@ public class MessageManager {
      * Adds a message to the SQL database
      * @param message the message to add
      */
-    public void addMessage(IMessage message) {
+    public void addMessage(Message message) {
         sqlManager.addMessage(message);
     }
 }

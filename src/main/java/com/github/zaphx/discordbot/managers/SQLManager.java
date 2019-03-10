@@ -1,14 +1,15 @@
 package com.github.zaphx.discordbot.managers;
 
 import com.github.zaphx.discordbot.Dizcord;
-import gnu.trove.map.TMap;
+import discord4j.core.object.entity.Member;
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.util.Snowflake;
 import gnu.trove.map.hash.THashMap;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
-import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.IUser;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.sql.*;
 import java.util.*;
@@ -98,6 +99,7 @@ public class SQLManager {
      * @param parameters
      */
     public void executeStatementAndPost(@Language("sql") String sql, Object... parameters) {
+
         Future<Void> future = CompletableFuture.supplyAsync(() -> {
             try {
                 Connection connection = getConnection();
@@ -278,7 +280,13 @@ public class SQLManager {
                 PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM " + prefix + "mutes WHERE expires < UNIX_TIMESTAMP()");
                 ResultSet rs = preparedStatement.executeQuery();
                 while (rs.next()) {
-                    clientManager.getClient().getUserByID(rs.getLong("id")).removeRole(clientManager.getClient().getRoleByID(rs.getLong("type")));
+                    clientManager.getClient().getMemberById(Snowflake.of(clientManager.GUILD_ID),Snowflake.of(rs.getLong("id"))).doOnNext(member -> {
+                        try {
+                            member.removeRole(Snowflake.of(rs.getLong("type")));
+                        } catch (SQLException e) {
+                            e.printStackTrace();
+                        }
+                    }); // removeRole(clientManager.getClient().getRoleByID(rs.getLong("type")));
                     executeStatementAndPost("DELETE FROM %smutes WHERE id = %s", prefix, rs.getLong("id"));
                 }
             } catch (SQLException e) {
@@ -392,12 +400,12 @@ public class SQLManager {
         return false;
     }
 
-    public String getPlayerFromLink(IUser user) {
+    public String getPlayerFromLink(Member user) {
         Connection connection = getConnection();
         Future<String> future = CompletableFuture.supplyAsync(() -> {
 
             try {
-                PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + prefix + "links WHERE discord = '" + user.getStringID() + "'");
+                PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + prefix + "links WHERE discord = '" + user.getId().asString() + "'");
                 ResultSet set = statement.executeQuery();
 
                 while (set.next()) {
@@ -423,8 +431,8 @@ public class SQLManager {
      *
      * @param message The message to add
      */
-    void addMessage(IMessage message) {
+    void addMessage(Message message) {
         executeStatementAndPost("INSERT INTO " + prefix + "messages (id, content, author, author_name, channel) values ('%s','%s','%s','%s','%s')",
-                message.getStringID(), message.getContent().replaceAll("'", "¼"), message.getAuthor().getStringID(), message.getAuthor().getName(), message.getChannel().getStringID());
+                message.getId().asString(), message.getContent().get().replaceAll("'", "¼"), message.getAuthor().get().getId().asString(), message.getAuthor().get().getUsername(), message.getChannel().block().getId().asString());
     }
 }

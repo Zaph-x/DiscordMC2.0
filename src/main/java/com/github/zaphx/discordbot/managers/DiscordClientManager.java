@@ -1,23 +1,24 @@
 package com.github.zaphx.discordbot.managers;
 
 import com.github.zaphx.discordbot.Dizcord;
+import discord4j.core.DiscordClient;
+import discord4j.core.DiscordClientBuilder;
+import discord4j.core.ServiceMediator;
+import discord4j.core.object.entity.Guild;
+import discord4j.core.object.entity.Member;
+import discord4j.core.object.entity.User;
+import discord4j.core.object.util.Permission;
+import discord4j.core.object.util.Snowflake;
 import org.bukkit.Bukkit;
-import sx.blah.discord.api.ClientBuilder;
-import sx.blah.discord.api.IDiscordClient;
-import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.Permissions;
-import sx.blah.discord.util.DiscordException;
-import sx.blah.discord.util.RateLimitException;
 
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.List;
+import java.lang.reflect.Field;
+import java.util.Objects;
 
 public class DiscordClientManager {
 
-    private IDiscordClient client;
+    private DiscordClient client;
     private static DiscordClientManager instance;
+    public final long GUILD_ID = Dizcord.getInstance().getConfig().getLong("discord.guild-id");
 
     /**
      * The token for the bot
@@ -26,8 +27,10 @@ public class DiscordClientManager {
 
     private DiscordClientManager() {
     }
+
     /**
      * Gets the instance of the DiscordClientManager
+     *
      * @return A new instance if one does not exist, else the instance
      */
     public static DiscordClientManager getInstance() {
@@ -40,15 +43,12 @@ public class DiscordClientManager {
      * @param client client to disconnect
      * @return True when disconnect was successful, False if otherwise
      */
-    public boolean logout(IDiscordClient client) {
-        try {
-            Bukkit.getScheduler().cancelTasks(Dizcord.getInstance());
+    public boolean logout(DiscordClient client) {
+        Bukkit.getScheduler().cancelTasks(Dizcord.getInstance());
 
-            client.logout();
-            return true;
-        } catch (DiscordException ignored) {
-            return false;
-        }
+        client.logout().block();
+        return true;
+
     }
 
     /**
@@ -57,30 +57,40 @@ public class DiscordClientManager {
      * @param client client to connect
      * @return True when connect was successful, False if otherwise
      */
-    public boolean login(IDiscordClient client) {
-        try {
-            client.login();
-            return true;
-        } catch (DiscordException | RateLimitException ignored) {
-            return false;
-        }
+    public boolean login(DiscordClient client) {
+        client.login().block();
+        return true;
+
     }
 
     /**
      * Checks if the client has a specific permission
+     *
      * @param permission The permission to check for
      * @return True if the client has permission, else false
      */
-    public boolean clientHasPermission(Permissions permission) {
-        IGuild guild = client.getGuildByID(Dizcord.getInstance().getConfig().getLong("discord.guild-id"));
-        return getClient().getOurUser().getPermissionsForGuild(guild).contains(permission);
+    public boolean clientHasPermission(Permission permission) {
+        Guild guild = client.getGuildById(Snowflake.of(GUILD_ID)).block();   // getGuildByID(Dizcord.getInstance().getConfig().getLong("discord.guild-id"));
+        Member ourUser = Objects.requireNonNull(guild).getMemberById(client.getSelfId().get()).block();
+        return ourUser != null && Objects.requireNonNull(ourUser.getBasePermissions().block()).contains(permission); // getOurUser().getPermissionsForGuild(guild).contains(permission);
     }
 
     /**
      * Gets the client
+     *
      * @return The client
      */
-    public IDiscordClient getClient() {
-        return client == null ? client = new ClientBuilder().withToken(TOKEN).setMaxReconnectAttempts(200).build() : client;
+    public DiscordClient getClient() {
+        return client == null ? client = new DiscordClientBuilder(TOKEN).build() : client;
+    }
+
+    public ServiceMediator getServiceMediator() {
+        try {
+            Field field = DiscordClient.class.getDeclaredField("serviceMediator");
+            field.setAccessible(true);
+            return (ServiceMediator) field.get(this.client);
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

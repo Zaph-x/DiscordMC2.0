@@ -2,16 +2,26 @@ package com.github.zaphx.discordbot.managers;
 
 import com.github.zaphx.discordbot.Dizcord;
 import com.github.zaphx.discordbot.utilities.DiscordChannelTypes;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.Embed;
+import discord4j.core.object.ExtendedInvite;
+import discord4j.core.object.entity.*;
+import discord4j.core.object.util.Image;
+import discord4j.core.object.util.Snowflake;
+import discord4j.core.spec.EmbedCreateSpec;
+import discord4j.core.spec.MessageCreateSpec;
+import discord4j.rest.json.request.MessageCreateRequest;
 import gnu.trove.map.hash.THashMap;
 import org.bukkit.configuration.file.FileConfiguration;
-import sx.blah.discord.api.internal.json.objects.EmbedObject;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageEvent;
-import sx.blah.discord.handle.obj.*;
-import sx.blah.discord.util.EmbedBuilder;
+import org.junit.internal.runners.ErrorReportingRunner;
+import reactor.core.publisher.Mono;
 
+import javax.xml.soap.Text;
 import java.awt.*;
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 public class EmbedManager {
 
@@ -22,6 +32,9 @@ public class EmbedManager {
     private FileConfiguration config = dizcord.getConfig();
     private String prefix = config.getString("sql.prefix");
     private DiscordClientManager clientManager = DiscordClientManager.getInstance();
+    private final Color WARNING = new Color(242, 56, 79);
+    private final Color NEUTRAL = new Color(133,150,211);
+    private final Color SUCCESS = new Color(120, 193, 82);
 
     private EmbedManager() {
     }
@@ -30,59 +43,63 @@ public class EmbedManager {
         return instance == null ? instance = new EmbedManager() : instance;
     }
 
-    public EmbedObject warningToUser(IUser warned, IUser warnee, String reason, IGuild guild) {
+    public Mono<Message> warningToUser(Member warned, Member warnee, String reason, Guild guild) {
+        long tickedID = sql.countTickets("warnings");
+        TextChannel rulesChannel = guild.getChannelById(Snowflake.of(DiscordChannelTypes.RULES.getID())).cast(TextChannel.class).block();
+
+        Consumer<EmbedCreateSpec> spec = embedCreateSpec -> {
+            embedCreateSpec.setTitle("__**Warning**__")
+                    .setDescription("You have been warned for " + reason+ "." +
+                            "\nYour ticket ID is: **" + tickedID + "**." +
+                            "\nYou were warned by: **" + warnee.getUsername() + "**" +
+                            "\nPlease make sure you have read the rules in " + rulesChannel.getMention() + "." +
+                            "\nIf you believe this is a mistake, please report it to the owner of the server, with a screenshot of this message.")
+                    .setColor(WARNING)
+                    .setFooter(warned.getUsername(), warned.getAvatarUrl())
+                    .setTimestamp(Instant.now())
+                    .setAuthor(guild.getName(), null, guild.getIconUrl(Image.Format.JPEG).get());
+        };
+
+        return warned.getPrivateChannel().flatMap(c -> c.createMessage(m -> m.setEmbed(spec)));
+    }
+
+    public Mono<Message> warningToChannel(Member warned, Member warnee, String reason, Guild guild, TextChannel destination) {
         long ticketID = sql.countTickets("warnings");
-        IChannel rulesChan = guild.getChannelByID(DiscordChannelTypes.RULES.getID());
-        EmbedBuilder eb = new EmbedBuilder();
-        eb.withTitle("__**Warning**__")
-                .withDesc("You have been warned for: " + reason + ". " +
-                        "\nYour ticket ID is: **" + Long.toString(ticketID) + "**. " +
-                        "\nYou were warned by: **" + warnee.getName() + "#" + warnee.getDiscriminator() + "**. " +
-                        "\nPlease make sure you have read the rules in " + rulesChan.mention() + "." +
-                        "\nIf you think this is a mistake, please report it to the owner of the server, with a screenshot of this message.");
-        eb.withColor(new Color(133, 150, 211))
-                .withFooterText(warned.getName())
-                .withFooterIcon(warned.getAvatarURL())
-                .withTimestamp(Instant.now())
-                .withAuthorName(guild.getName())
-                .withAuthorIcon(guild.getIconURL());
-        return eb.build();
+
+        Consumer<EmbedCreateSpec> spec = embedCreateSpec -> {
+            embedCreateSpec.setTitle("__**Warning**__")
+                    .setDescription("**User warned:** " + warned.getUsername() + "#" + warned.getDiscriminator() +
+                            "\n**Ticket ID:** " + Long.toString(ticketID) + ". " +
+                            "\n**User ID:** " + warned.getId().asString() +
+                            "\n**Warned by:** " + warnee.getUsername() + "#" + warnee.getDiscriminator() + ". " +
+                            "\n**Reason:** " + reason + ".")
+                    .setColor(new Color(133, 150, 211))
+                    .setFooter(warned.getDisplayName(), warned.getAvatarUrl())
+                    .setTimestamp(Instant.now())
+                    .setAuthor(guild.getName(), null, guild.getIconUrl(Image.Format.JPEG).get());
+        };
+
+        return destination.createMessage(m -> m.setEmbed(spec));
     }
 
-    public EmbedObject warningToChannel(IUser warned, IUser warnee, String reason, IGuild guild) {
-        long ticketID = sql.countTickets("warnings");
-        EmbedBuilder eb = new EmbedBuilder();
-        eb.withTitle("__**Warning**__")
-                .withDesc("**User warned:** " + warned.getName() + "#" + warned.getDiscriminator() +
-                        "\n**Ticket ID:** " + Long.toString(ticketID) + ". " +
-                        "\n**User ID:** " + warned.getStringID() +
-                        "\n**Warned by:** " + warnee.getName() + "#" + warnee.getDiscriminator() + ". " +
-                        "\n**Reason:** " + reason + ".")
-                .withColor(new Color(133, 150, 211))
-                .withFooterText(warned.getName())
-                .withFooterIcon(warned.getAvatarURL())
-                .withTimestamp(Instant.now())
-                .withAuthorName(guild.getName())
-                .withAuthorIcon(guild.getIconURL());
-        return eb.build();
+    public Mono<Message> invalidCommandEmbed(TextChannel channel) {
+
+        Consumer<EmbedCreateSpec> spec = embedCreateSpec -> embedCreateSpec.setTitle("Invalid command")
+                .setDescription("There is no command with that name! See the help list for all valid commands.")
+                .setColor(WARNING)
+                .setTimestamp(Instant.now());
+
+        return channel.createMessage(m -> m.setEmbed(spec));
     }
 
-    public EmbedObject invalidCommandEmbed() {
-        return new EmbedBuilder()
-                .withTitle("Invalid command")
-                .withDesc("There is no command with that name! See the help list for all valid commands.")
-                .withColor(new Color(242, 56, 79))
-                .withTimestamp(Instant.now())
-                .build();
-    }
+    public Mono<Message> invalidSyntaxEmbed(String command, TextChannel channel) {
+        Consumer<EmbedCreateSpec> spec = embedCreateSpec -> embedCreateSpec.setTitle("Invalid command format")
+                .setDescription("The command was not formatted right! See `ob!help " + command + "` for correct usage.")
+                .setColor(WARNING)
+                .setTimestamp(Instant.now());
 
-    public EmbedObject invalidSyntaxEmbed(String command) {
-        return new EmbedBuilder()
-                .withTitle("Invalid command format")
-                .withDesc("The command was not formatted right! See `ob!help " + command + "` for correct usage.")
-                .withColor(new Color(242, 56, 79))
-                .withTimestamp(Instant.now())
-                .build();
+
+        return channel.createMessage(m -> m.setEmbed(spec))
     }
 
     public EmbedObject insufficientPermissions() {
@@ -112,15 +129,15 @@ public class EmbedManager {
                 .build();
     }
 
-    public EmbedObject joinEmbed(IExtendedInvite invite, IUser joined) {
+    public EmbedObject joinEmbed(ExtendedInvite invite, Member joined) {
         EmbedBuilder eb = new EmbedBuilder();
         eb.withTimestamp(Instant.now())
                 .withTitle("**A user joined the guild**")
-                .withThumbnail(joined.getAvatarURL())
-                .appendField("User:", joined.mention() + " (" + joined.getName() + ")", false)
+                .withThumbnail(joined.getAvatarUrl())
+                .appendField("User:", joined.getDisplayName() + " (" + joined.getUsername() + ")", false)
                 .appendField("With invite", invite.getCode(), true)
-                .appendField("Invite by user", invite.getInviter().mention(), true)
-                .withColor(new Color(120, 193, 82));
+                .appendField("Invite by user", Objects.requireNonNull(invite.getInviter().block()).getMention(), true)
+                .withColor();
 
         return eb.build();
     }

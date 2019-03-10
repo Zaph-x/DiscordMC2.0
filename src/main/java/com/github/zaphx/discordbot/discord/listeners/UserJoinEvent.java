@@ -1,10 +1,9 @@
 package com.github.zaphx.discordbot.discord.listeners;
 
 import com.github.zaphx.discordbot.managers.*;
-import sx.blah.discord.api.events.EventSubscriber;
-import sx.blah.discord.handle.impl.events.guild.member.UserJoinEvent;
+import discord4j.core.event.domain.guild.MemberJoinEvent;
 
-public class MemberJoinEvent {
+public class UserJoinEvent {
 
     private DiscordClientManager clientManager = DiscordClientManager.getInstance();
     private ChannelManager channelManager = ChannelManager.getInstance();
@@ -13,11 +12,9 @@ public class MemberJoinEvent {
     private MessageManager messageManager = MessageManager.getInstance();
 
 
-    public MemberJoinEvent() {}
+    public UserJoinEvent() {}
 
-
-    @EventSubscriber
-    public void onUserJoinEvent(UserJoinEvent event) {
-        messageManager.auditlog(embedManager.joinEmbed(inviteManager.getInvite(), event.getUser()));
+    public void onUserJoinEvent(final MemberJoinEvent event) {
+        messageManager.auditlog(embedManager.joinEmbed(inviteManager.getInvite(), event.getMember()));
     }
 }

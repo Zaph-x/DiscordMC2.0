@@ -1,16 +1,24 @@
 package com.github.zaphx.discordbot.discord.listeners;
 
 import com.github.zaphx.discordbot.managers.SQLManager;
-import sx.blah.discord.api.events.EventSubscriber;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageEditEvent;
+import discord4j.core.event.domain.message.MessageUpdateEvent;
+import discord4j.core.object.entity.Message;
+import reactor.core.publisher.Mono;
 
 public class OnChatEditEvent {
 
     private SQLManager sqlManager = SQLManager.getInstance();
 
-    @EventSubscriber
-    public void onEdit(MessageEditEvent e) {
-        sqlManager.executeStatementAndPost("UPDATE " + sqlManager.prefix + "messages SET content = '%s' WHERE id = '%s'", e.getMessage().getContent().replaceAll("'", "¼"), e.getMessage().getStringID());
+    public void onEdit(final MessageUpdateEvent event) {
+        Mono.justOrEmpty(event.getMessage()).subscribe(this::updateSQLEntry);
     }
 
+    private void updateSQLEntry(Mono<Message> message) {
+        Message m = message.block();
+        if (m != null) {
+            sqlManager.executeStatementAndPost("UPDATE " + sqlManager.prefix + "messages SET content = '%s' WHERE id = '%s'",
+                    m.getContent().orElse("STRING CONTENT NOT FOUND IN MESSAGE").replaceAll("'", "¼"),
+                    m.getId().asString());
+        }
+    }
 }

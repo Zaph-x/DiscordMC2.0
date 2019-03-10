@@ -2,8 +2,9 @@ package com.github.zaphx.discordbot.utilities;
 
 import com.github.zaphx.discordbot.Dizcord;
 import com.github.zaphx.discordbot.managers.DiscordClientManager;
-import sx.blah.discord.api.IDiscordClient;
-import sx.blah.discord.handle.obj.IChannel;
+import discord4j.core.DiscordClient;
+import discord4j.core.object.entity.TextChannel;
+import discord4j.core.object.util.Snowflake;
 
 public enum DiscordChannelTypes {
 
@@ -15,14 +16,14 @@ public enum DiscordChannelTypes {
     SUGGESTIONS("discord.suggestions-channel");
 
     private String path;
-    private IDiscordClient client = DiscordClientManager.getInstance().getClient();
+    private DiscordClient client = DiscordClientManager.getInstance().getClient();
 
     DiscordChannelTypes(String path) {
         this.path = path;
     }
 
-    public IChannel getChannel() {
-        return client.getChannelByID(Dizcord.getInstance().getConfig().getLong(this.path));
+    public TextChannel getChannel() {
+        return client.getChannelById(Snowflake.of(Dizcord.getInstance().getConfig().getLong(this.path))).cast(TextChannel.class).block();
     }
 
     public String getPath() {

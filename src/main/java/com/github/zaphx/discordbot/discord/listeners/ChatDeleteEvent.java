@@ -3,11 +3,12 @@ package com.github.zaphx.discordbot.discord.listeners;
 import com.github.zaphx.discordbot.managers.DiscordClientManager;
 import com.github.zaphx.discordbot.managers.EmbedManager;
 import com.github.zaphx.discordbot.managers.MessageManager;
-import com.github.zaphx.discordbot.managers.SQLManager;
+import discord4j.core.event.domain.message.MessageDeleteEvent;
+import discord4j.core.object.entity.User;
+import discord4j.core.object.util.Snowflake;
 import gnu.trove.map.hash.THashMap;
-import sx.blah.discord.api.events.EventSubscriber;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageDeleteEvent;
-import sx.blah.discord.handle.obj.IMessage;
+
+import java.util.Objects;
 
 public class ChatDeleteEvent {
 
@@ -15,12 +16,11 @@ public class ChatDeleteEvent {
     private EmbedManager em = EmbedManager.getInstance();
     private DiscordClientManager clientManager = DiscordClientManager.getInstance();
 
-    @EventSubscriber
     public void onMessageDelete(MessageDeleteEvent event) {
-        long id = event.getMessageID();
+        long id = event.getMessageId().asLong();
         THashMap<String, String> map = messageManager.getDeletedMessage("" + id);
         if ((map.get("content")).toLowerCase().startsWith("ob!")) return;
-        if (!clientManager.getClient().getUserByID(Long.parseLong(map.get("author"))).isBot()) {
+        if (!Objects.requireNonNull(clientManager.getClient().getMemberById(Snowflake.of(clientManager.GUILD_ID), event.getMessage().get().getAuthor().get().getId()).block()).isBot()) {
             messageManager.auditlog(em.messageDeleteEmbed(map));
         }
     }
