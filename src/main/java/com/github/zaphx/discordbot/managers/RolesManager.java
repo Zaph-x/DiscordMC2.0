@@ -12,7 +12,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 public class RolesManager {
 
     private static RolesManager instance;
-    public TMap<String, Snowflake> roles = new THashMap<>();
+    private TMap<String, Snowflake> roles = new THashMap<>();
     private Dizcord dizcord = Dizcord.getInstance();
     private FileConfiguration config = dizcord.getConfig();
     private DiscordClientManager clientManager = DiscordClientManager.getInstance();
@@ -26,7 +26,7 @@ public class RolesManager {
     }
 
     public void mapRoles() {
-        Guild guild = client.getGuildById();
+        Guild guild = client.getGuildById(clientManager.GUILD_SNOWFLAKE).block();
         roles.clear();
         for (Role role : guild.getRoles().collectList().block()) {
             roles.put(role.getName(), role.getId());
@@ -37,15 +37,15 @@ public class RolesManager {
         return client.getRoleById(clientManager.GUILD_SNOWFLAKE, roles.get(name)).block().getId();
     }
 
-    public IRole getRole(long ID) {
-        return client.getRoleByID(ID);
+    public Role getRole(long ID) {
+        return client.getRoleById(clientManager.GUILD_SNOWFLAKE, Snowflake.of(ID)).block();
     }
 
-    public void addRole(IRole role) {
-        roles.put(role.getName(),role.getLongID());
+    public void addRole(Role role) {
+        roles.put(role.getName(),role.getId());
     }
 
-    public void removeRole(IRole role) {
+    public void removeRole(Role role) {
         roles.remove(role.getName());
     }
 
