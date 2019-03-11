@@ -1,11 +1,10 @@
 package com.github.zaphx.discordbot.minecraft.commands;
 
 import com.github.zaphx.discordbot.managers.ChannelManager;
+import discord4j.core.object.entity.TextChannel;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.util.RequestBuffer;
 import static org.bukkit.ChatColor.*;
 
 
@@ -14,7 +13,7 @@ public class ToDiscord implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        IChannel channel;
+        TextChannel channel;
         StringBuilder sb;
         ChannelManager channelManager = ChannelManager.getInstance();
 
@@ -41,7 +40,7 @@ public class ToDiscord implements CommandExecutor {
                     sender.sendMessage(RED +"The channel you specified does not exist.");
                     return true;
                 } else {
-                    RequestBuffer.request(() -> channel.sendMessage(sb.toString()));
+                    channel.createMessage(sb.toString()).subscribe();
                     sender.sendMessage(GREEN + "Message sent");
                     return true;
                 }
