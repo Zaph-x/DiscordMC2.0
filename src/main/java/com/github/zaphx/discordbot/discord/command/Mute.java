@@ -4,6 +4,9 @@ import com.github.zaphx.discordbot.Dizcord;
 import com.github.zaphx.discordbot.api.commandhandler.CommandExitCode;
 import com.github.zaphx.discordbot.api.commandhandler.CommandListener;
 import com.github.zaphx.discordbot.utilities.DateUtils;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.Channel;
+import discord4j.core.object.entity.User;
 import org.jetbrains.annotations.NotNull;
 import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
 import sx.blah.discord.handle.obj.IChannel;
@@ -19,7 +22,7 @@ public class Mute implements CommandListener {
     private IRole mute;
 
     @Override
-    public CommandExitCode onCommand(IUser sender, String command, List<String> args, IChannel destination, MessageReceivedEvent event) {
+    public CommandExitCode onCommand(User sender, String command, List<String> args, Channel destination, MessageCreateEvent event) {
         RequestBuffer.request(() -> event.getMessage().delete());
         if (!commandHandler.clientHasPermission(event, Permissions.MANAGE_ROLES)) {
             return CommandExitCode.CLIENT_INSUFFICIENT_PERMISSIONS;
@@ -30,7 +33,7 @@ public class Mute implements CommandListener {
         switch (args.get(1).toLowerCase()) {
             case "voice":
                 try {
-                    IUser target = event.getMessage().getMentions().get(0);
+                    User target = event.getMember().getMentions().get(0);
                     String time = getFinalArg(args, 2);
                     long timestamp = DateUtils.parseDateDiff(time, true);
                     String expiry = DateUtils.formatDateDiff(timestamp);
@@ -38,17 +41,7 @@ public class Mute implements CommandListener {
 
                     mute = clientManager.getClient().getRoleByID(Dizcord.getInstance().getConfig().getLong("discord.voice-mute-role"));
 
-                    target.addRole(mute);
-                    sql.executeStatementAndPost("INSERT INTO %smutes (id, muter, expires, type) VALUES ('%s','%s','%s','%s')",
-                            Dizcord.getInstance().getConfig().getString("sql.prefix"),
-                            target.getStringID(),
-                            sender.getStringID(),
-                            timestamp,
-                            mute.getLongID());
-                    messageManager.log(embedManager.logMuteEmbed(reason,expiry,sender, target));
-                    channelManager.sendMessageToChannel(target.getOrCreatePMChannel(), embedManager.muteEmbed(reason,expiry,sender));
-
-                    return CommandExitCode.SUCCESS;
+                    return handleMute(sender, target, timestamp, expiry, reason);
                 } catch (Exception e) {
                     commandHandler.handleException(e);
                     return CommandExitCode.ERROR;
@@ -63,16 +56,7 @@ public class Mute implements CommandListener {
 
                     mute = clientManager.getClient().getRoleByID(Dizcord.getInstance().getConfig().getLong("discord.mute-role"));
 
-                    target.addRole(mute);
-                    sql.executeStatementAndPost("INSERT INTO %smutes (id, muter, expires, type) VALUES ('%s','%s','%s','%s')",
-                            Dizcord.getInstance().getConfig().getString("sql.prefix"),
-                            target.getStringID(),
-                            sender.getStringID(),
-                            timestamp,
-                            mute.getLongID());
-                    messageManager.log(embedManager.logMuteEmbed(reason,expiry,sender, target));
-                    channelManager.sendMessageToChannel(target.getOrCreatePMChannel(), embedManager.muteEmbed(reason,expiry,sender));
-                    return CommandExitCode.SUCCESS;
+                    return handleMute(sender, target, timestamp, expiry, reason);
                 } catch (Exception e) {
                     commandHandler.handleException(e);
                     return CommandExitCode.ERROR;
@@ -80,6 +64,21 @@ public class Mute implements CommandListener {
             default:
                 return CommandExitCode.INVALID_SYNTAX;
         }
+    }
+
+    @NotNull
+    private CommandExitCode handleMute(IUser sender, IUser target, long timestamp, String expiry, String reason) {
+        target.addRole(mute);
+        sql.executeStatementAndPost("INSERT INTO %smutes (id, muter, expires, type) VALUES ('%s','%s','%s','%s')",
+                Dizcord.getInstance().getConfig().getString("sql.prefix"),
+                target.getStringID(),
+                sender.getStringID(),
+                timestamp,
+                mute.getLongID());
+        messageManager.log(embedManager.logMuteEmbed(reason,expiry,sender, target));
+        channelManager.sendMessageToChannel(target.getOrCreatePMChannel(), embedManager.muteEmbed(reason,expiry,sender));
+
+        return CommandExitCode.SUCCESS;
     }
 
     @Override

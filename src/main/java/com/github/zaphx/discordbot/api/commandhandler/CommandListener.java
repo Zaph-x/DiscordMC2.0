@@ -2,10 +2,10 @@ package com.github.zaphx.discordbot.api.commandhandler;
 
 import com.github.zaphx.discordbot.Dizcord;
 import com.github.zaphx.discordbot.managers.*;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.MessageChannel;
+import discord4j.core.object.entity.User;
 import org.jetbrains.annotations.NotNull;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IUser;
 
 import java.util.List;
 
@@ -33,7 +33,7 @@ public interface CommandListener {
      * @param event The event provided by discord.
      * @return This method will return a {@link CommandExitCode} showing how the command was exited.
      */
-    CommandExitCode onCommand(IUser sender, String command, List<String> args, IChannel destination, MessageReceivedEvent event);
+    CommandExitCode onCommand(User sender, String command, List<String> args, MessageChannel destination, MessageCreateEvent event);
 
     /**
      * Used to generate the help message, when the help command is run on the command.

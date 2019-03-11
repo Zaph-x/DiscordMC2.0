@@ -84,6 +84,10 @@ public class DiscordClientManager {
         return client == null ? client = new DiscordClientBuilder(TOKEN).build() : client;
     }
 
+    public Member getSelf() {
+        return client.getSelf().cast(Member.class).block();
+    }
+
     public ServiceMediator getServiceMediator() {
         try {
             Field field = DiscordClient.class.getDeclaredField("serviceMediator");

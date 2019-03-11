@@ -164,7 +164,7 @@ public class ChannelManager {
      * @param event   The provided MessageEvent
      * @param message The message to send
      */
-    public void sendMessageToChannel(MessageCreateEvent event, EmbedRequest message) {
+    public void sendMessageToChannel(MessageCreateEvent event, Consumer<EmbedCreateSpec> message) {
         event.getMessage().getChannel().map(messageChannel -> messageChannel.createMessage(message.toString())).subscribe();
     }
 
@@ -184,7 +184,7 @@ public class ChannelManager {
      * @param event   The provided MessageEvent
      * @param message The message to send
      */
-    public void sendMessageToChannel(MessageDeleteEvent event, EmbedRequest message) {
+    public void sendMessageToChannel(MessageDeleteEvent event, Consumer<EmbedCreateSpec> message) {
         Mono.justOrEmpty(event).flatMap(e -> e.getChannel().map(messageChannel -> messageChannel.createMessage(message.toString()))).subscribe();
     }
 

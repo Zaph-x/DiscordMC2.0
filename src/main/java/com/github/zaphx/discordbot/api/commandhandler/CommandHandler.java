@@ -4,14 +4,13 @@ import com.github.zaphx.discordbot.Dizcord;
 import com.github.zaphx.discordbot.managers.ChannelManager;
 import com.github.zaphx.discordbot.managers.DiscordClientManager;
 import com.github.zaphx.discordbot.managers.EmbedManager;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.MessageChannel;
+import discord4j.core.object.entity.User;
+import discord4j.core.object.util.Permission;
 import gnu.trove.map.TMap;
 import gnu.trove.map.hash.THashMap;
 import org.apache.commons.lang.exception.ExceptionUtils;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageEvent;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.handle.obj.Permissions;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,6 +26,10 @@ public class CommandHandler {
      * The instance of the channel manager, used to send messages to specific channels.
      */
     private ChannelManager channelManager = ChannelManager.getInstance();
+    /**
+     * The instance of the client manager, used to interact with the discord client.
+     */
+    private DiscordClientManager clientManager = DiscordClientManager.getInstance();
     /**
      * The instance of the embed manager
      */
@@ -60,10 +63,10 @@ public class CommandHandler {
      *
      * @param event The event to check in.
      */
-    public void checkForCommand(MessageReceivedEvent event) {
-        IUser sender = event.getAuthor();
-        IChannel channel = event.getChannel();
-        String s = event.getMessage().getContent();
+    public void checkForCommand(MessageCreateEvent event) {
+        User sender = event.getMember().orElseThrow(NullPointerException::new);
+        MessageChannel channel = event.getMessage().getChannel().block();
+        String s = event.getMessage().getContent().orElse("");
         String[] fullCommand = s.toLowerCase().split(" ");
         if (s.startsWith(commandPrefix.toLowerCase())) {
             if (fullCommand.length == 0) return;
@@ -132,8 +135,8 @@ public class CommandHandler {
      * @param permission The permission to check for
      * @return True if the user has permission
      */
-    public boolean userHasPermission(MessageEvent event, Permissions permission) {
-        return event.getAuthor().getPermissionsForGuild(event.getGuild()).contains(permission);
+    public boolean userHasPermission(MessageCreateEvent event, Permission permission) {
+        return event.getMember().orElseThrow(NullPointerException::new).getBasePermissions().blockOptional().orElseThrow(NullPointerException::new).contains(permission);
     }
 
     /**
@@ -142,8 +145,8 @@ public class CommandHandler {
      * @param permission The permission to check for
      * @return True if the client has permission
      */
-    public boolean clientHasPermission(MessageEvent event, Permissions permission) {
-        return event.getClient().getOurUser().getPermissionsForGuild(event.getGuild()).contains(permission);
+    public boolean clientHasPermission(MessageCreateEvent event, Permission permission) {
+        return clientManager.getSelf().getBasePermissions().blockOptional().orElseThrow(NullPointerException::new).contains(permission);
     }
 
     /**
@@ -151,12 +154,12 @@ public class CommandHandler {
      * @param e The exception thrown.
      */
     public void handleException(Exception e) {
-        DiscordClientManager
-                .getInstance()
-                .getClient()
-                .getApplicationOwner()
-                .getOrCreatePMChannel()
-                .sendMessage(embedManager.exceptionToOwner(ExceptionUtils.getMessage(e), ExceptionUtils.getStackTrace(e)));
+        clientManager.getClient().getApplicationInfo()
+                .map(applicationInfo -> applicationInfo.getOwner()
+                        .map(owner -> owner.getPrivateChannel()
+                                .map(channel -> channel.createMessage(messageCreateSpec -> {
+                                    messageCreateSpec.setEmbed(embedManager.exceptionToOwner(ExceptionUtils.getMessage(e), ExceptionUtils.getStackTrace(e)));
+                                })))).subscribe();
     }
 
     /**
