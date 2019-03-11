@@ -1,10 +1,9 @@
 package com.github.zaphx.discordbot.trello;
 
+import com.github.zaphx.discordbot.utilities.ArgumentException;
 import com.github.zaphx.discordbot.utilities.DiscordChannelTypes;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.IUser;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,17 +15,17 @@ public class TrelloEventBuilder {
     private List<String> attachments = new ArrayList<>();
 
     private boolean isValidReport = true;
-    private MessageReceivedEvent event;
+    private MessageCreateEvent event;
     private TrelloType trelloType;
-    private IMessage message;
-    private IChannel channel;
-    private IUser sender;
+    private Message message;
+    private TextChannel channel;
+    private User sender;
 
-    TrelloEventBuilder(MessageReceivedEvent event) {
+    TrelloEventBuilder(MessageCreateEvent event) {
         this.event = event;
         this.message = event.getMessage();
-        this.channel = event.getChannel();
-        this.sender = event.getAuthor();
+        this.channel = (TextChannel) event.getMessage().getChannel().block();
+        this.sender = event.getMember().orElseThrow(ArgumentException::new);
     }
 
     TrelloEventBuilder setType(TrelloType type) {
@@ -35,7 +34,7 @@ public class TrelloEventBuilder {
     }
 
     public TrelloEventBuilder checkChannel(DiscordChannelTypes channelType) {
-        if (this.channel.getLongID() != channelType.getID()) {
+        if (this.channel.getId().asLong() != channelType.getID()) {
             this.isValidReport = false;
         }
         return this;
@@ -64,11 +63,11 @@ public class TrelloEventBuilder {
         trelloManager.officiallyFileReport(this, this.trelloType);
     }
 
-    IMessage getMessage() {
+    Message getMessage() {
         return message;
     }
 
-    MessageReceivedEvent getEvent() {
+    MessageCreateEvent getEvent() {
         return event;
     }
 
@@ -76,7 +75,7 @@ public class TrelloEventBuilder {
         return trelloType;
     }
 
-    IChannel getChannel() {
+    TextChannel getChannel() {
         return channel;
     }
 
@@ -88,7 +87,7 @@ public class TrelloEventBuilder {
         return attachments;
     }
 
-    IUser getSender() {
+    User getSender() {
         return sender;
     }
 }

@@ -18,9 +18,11 @@ import discord4j.rest.json.request.EmbedRequest;
 import gnu.trove.map.TMap;
 import gnu.trove.map.hash.THashMap;
 import org.bukkit.configuration.file.FileConfiguration;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import javax.xml.soap.Text;
+import java.util.Objects;
 
 public class ChannelManager {
 
@@ -118,6 +120,17 @@ public class ChannelManager {
     }
 
     /**
+     * This method checks if the ID provided is the channel also provided
+     *
+     * @param snowflake The snowflake to check
+     * @param ID      The ID to check
+     * @return True if ID and channel match
+     */
+    public boolean isChannel(Snowflake snowflake, long ID) {
+        return snowflake.asLong() == ID;
+    }
+
+    /**
      * This method checks if the two channels provided are the same
      *
      * @param channel The channel to check
@@ -125,7 +138,7 @@ public class ChannelManager {
      * @return True if channels match
      */
     public boolean isChannel(TextChannel target, TextChannel channel) {
-        return target == channel || target.equals(channel);
+        return target == channel || Objects.equals(target, channel);
     }
 
     /**
@@ -147,6 +160,7 @@ public class ChannelManager {
     public void sendMessageToChannel(MessageCreateEvent event, EmbedRequest message) {
         event.getMessage().getChannel().map(messageChannel -> messageChannel.createMessage(message.toString())).subscribe();
     }
+
     /**
      * Sends a message to a channel provided by the MessageEvent
      *
