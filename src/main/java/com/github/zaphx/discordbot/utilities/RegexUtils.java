@@ -1,7 +1,7 @@
 package com.github.zaphx.discordbot.utilities;
 
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageEvent;
-import sx.blah.discord.util.RequestBuffer;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.User;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,11 +21,13 @@ public class RegexUtils {
         return m.find() && m.group(0).split(" ").length <= length;
     }
 
-    public static String stripString(MessageEvent event, Pattern patternToStrip, String stringToStrip) {
+    public static String stripString(MessageCreateEvent event, Pattern patternToStrip, String stringToStrip) {
         Matcher matcher = patternToStrip.matcher(stringToStrip);
         if (matcher.find()) {
             stringToStrip = stringToStrip.replaceAll(RegexPattern.IP.getPattern().pattern(), "[IP hidden]");
-            RequestBuffer.request(() -> event.getAuthor().getOrCreatePMChannel().sendMessage("Hidden IP was: " + matcher.group(0)));
+            event.getMember()
+                    .map(member -> member.getPrivateChannel()
+                            .map(channel -> channel.createMessage("Hidden IP was: " + matcher.group(0)).subscribe()));
         }
         return stringToStrip;
     }
