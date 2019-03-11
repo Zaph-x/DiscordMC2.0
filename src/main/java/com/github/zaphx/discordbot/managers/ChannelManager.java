@@ -8,9 +8,7 @@ import discord4j.core.event.domain.channel.TextChannelDeleteEvent;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.event.domain.message.MessageDeleteEvent;
 import discord4j.core.event.domain.message.MessageEvent;
-import discord4j.core.object.entity.Channel;
-import discord4j.core.object.entity.Guild;
-import discord4j.core.object.entity.TextChannel;
+import discord4j.core.object.entity.*;
 import discord4j.core.object.util.Snowflake;
 import discord4j.core.spec.EmbedCreateSpec;
 import discord4j.core.spec.MessageCreateSpec;
@@ -23,6 +21,7 @@ import reactor.core.publisher.Mono;
 
 import javax.xml.soap.Text;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class ChannelManager {
 
@@ -47,8 +46,6 @@ public class ChannelManager {
 
     /**
      * This method maps all available channels to a map.
-     *
-     * @return The TreeMap of channels.
      */
     public void mapChannels() {
         client.getGuildById(Snowflake.of(clientManager.GUILD_ID)).subscribe(guild -> {
@@ -84,7 +81,7 @@ public class ChannelManager {
      * @param name The name to look for
      * @return The channel from name if it exists. Else null
      */
-    public TextChannel getChannel(String name) {
+    public MessageChannel getChannel(String name) {
         return channelMap.get(name) != null ? client.getChannelById(Snowflake.of(channelMap.get(name))).cast(TextChannel.class).block() : null;
     }
 
@@ -94,8 +91,18 @@ public class ChannelManager {
      * @param ID The ID of the channel to look for
      * @return The channel from the ID provided.
      */
-    public TextChannel getChannel(long ID) {
+    public MessageChannel getChannel(long ID) {
         return client.getChannelById(Snowflake.of(ID)).cast(TextChannel.class).block();
+    }
+
+    /**
+     * This method gets a channel by its ID, from the THashMap channels.
+     *
+     * @param ID The ID of the channel to look for
+     * @return The channel from the ID provided.
+     */
+    public MessageChannel getChannel(Snowflake ID) {
+        return client.getChannelById(ID).cast(TextChannel.class).block();
     }
 
     /**
@@ -104,7 +111,7 @@ public class ChannelManager {
      * @param types The DiscordChannelTypes type
      * @return The channel from name if it exists. Else null
      */
-    public TextChannel getChannel(DiscordChannelTypes types) {
+    public MessageChannel getChannel(DiscordChannelTypes types) {
         return client.getChannelById(Snowflake.of(types.getID())).cast(TextChannel.class).block();
     }
 
@@ -185,13 +192,10 @@ public class ChannelManager {
      * Sends a message to a channel provided by the MessageEvent
      *
      * @param channel The channel to send a message to
-     * @param message The message to send
+     * @param embed The message to send
      */
-    public void sendMessageToChannel(Channel channel, MessageCreateSpec message) {
-
-        Mono.justOrEmpty(channel).filter(c -> c instanceof TextChannel)
-                .cast(TextChannel.class)
-                .map(c -> c.createMessage(new MessageCreateSpec().setEmbed(message)));
+    public void sendMessageToChannel(MessageChannel channel, Consumer<EmbedCreateSpec> embed) {
+        channel.createMessage(messageCreateSpec -> messageCreateSpec.setEmbed(embed)).subscribe();
     }
 
     /**
@@ -200,18 +204,18 @@ public class ChannelManager {
      * @param channel The channel to send a message to
      * @param message The message to send
      */
-    public void sendMessageToChannel(IChannel channel, String message) {
-        RequestBuffer.request(() -> channel.sendMessage(message));
+    public void sendMessageToChannel(MessageChannel channel, String message) {
+        channel.createMessage(message).subscribe();
     }
 
     /**
      * Sends a message to a channel provided by the MessageEvent
      *
      * @param channel The channel to send a message to
-     * @param message The message to send
+     * @param embed The message to send
      */
-    public void sendMessageToChannel(DiscordChannelTypes channel, EmbedObject message) {
-        RequestBuffer.request(() -> channel.getChannel().sendMessage(message));
+    public void sendMessageToChannel(DiscordChannelTypes channel, Consumer<EmbedCreateSpec> embed) {
+        channel.getChannel().createMessage(m -> m.setEmbed(embed)).subscribe();
     }
 
     /**
@@ -221,17 +225,17 @@ public class ChannelManager {
      * @param message The message to send
      */
     public void sendMessageToChannel(DiscordChannelTypes channel, String message) {
-        RequestBuffer.request(() -> channel.getChannel().sendMessage(message));
+        channel.getChannel().createMessage(message).subscribe();
     }
 
     /**
      * Sends a message to a channel provided by the MessageEvent
      *
      * @param id      The id of the channel to send a message to
-     * @param message The message to send
+     * @param embed The message to send
      */
-    public void sendMessageToChannel(long id, EmbedObject message) {
-        RequestBuffer.request(() -> client.getChannelByID(id).sendMessage(message));
+    public void sendMessageToChannel(long id, Consumer<EmbedCreateSpec> embed) {
+        client.getChannelById(Snowflake.of(id)).cast(MessageChannel.class).map(messageChannel -> messageChannel.createMessage(messageCreateSpec -> messageCreateSpec.setEmbed(embed))).subscribe();
     }
 
     /**
@@ -241,17 +245,37 @@ public class ChannelManager {
      * @param message The message to send
      */
     public void sendMessageToChannel(long id, String message) {
-        RequestBuffer.request(() -> client.getChannelByID(id).sendMessage(message));
+        client.getChannelById(Snowflake.of(id)).cast(MessageChannel.class).map(messageChannel -> messageChannel.createMessage(message)).subscribe();
+    }
+
+    /**
+     * Sends a message to a channel provided by the MessageEvent
+     *
+     * @param id      The id of the channel to send a message to
+     * @param embed The message to send
+     */
+    public void sendMessageToChannel(Snowflake id, Consumer<EmbedCreateSpec> embed) {
+        client.getChannelById(id).cast(MessageChannel.class).map(messageChannel -> messageChannel.createMessage(messageCreateSpec -> messageCreateSpec.setEmbed(embed))).subscribe();
+    }
+
+    /**
+     * Sends a message to a channel provided by the MessageEvent
+     *
+     * @param id      The id of the channel to send a message to
+     * @param message The message to send
+     */
+    public void sendMessageToChannel(Snowflake id, String message) {
+        client.getChannelById(id).cast(MessageChannel.class).map(messageChannel -> messageChannel.createMessage(message)).subscribe();
     }
 
     /**
      * Sends a message to a channel provided by the MessageEvent
      *
      * @param name    The name of the channel to send a message to
-     * @param message The message to send
+     * @param embed The message to send
      */
-    public void sendMessageToChannel(String name, EmbedObject message) {
-        RequestBuffer.request(() -> client.getChannelByID(channelMap.get(name)).sendMessage(message));
+    public void sendMessageToChannel(String name, Consumer<EmbedCreateSpec> embed) {
+        client.getChannelById(Snowflake.of(channelMap.get(name))).cast(MessageChannel.class).map(messageChannel -> messageChannel.createMessage(messageCreateSpec -> messageCreateSpec.setEmbed(embed))).subscribe();
     }
 
     /**
@@ -261,27 +285,6 @@ public class ChannelManager {
      * @param message The message to send
      */
     public void sendMessageToChannel(String name, String message) {
-        RequestBuffer.request(() -> client.getChannelByID(channelMap.get(name)).sendMessage(message));
+        client.getChannelById(Snowflake.of(channelMap.get(name))).cast(MessageChannel.class).map(messageChannel -> messageChannel.createMessage(message)).subscribe();
     }
-
-    /**
-     * Sends a message to a channel provided by the MessageEvent
-     *
-     * @param channel The private channel you are sending a message to
-     * @param message The message to send
-     */
-    public void sendMessageToChannel(IPrivateChannel channel, EmbedObject message) {
-        RequestBuffer.request(() -> channel.sendMessage(message));
-    }
-
-    /**
-     * Sends a message to a channel provided by the MessageEvent
-     *
-     * @param channel The private channel you are sending a message to
-     * @param message The message to send
-     */
-    public void sendMessageToChannel(IPrivateChannel channel, String message) {
-        RequestBuffer.request(() -> channel.sendMessage(message));
-    }
-
 }
