@@ -39,10 +39,10 @@ public class MainCommand implements CommandExecutor {
             } else if (messageManager.hashes.get(hash).getUniqueId() == ((Player) sender).getUniqueId()) {
                 Player sender_p = (Player) sender;
                 if (!sql.isUserLinked(
-                        messageManager.discord.get(hash).getStringID(),
+                        messageManager.discord.get(hash).getId().asString(),
                         sender_p.getUniqueId())) {
                     sql.executeStatementAndPost("INSERT INTO %slinks (id, hash, discord) values ('%s','%s','%s')",
-                            sql.prefix, sender_p.getUniqueId().toString(), hash, messageManager.discord.get(hash).getStringID());
+                            sql.prefix, sender_p.getUniqueId().toString(), hash, messageManager.discord.get(hash).getId().asString());
                     sender.sendMessage("Your account was linked!");
                     if (sender.hasPermission("dizcord.donator")) messageManager.discord.get(hash).addRole(rolesManager.getRole("Donator"));
                     if (sender.hasPermission("group.builder")) messageManager.discord.get(hash).addRole(rolesManager.getRole("Builder"));
@@ -73,7 +73,7 @@ public class MainCommand implements CommandExecutor {
         }
         switch (args[0].toLowerCase()) {
             case "login":
-                if (!clientManager.getClient().isLoggedIn()) {
+                if (!clientManager.getClient().isConnected()) {
                     clientManager.login(clientManager.getClient());
                     sender.sendMessage(GREEN + "You logged the bot in!");
                     Bukkit.getLogger().info(sender.getName() + " tried to log the bot in");
@@ -82,7 +82,7 @@ public class MainCommand implements CommandExecutor {
                 }
                 break;
             case "logout":
-                if (clientManager.getClient().isLoggedIn()) {
+                if (clientManager.getClient().isConnected()) {
                     clientManager.logout(clientManager.getClient());
                     sender.sendMessage(GREEN + "You logged the bot out!");
                     Bukkit.getLogger().info(sender.getName() + " tried to log the bot out");

@@ -1,20 +1,22 @@
 package com.github.zaphx.discordbot.managers;
 
 import com.github.zaphx.discordbot.Dizcord;
+import discord4j.core.DiscordClient;
+import discord4j.core.object.entity.Guild;
+import discord4j.core.object.entity.Role;
+import discord4j.core.object.util.Snowflake;
 import gnu.trove.map.TMap;
 import gnu.trove.map.hash.THashMap;
 import org.bukkit.configuration.file.FileConfiguration;
-import sx.blah.discord.api.IDiscordClient;
-import sx.blah.discord.handle.obj.IGuild;
-import sx.blah.discord.handle.obj.IRole;
 
 public class RolesManager {
 
     private static RolesManager instance;
-    public TMap<String, Long> roles = new THashMap<>();
+    public TMap<String, Snowflake> roles = new THashMap<>();
     private Dizcord dizcord = Dizcord.getInstance();
     private FileConfiguration config = dizcord.getConfig();
-    private IDiscordClient client = DiscordClientManager.getInstance().getClient();
+    private DiscordClientManager clientManager = DiscordClientManager.getInstance();
+    private DiscordClient client = clientManager.getClient();
 
     private RolesManager() {
     }
@@ -24,15 +26,15 @@ public class RolesManager {
     }
 
     public void mapRoles() {
-        IGuild guild = client.getGuildByID(config.getLong("discord.guild-id"));
+        Guild guild = client.getGuildById();
         roles.clear();
-        for (IRole role : guild.getRoles()) {
-            roles.put(role.getName(), role.getLongID());
+        for (Role role : guild.getRoles().collectList().block()) {
+            roles.put(role.getName(), role.getId());
         }
     }
 
-    public IRole getRole(String name) {
-        return client.getRoleByID(roles.get(name));
+    public Snowflake getRole(String name) {
+        return client.getRoleById(clientManager.GUILD_SNOWFLAKE, roles.get(name)).block().getId();
     }
 
     public IRole getRole(long ID) {

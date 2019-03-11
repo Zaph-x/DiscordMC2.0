@@ -6,7 +6,6 @@ import discord4j.core.DiscordClientBuilder;
 import discord4j.core.ServiceMediator;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Member;
-import discord4j.core.object.entity.User;
 import discord4j.core.object.util.Permission;
 import discord4j.core.object.util.Snowflake;
 import org.bukkit.Bukkit;
@@ -19,6 +18,7 @@ public class DiscordClientManager {
     private DiscordClient client;
     private static DiscordClientManager instance;
     public final long GUILD_ID = Dizcord.getInstance().getConfig().getLong("discord.guild-id");
+    public final Snowflake GUILD_SNOWFLAKE = Snowflake.of(GUILD_ID);
 
     /**
      * The token for the bot
