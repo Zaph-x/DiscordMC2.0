@@ -5,58 +5,55 @@ import com.github.zaphx.discordbot.api.commandhandler.CommandExitCode;
 import com.github.zaphx.discordbot.api.commandhandler.CommandListener;
 import com.github.zaphx.discordbot.utilities.DateUtils;
 import discord4j.core.event.domain.message.MessageCreateEvent;
-import discord4j.core.object.entity.Channel;
+import discord4j.core.object.entity.MessageChannel;
+import discord4j.core.object.entity.Role;
 import discord4j.core.object.entity.User;
+import discord4j.core.object.util.Permission;
+import discord4j.core.object.util.Snowflake;
 import org.jetbrains.annotations.NotNull;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IRole;
-import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.handle.obj.Permissions;
-import sx.blah.discord.util.RequestBuffer;
 
 import java.util.List;
 
 public class Mute implements CommandListener {
 
-    private IRole mute;
+    private Role mute;
 
     @Override
-    public CommandExitCode onCommand(User sender, String command, List<String> args, Channel destination, MessageCreateEvent event) {
-        RequestBuffer.request(() -> event.getMessage().delete());
-        if (!commandHandler.clientHasPermission(event, Permissions.MANAGE_ROLES)) {
+    public CommandExitCode onCommand(User sender, String command, List<String> args, MessageChannel destination, MessageCreateEvent event) {
+        event.getMessage().delete().subscribe();
+        if (!commandHandler.clientHasPermission(event, Permission.MANAGE_ROLES)) {
             return CommandExitCode.CLIENT_INSUFFICIENT_PERMISSIONS;
         }
-        if (event.getMessage().getMentions().size() < 1 || args.size() < 3) {
+        if (event.getMessage().getUserMentions().toStream().count() < 1 || args.size() < 3) {
             return CommandExitCode.INVALID_SYNTAX;
         }
         switch (args.get(1).toLowerCase()) {
             case "voice":
                 try {
-                    User target = event.getMember().getMentions().get(0);
                     String time = getFinalArg(args, 2);
                     long timestamp = DateUtils.parseDateDiff(time, true);
                     String expiry = DateUtils.formatDateDiff(timestamp);
                     String reason = DateUtils.removeTimePattern(time);
 
-                    mute = clientManager.getClient().getRoleByID(Dizcord.getInstance().getConfig().getLong("discord.voice-mute-role"));
+                    clientManager.getClient().getRoleById(clientManager.GUILD_SNOWFLAKE,Snowflake.of(Dizcord.getInstance().getConfig().getLong("discord.voice-mute-role"))).subscribe(r -> mute = r);
 
-                    return handleMute(sender, target, timestamp, expiry, reason);
+                    event.getMessage().getUserMentions().subscribe(u -> handleMute(sender, u, timestamp, expiry, reason)); //.getMember().getMentions().get(0);
+                    return CommandExitCode.SUCCESS;
                 } catch (Exception e) {
                     commandHandler.handleException(e);
                     return CommandExitCode.ERROR;
                 }
             case "chat":
                 try {
-                    IUser target = event.getMessage().getMentions().get(0);
                     String time = getFinalArg(args, 2);
                     long timestamp = DateUtils.parseDateDiff(time, true);
                     String expiry = DateUtils.formatDateDiff(timestamp);
                     String reason = DateUtils.removeTimePattern(time);
 
-                    mute = clientManager.getClient().getRoleByID(Dizcord.getInstance().getConfig().getLong("discord.mute-role"));
+                    clientManager.getClient().getRoleById(clientManager.GUILD_SNOWFLAKE,Snowflake.of(Dizcord.getInstance().getConfig().getLong("discord.mute-role"))).subscribe(r -> mute = r);
 
-                    return handleMute(sender, target, timestamp, expiry, reason);
+                    event.getMessage().getUserMentions().subscribe(u -> handleMute(sender, u, timestamp, expiry, reason));
+                    return CommandExitCode.SUCCESS;
                 } catch (Exception e) {
                     commandHandler.handleException(e);
                     return CommandExitCode.ERROR;
@@ -67,18 +64,16 @@ public class Mute implements CommandListener {
     }
 
     @NotNull
-    private CommandExitCode handleMute(IUser sender, IUser target, long timestamp, String expiry, String reason) {
-        target.addRole(mute);
+    private void handleMute(User sender, User target, long timestamp, String expiry, String reason) {
+        target.asMember(clientManager.GUILD_SNOWFLAKE).subscribe(member -> member.addRole(mute.getId()));
         sql.executeStatementAndPost("INSERT INTO %smutes (id, muter, expires, type) VALUES ('%s','%s','%s','%s')",
                 Dizcord.getInstance().getConfig().getString("sql.prefix"),
-                target.getStringID(),
-                sender.getStringID(),
+                target.getId().asString(),
+                sender.getId().asString(),
                 timestamp,
-                mute.getLongID());
+                mute.getId().asString());
         messageManager.log(embedManager.logMuteEmbed(reason,expiry,sender, target));
-        channelManager.sendMessageToChannel(target.getOrCreatePMChannel(), embedManager.muteEmbed(reason,expiry,sender));
-
-        return CommandExitCode.SUCCESS;
+        channelManager.sendMessageToChannel(target.getPrivateChannel().block(), embedManager.muteEmbed(reason, expiry, sender));
     }
 
     @Override

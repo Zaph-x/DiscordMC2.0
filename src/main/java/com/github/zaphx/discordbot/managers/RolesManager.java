@@ -37,8 +37,8 @@ public class RolesManager {
         return client.getRoleById(clientManager.GUILD_SNOWFLAKE, roles.get(name)).block().getId();
     }
 
-    public Role getRole(long ID) {
-        return client.getRoleById(clientManager.GUILD_SNOWFLAKE, Snowflake.of(ID)).block();
+    public Role getRole(long Id) {
+        return client.getRoleById(clientManager.GUILD_SNOWFLAKE, Snowflake.of(Id)).block();
     }
 
     public void addRole(Role role) {

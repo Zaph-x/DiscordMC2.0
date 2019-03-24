@@ -55,7 +55,7 @@ public class TrelloManager {
             return;
         }
         if (trelloType.equals(TrelloType.ISSUE)) {
-            if (channelManager.isChannel(event.getMessage().getChannelId(), DiscordChannelTypes.REPORTS.getID())) {
+            if (channelManager.isChannel(event.getMessage().getChannelId(), DiscordChannelTypes.REPORTS.getId())) {
                 if (isEnabled()) {
                     new TrelloEventBuilder(event)
                             .setType(TrelloType.ISSUE)
@@ -64,7 +64,7 @@ public class TrelloManager {
                 }
             }
         } else if (trelloType.equals(TrelloType.SUGGESTION)) {
-            if (channelManager.isChannel(event.getMessage().getChannelId(), DiscordChannelTypes.SUGGESTIONS.getID())) {
+            if (channelManager.isChannel(event.getMessage().getChannelId(), DiscordChannelTypes.SUGGESTIONS.getId())) {
                 if (isEnabled()) {
                     new TrelloEventBuilder(event)
                             .setType(TrelloType.SUGGESTION)
@@ -91,7 +91,7 @@ public class TrelloManager {
             isValidReport = true;
 
             // Not sent in the reports channel, thus can be ignored.
-            if (!(message.getChannelId().asLong() == DiscordChannelTypes.REPORTS.getID())) {
+            if (!(message.getChannelId().asLong() == DiscordChannelTypes.REPORTS.getId())) {
                 return isValidReport;
             }
             // char *string = {'h', 'e', 'l', 'l', 'o', '\0'};
@@ -134,7 +134,7 @@ public class TrelloManager {
 
             isValidReport = true;
 
-            if (!(message.getChannelId().asLong() == DiscordChannelTypes.SUGGESTIONS.getID())) {
+            if (!(message.getChannelId().asLong() == DiscordChannelTypes.SUGGESTIONS.getId())) {
                 return isValidReport;
             }
             String suggestion = message.getContent().orElseThrow(ArgumentException::new);

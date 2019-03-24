@@ -19,7 +19,7 @@ public class OnReadyEvent {
 
 
 
-    public Mono<Void> onReady(final ReadyEvent event) {
+    public void onReady(final ReadyEvent event) {
         messageManager.setMessages();
         inviteManager.update();
         Dizcord.getInstance().getLogger().log(Level.INFO, "Checking for any mutes.");

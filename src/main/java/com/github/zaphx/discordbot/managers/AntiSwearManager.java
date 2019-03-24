@@ -1,8 +1,8 @@
 package com.github.zaphx.discordbot.managers;
 
 import com.github.zaphx.discordbot.utilities.RegexPattern;
-import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.util.RequestBuffer;
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.User;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -23,14 +23,14 @@ public class AntiSwearManager {
         return instance == null ? instance = new AntiSwearManager() : instance;
     }
 
-    public void handleMessage(IMessage message) {
+    public void handleMessage(Message message) {
         String handledMessage;
 
         String url = "https://www.purgomalum.com/service/containsprofanity?text=";
 
-        handledMessage = message.getContent().replaceAll(RegexPattern.USER.toString(),"");
-        handledMessage = handledMessage.replaceAll(RegexPattern.ROLE.toString(),"");
-        handledMessage = handledMessage.replaceAll(RegexPattern.EMOTES.toString(),"");
+        handledMessage = message.getContent().orElse("").replaceAll(RegexPattern.USER.toString(), "");
+        handledMessage = handledMessage.replaceAll(RegexPattern.ROLE.toString(), "");
+        handledMessage = handledMessage.replaceAll(RegexPattern.EMOTES.toString(), "");
         handledMessage = handledMessage.replaceFirst("(ob!\\s)", "");
         handledMessage = handledMessage.replaceFirst("assign", "");
 
@@ -43,8 +43,8 @@ public class AntiSwearManager {
                 boolean isSwear = Boolean.valueOf(result);
 
                 if (isSwear) {
-                    RequestBuffer.request(message::delete);
-                    RequestBuffer.request(() -> message.getAuthor().getOrCreatePMChannel().sendMessage(embedManager.swearEmbed()));
+                    message.delete().subscribe();
+                    message.getAuthor().map(User::getPrivateChannel).map(c -> c.subscribe(channel -> channel.createMessage(spec -> spec.setEmbed(embedManager.swearEmbed()))));
                     break;
                 }
             }

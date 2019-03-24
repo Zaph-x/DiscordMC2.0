@@ -5,13 +5,11 @@ import com.github.zaphx.discordbot.utilities.ArgumentException;
 import com.github.zaphx.discordbot.utilities.DiscordChannelTypes;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.ExtendedInvite;
-import discord4j.core.object.Invite;
 import discord4j.core.object.entity.*;
 import discord4j.core.object.util.Image;
 import discord4j.core.object.util.Snowflake;
 import discord4j.core.spec.EmbedCreateSpec;
 import gnu.trove.map.hash.THashMap;
-import org.bukkit.configuration.file.FileConfiguration;
 import reactor.core.publisher.Mono;
 
 import java.awt.*;
@@ -36,33 +34,33 @@ public class EmbedManager {
         return instance == null ? instance = new EmbedManager() : instance;
     }
 
-    public Consumer<EmbedCreateSpec> warningToUser(Member warned, Member warnee, String reason, Guild guild) {
-        long tickedID = sql.countTickets("warnings");
-        TextChannel rulesChannel = guild.getChannelById(Snowflake.of(DiscordChannelTypes.RULES.getID())).cast(TextChannel.class).block();
+    public Consumer<EmbedCreateSpec> warningToUser(User warned, User warnee, String reason, Mono<Guild> guild) {
+        long tickedId = sql.countTickets("warnings");
+        TextChannel rulesChannel = guild.block().getChannelById(DiscordChannelTypes.RULES.getId()).cast(TextChannel.class).block();
 
         return embedCreateSpec -> embedCreateSpec.setTitle("__**Warning**__")
                 .setDescription("You have been warned for " + reason + "." +
-                        "\nYour ticket ID is: **" + tickedID + "**." +
+                        "\nYour ticket Id is: **" + tickedId + "**." +
                         "\nYou were warned by: **" + warnee.getUsername() + "**" +
                         "\nPlease make sure you have read the rules in " + rulesChannel.getMention() + "." +
                         "\nIf you believe this is a mistake, please report it to the owner of the server, with a screenshot of this message.")
                 .setColor(WARNING)
                 .setFooter(warned.getUsername(), warned.getAvatarUrl())
                 .setTimestamp(Instant.now())
-                .setAuthor(guild.getName(), null, guild.getIconUrl(Image.Format.JPEG).orElseThrow(IllegalArgumentException::new));
+                .setAuthor(guild.block().getName(), null, guild.block().getIconUrl(Image.Format.JPEG).orElseThrow(IllegalArgumentException::new));
     }
 
-    public Consumer<EmbedCreateSpec> warningToChannel(Member warned, Member warnee, String reason, Guild guild, TextChannel destination) {
-        long ticketID = sql.countTickets("warnings");
+    public Consumer<EmbedCreateSpec> warningToChannel(User warned, User warnee, String reason, Guild guild, MessageChannel destination) {
+        long ticketId = sql.countTickets("warnings");
 
         return embedCreateSpec -> embedCreateSpec.setTitle("__**Warning**__")
                 .setDescription("**User warned:** " + warned.getUsername() + "#" + warned.getDiscriminator() +
-                        "\n**Ticket ID:** " + ticketID + ". " +
-                        "\n**User ID:** " + warned.getId().asString() +
+                        "\n**Ticket Id:** " + ticketId + ". " +
+                        "\n**User Id:** " + warned.getId().asString() +
                         "\n**Warned by:** " + warnee.getUsername() + "#" + warnee.getDiscriminator() + ". " +
                         "\n**Reason:** " + reason + ".")
                 .setColor(NEUTRAL)
-                .setFooter(warned.getDisplayName(), warned.getAvatarUrl())
+                .setFooter(warned.getUsername(), warned.getAvatarUrl())
                 .setTimestamp(Instant.now())
                 .setAuthor(guild.getName(), null, guild.getIconUrl(Image.Format.JPEG).orElseThrow(IllegalArgumentException::new));
     }
@@ -111,15 +109,15 @@ public class EmbedManager {
                 .setTimestamp(Instant.now());
     }
 
-    public Consumer<EmbedCreateSpec> joinEmbed(Mono<ExtendedInvite> invite, Mono<Member> joined) {
+    public Consumer<EmbedCreateSpec> joinEmbed(ExtendedInvite invite, Member joined) {
 
         return embedCreateSpec -> embedCreateSpec
                 .setTimestamp(Instant.now())
                 .setTitle("**A user joined the guild**")
-                .setThumbnail(joined.map(Member::getAvatarUrl).blockOptional().orElseThrow(IllegalArgumentException::new))
-                .addField("User:", joined.map(Member::getDisplayName) + " (" + joined.map(Member::getUsername) + ")", false)
-                .addField("With invite", invite.map(Invite::getCode).blockOptional().orElseThrow(IllegalArgumentException::new), true)
-                .addField("Invite by user", invite.map(inv -> inv.getInviter().map(User::getMention).block()).blockOptional().orElseThrow(NoSuchFieldError::new), true)
+                .setThumbnail(joined.getAvatarUrl())
+                .addField("User:", joined.getDisplayName() + " (" + joined.getUsername() + ")", false)
+                .addField("With invite", invite.getCode(), true)
+                .addField("Invite by user", invite.getInviter().map(User::getMention).blockOptional().orElseThrow(NoSuchFieldError::new), true)
                 .setColor(NEUTRAL);
     }
 
@@ -127,7 +125,7 @@ public class EmbedManager {
         String content = message.get("content").replaceAll("¼", "'");
         Mono<User> author = clientManager.getClient().getUserById(Snowflake.of(Long.parseLong(message.get("author"))));
         Mono<TextChannel> targetChannel = clientManager.getClient().getChannelById(Snowflake.of(Long.parseLong(message.get("channel")))).cast(TextChannel.class);
-        String ID = message.get("id");
+        String Id = message.get("id");
         if (content.isEmpty()) {
             content = "Embed";
         }
@@ -138,20 +136,20 @@ public class EmbedManager {
                 .addField("Author", author.map(User::getMention) + " (" + author.map(User::getUsername) + ")", true)
                 //.addField("Deleter", deleter.getMention(), true)
                 .addField("Channel", targetChannel.map(TextChannel::getMention).blockOptional().orElseThrow(ArgumentException::new), true)
-                .addField("Message id", ID, true)
+                .addField("Message id", Id, true)
                 .addField("Message content", finalContent, false)
                 .setThumbnail(author.map(User::getAvatarUrl).blockOptional().orElseThrow(IllegalArgumentException::new))
                 .setColor(WARNING);
     }
 
-    public Consumer<EmbedCreateSpec> banToChannel(Mono<Member> banned, Mono<Member> bannee, String reason) {
+    public Consumer<EmbedCreateSpec> banToChannel(Member banned, Member bannee, String reason) {
         return embedCreateSpec -> embedCreateSpec
                 .setTitle("**A user was banned**")
                 .setColor(NEUTRAL)
                 .setTimestamp(Instant.now())
-                .setThumbnail(banned.map(User::getAvatarUrl).blockOptional().orElseThrow(IllegalArgumentException::new))
-                .addField("User banned", banned.map(Member::getMention) + " (" + banned.map(Member::getUsername) + ")", true)
-                .addField("User banning", bannee.map(Member::getMention).blockOptional().orElseThrow(ArgumentException::new), true)
+                .setThumbnail(banned.getAvatarUrl())
+                .addField("User banned", banned.getMention() + " (" + banned.getUsername() + ")", true)
+                .addField("User banning", bannee.getMention(), true)
                 .addField("With reason", reason, false);
     }
 
@@ -242,10 +240,10 @@ public class EmbedManager {
                 .setTimestamp(Instant.now());
     }
 
-    public Consumer<EmbedCreateSpec> whoIsEmbed(Member user, String name) {
+    public Consumer<EmbedCreateSpec> whoIsEmbed(User user, String name) {
 
         return embedCreateSpec -> embedCreateSpec.setColor(SUCCESS)
-                .setDescription("The account linked to user, " + user.getNickname().orElseThrow(IllegalArgumentException::new) + ", is " + name)
+                .setDescription("The account linked to user, " + user.getMention() + ", is " + name)
                 .setTimestamp(Instant.now());
     }
 
@@ -291,13 +289,13 @@ public class EmbedManager {
                 .setTimestamp(Instant.now());
     }
 
-    public Consumer<EmbedCreateSpec> userLinked(Member user, String username) {
+    public Consumer<EmbedCreateSpec> userLinked(User user, String username) {
 
         return embedCreateSpec -> embedCreateSpec.setColor(WARNING)
                 .setTitle("A user linked their account")
                 .addField("Discord name", user.getMention(), true)
                 .addField("Minecraft name", username, true)
-                .addField("Discord ID", user.getId().asString(), false)
+                .addField("Discord Id", user.getId().asString(), false)
                 .setTimestamp(Instant.now());
     }
 
@@ -334,7 +332,7 @@ public class EmbedManager {
                 .addField("Your suggestion was:", message.getContent().orElseThrow(ArgumentException::new), false);
     }
 
-    public Consumer<EmbedCreateSpec> muteEmbed(String reason, String time, Member muter) {
+    public Consumer<EmbedCreateSpec> muteEmbed(String reason, String time, User muter) {
 
         return embedCreateSpec -> embedCreateSpec.setColor(NEUTRAL)
                 .setTimestamp(Instant.now())
@@ -344,7 +342,7 @@ public class EmbedManager {
                 .addField("Reason", reason, false);
     }
 
-    public Consumer<EmbedCreateSpec> logMuteEmbed(String reason, String time, Member muter, Member muted) {
+    public Consumer<EmbedCreateSpec> logMuteEmbed(String reason, String time, User muter, User muted) {
 
         return embedCreateSpec -> embedCreateSpec.setColor(NEUTRAL)
                 .setTimestamp(Instant.now())

@@ -6,8 +6,7 @@ import com.github.zaphx.discordbot.managers.AntiSwearManager;
 import com.github.zaphx.discordbot.managers.MessageManager;
 import com.github.zaphx.discordbot.trello.TrelloManager;
 import com.github.zaphx.discordbot.trello.TrelloType;
-import sx.blah.discord.api.events.EventSubscriber;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
+import discord4j.core.event.domain.message.MessageCreateEvent;
 
 public class ChatListener {
 
@@ -16,8 +15,7 @@ public class ChatListener {
     private CommandHandler commandHandler = CommandHandler.getInstance();
     private AntiSwearManager antiSwearManager = AntiSwearManager.getInstance();
 
-    @EventSubscriber
-    public void onChat(MessageReceivedEvent event) {
+    public void onChat(final MessageCreateEvent event) {
         new AntiAdvertisement().checkAndHandle(event);
         antiSwearManager.handleMessage(event.getMessage());
         trelloManager.checkAndSend(event, TrelloType.ISSUE);

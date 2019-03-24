@@ -5,11 +5,11 @@ import com.github.zaphx.discordbot.managers.DiscordClientManager;
 import com.github.zaphx.discordbot.managers.EmbedManager;
 import com.github.zaphx.discordbot.managers.InternalsManager;
 import com.github.zaphx.discordbot.managers.MessageManager;
+import discord4j.core.event.domain.guild.BanEvent;
+import discord4j.core.object.entity.Member;
+import discord4j.core.object.util.Permission;
 import org.bukkit.Bukkit;
-import sx.blah.discord.api.events.EventSubscriber;
-import sx.blah.discord.handle.impl.events.guild.member.UserBanEvent;
-import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.handle.obj.Permissions;
+import reactor.core.publisher.Mono;
 
 public class OnUserBanEvent {
 
@@ -18,13 +18,12 @@ public class OnUserBanEvent {
     private DiscordClientManager clientManager = DiscordClientManager.getInstance();
     private InternalsManager internalsManager = InternalsManager.getInstance();
 
-    @EventSubscriber
-    public void onUserBan(UserBanEvent event) {
-        if (clientManager.clientHasPermission(Permissions.VIEW_AUDIT_LOG)) {
+    public void onUserBan(BanEvent event) {
+        if (clientManager.clientHasPermission(Permission.VIEW_AUDIT_LOG)) {
             Bukkit.getScheduler().runTaskLaterAsynchronously(Dizcord.getInstance(), () -> {
-                IUser banner = internalsManager.getBanner(event);
+                Member banner = internalsManager.getBanner(event);
                 String reason = internalsManager.getReason(event);
-                messageManager.log(embedManager.banToChannel(event.getUser(),banner,reason));
+                messageManager.log(embedManager.banToChannel(((Member) event.getUser()),banner,reason));
             }, 40L);
         }
     }

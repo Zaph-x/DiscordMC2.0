@@ -34,7 +34,7 @@ public class TrelloEventBuilder {
     }
 
     public TrelloEventBuilder checkChannel(DiscordChannelTypes channelType) {
-        if (this.channel.getId().asLong() != channelType.getID()) {
+        if (this.channel.getId().asLong() != channelType.getId()) {
             this.isValidReport = false;
         }
         return this;

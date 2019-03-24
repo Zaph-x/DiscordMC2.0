@@ -2,39 +2,41 @@ package com.github.zaphx.discordbot.discord.command;
 
 import com.github.zaphx.discordbot.api.commandhandler.CommandExitCode;
 import com.github.zaphx.discordbot.api.commandhandler.CommandListener;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.MessageChannel;
+import discord4j.core.object.entity.TextChannel;
+import discord4j.core.object.entity.User;
+import discord4j.core.object.util.Permission;
 import org.jetbrains.annotations.NotNull;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IMessage;
-import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.handle.obj.Permissions;
 
 import java.util.List;
 
 public class MapMessages implements CommandListener {
+
     @Override
-    public CommandExitCode onCommand(IUser sender, String command, List<String> args, IChannel destination, MessageReceivedEvent event) {
+    public CommandExitCode onCommand(User sender, String command, List<String> args, MessageChannel destination, MessageCreateEvent event) {
         double time = System.currentTimeMillis();
-        if (!commandHandler.userHasPermission(event, Permissions.ADMINISTRATOR)) {
+        if (!commandHandler.userHasPermission(event, Permission.ADMINISTRATOR)) {
             return CommandExitCode.CLIENT_INSUFFICIENT_PERMISSIONS;
         }
         if (args.size() > 0) {
             return CommandExitCode.INVALID_SYNTAX;
         }
-        for (IChannel channel : event.getGuild().getChannels()) {
-            for (IMessage message : channel.getMessageHistory(200)) {
+        for (MessageChannel channel : event.getGuild().map(guild -> guild.getChannels().filter(c -> c instanceof TextChannel).cast(MessageChannel.class)).block().toIterable()) {
+            for (Message message : channel.getMessagesBefore(event.getMessage().getId()).take(200).toIterable()) {
                 sql.executeStatementAndPost("INSERT INTO " + sql.prefix + "messages (id, content, author, author_name, channel) VALUES ('%s','%s','%s','%s','%s') \nON DUPLICATE KEY UPDATE content = " +
                                 "'%s'",
-                        message.getStringID(),
-                        message.getContent().replaceAll("'", "¼"),
-                        message.getAuthor().getStringID(),
-                        message.getAuthor().getName(),
-                        message.getChannel().getStringID(),
-                        message.getContent().replaceAll("'", "¼"));
+                        message.getId().asString(),
+                        message.getContent().orElse("").replaceAll("'","¼"),
+                        message.getAuthor().get().getId().asString(),
+                        message.getAuthor().get().getUsername(),
+                        message.getChannel().block().getId().asString(),
+                        message.getContent().orElse("").replaceAll("'","¼"));
             }
         }
         double elapsed = System.currentTimeMillis() / time;
-        destination.sendMessage("Mapped all channels successfully. Time elapsed: " + elapsed + " seconds.");
+        destination.createMessage("Mapped all channels successfully. Time elapsed: " + elapsed + " seconds.").subscribe();
         return CommandExitCode.SUCCESS;
     }
 

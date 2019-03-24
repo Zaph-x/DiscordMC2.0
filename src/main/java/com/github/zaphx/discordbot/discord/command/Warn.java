@@ -5,25 +5,24 @@ import com.github.zaphx.discordbot.api.commandhandler.CommandExitCode;
 import com.github.zaphx.discordbot.api.commandhandler.CommandListener;
 import com.github.zaphx.discordbot.utilities.RegexPattern;
 import com.github.zaphx.discordbot.utilities.RegexUtils;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.MessageChannel;
+import discord4j.core.object.entity.User;
+import discord4j.core.object.util.Permission;
 import org.jetbrains.annotations.NotNull;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.handle.obj.Permissions;
-import sx.blah.discord.util.RequestBuffer;
 
 import java.util.List;
 
 public class Warn implements CommandListener {
 
     @Override
-    public CommandExitCode onCommand(IUser sender, String command, List<String> args, IChannel destination, MessageReceivedEvent event) {
-        RequestBuffer.request(() -> event.getMessage().delete());
-        if (commandHandler.userHasPermission(event, Permissions.MANAGE_MESSAGES)) {
+    public CommandExitCode onCommand(User sender, String command, List<String> args, MessageChannel destination, MessageCreateEvent event) {
+        event.getMessage().delete().subscribe();
+        if (commandHandler.userHasPermission(event, Permission.MANAGE_MESSAGES)) {
             String reason;
-            IUser warned = event.getMessage().getMentions().get(0);
+            User warned = event.getMessage().getUserMentions().toStream().findFirst().get();
             StringBuilder builder = new StringBuilder();
-            if (event.getMessage().getMentions().size() < 1) {
+            if (event.getMessage().getUserMentions().toStream().count() < 1) {
                 return CommandExitCode.INVALID_SYNTAX;
             }
             if (!RegexUtils.isMatch(RegexPattern.USER, args.get(0))) {
@@ -38,13 +37,14 @@ public class Warn implements CommandListener {
                 return CommandExitCode.INVALID_SYNTAX;
             }
             String sqlprefix = Dizcord.getInstance().getConfig().getString("sql.prefix");
-            sql.executeStatementAndPost("INSERT INTO %s" + "%s (id, reason, warnee) VALUES ('%s','%s','%s')", sqlprefix, "warnings", warned.getStringID(), reason, warned.getStringID());
-            messageManager.log(embedManager.warningToChannel(warned, sender, reason, event.getGuild()));
-            channelManager.sendMessageToChannel(warned.getOrCreatePMChannel(), embedManager.warningToUser(warned, sender, reason, event.getGuild()));
+            sql.executeStatementAndPost("INSERT INTO %s" + "%s (id, reason, warnee) VALUES ('%s','%s','%s')", sqlprefix, "warnings", warned.getId().asString(), reason, warned.getId().asString());
+            messageManager.log(embedManager.warningToChannel(warned, sender, reason, event.getGuild().block(),destination));
+            channelManager.sendMessageToChannel(warned.getPrivateChannel().block(), embedManager.warningToUser(warned, sender, reason, event.getGuild()));
             return CommandExitCode.SUCCESS;
         }
         return CommandExitCode.INSUFFICIENT_PERMISSIONS;
     }
+
 
     @Override
     public @NotNull String getCommandDescription() {

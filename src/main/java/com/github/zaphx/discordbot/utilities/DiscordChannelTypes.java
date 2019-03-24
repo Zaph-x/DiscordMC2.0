@@ -30,7 +30,7 @@ public enum DiscordChannelTypes {
         return this.path;
     }
 
-    public long getID() {
-        return Dizcord.getInstance().getConfig().getLong(this.path);
+    public Snowflake getId() {
+        return Snowflake.of(Dizcord.getInstance().getConfig().getLong(this.path));
     }
 }

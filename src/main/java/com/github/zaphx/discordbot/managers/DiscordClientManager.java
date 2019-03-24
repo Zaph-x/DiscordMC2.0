@@ -17,8 +17,8 @@ public class DiscordClientManager {
 
     private DiscordClient client;
     private static DiscordClientManager instance;
-    public final long GUILD_ID = Dizcord.getInstance().getConfig().getLong("discord.guild-id");
-    public final Snowflake GUILD_SNOWFLAKE = Snowflake.of(GUILD_ID);
+    public final long GUILD_Id = Dizcord.getInstance().getConfig().getLong("discord.guild-id");
+    public final Snowflake GUILD_SNOWFLAKE = Snowflake.of(GUILD_Id);
 
     /**
      * The token for the bot
@@ -70,7 +70,7 @@ public class DiscordClientManager {
      * @return True if the client has permission, else false
      */
     public boolean clientHasPermission(Permission permission) {
-        Guild guild = client.getGuildById(Snowflake.of(GUILD_ID)).block();   // getGuildByID(Dizcord.getInstance().getConfig().getLong("discord.guild-id"));
+        Guild guild = client.getGuildById(Snowflake.of(GUILD_Id)).block();   // getGuildById(Dizcord.getInstance().getConfig().getLong("discord.guild-id"));
         Member ourUser = Objects.requireNonNull(guild).getMemberById(client.getSelfId().get()).block();
         return ourUser != null && Objects.requireNonNull(ourUser.getBasePermissions().block()).contains(permission); // getOurUser().getPermissionsForGuild(guild).contains(permission);
     }

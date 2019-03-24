@@ -39,7 +39,7 @@ public class InviteManager {
      * Updates the stored guild invites
      */
     public void update() {
-        List<ExtendedInvite> invites = client.getGuildById(Snowflake.of(clientManager.GUILD_ID)).block().getInvites().collectList().block();//getGuildByID(config.getLong("discord.guild-id")).getExtendedInvites();
+        List<ExtendedInvite> invites = client.getGuildById(Snowflake.of(clientManager.GUILD_Id)).block().getInvites().collectList().block();//getGuildById(config.getLong("discord.guild-id")).getExtendedInvites();
         System.out.println("Found " + invites.size() + " invites. They are now registered");
         for (ExtendedInvite inv : invites) {
             inviteMap.put(inv.getCode(), inv.getUses());
@@ -52,8 +52,8 @@ public class InviteManager {
      * @return A newly created invite
      */
     private ExtendedInvite getInviteChange() {
-        List<ExtendedInvite> invites = client.getGuildById(Snowflake.of(clientManager.GUILD_ID))
-                .block().getInvites().collectList().block(); //getGuildByID(config.getLong("discord.guild-id")).getExtendedInvites();
+        List<ExtendedInvite> invites = client.getGuildById(Snowflake.of(clientManager.GUILD_Id))
+                .block().getInvites().collectList().block(); //getGuildById(config.getLong("discord.guild-id")).getExtendedInvites();
         if (invites.size() > inviteObjectMap.size()) {
             // new invite created
             for (ExtendedInvite invite : invites) {
@@ -81,7 +81,7 @@ public class InviteManager {
      * @return User who created invite
      */
     public Member getUserCreated() {
-        return Objects.requireNonNull(getInviteChange()).getInviter().block().asMember(Snowflake.of(clientManager.GUILD_ID)).block();
+        return Objects.requireNonNull(getInviteChange()).getInviter().block().asMember(Snowflake.of(clientManager.GUILD_Id)).block();
     }
 
     /**

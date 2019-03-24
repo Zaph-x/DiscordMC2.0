@@ -5,21 +5,22 @@ import com.github.zaphx.discordbot.api.commandhandler.CommandListener;
 import com.github.zaphx.discordbot.discord.AntiAdvertisement;
 import com.github.zaphx.discordbot.utilities.RegexPattern;
 import com.github.zaphx.discordbot.utilities.RegexUtils;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.MessageChannel;
+import discord4j.core.object.entity.User;
+import discord4j.core.object.util.Permission;
 import org.jetbrains.annotations.NotNull;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.handle.obj.Permissions;
 
 import java.util.List;
+import java.util.Objects;
 
 public class AdAllow implements CommandListener {
     @Override
-    public CommandExitCode onCommand(IUser sender, String command, List<String> args, IChannel destination, MessageReceivedEvent event) {
-        if (!commandHandler.userHasPermission(event, Permissions.MANAGE_MESSAGES)) {
+    public CommandExitCode onCommand(User sender, String command, List<String> args, MessageChannel destination, MessageCreateEvent event) {
+        if (!commandHandler.userHasPermission(event, Permission.MANAGE_MESSAGES)) {
             return CommandExitCode.INSUFFICIENT_PERMISSIONS;
         }
-        if (event.getMessage().getMentions().size() < 1) {
+        if (Objects.requireNonNull(event.getMessage().getUserMentions().collectList().block()).size() < 1) {
             return CommandExitCode.INVALID_SYNTAX;
         }
         boolean isValid = true;

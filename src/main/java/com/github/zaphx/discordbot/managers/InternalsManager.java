@@ -1,11 +1,12 @@
 package com.github.zaphx.discordbot.managers;
 
-import sx.blah.discord.handle.audit.ActionType;
-import sx.blah.discord.handle.audit.entry.AuditLogEntry;
-import sx.blah.discord.handle.impl.events.guild.member.UserBanEvent;
-import sx.blah.discord.handle.obj.IUser;
+import discord4j.core.event.domain.guild.BanEvent;
+import discord4j.core.object.audit.ActionType;
+import discord4j.core.object.audit.AuditLogEntry;
+import discord4j.core.object.entity.Member;
 
 import java.util.Comparator;
+import java.util.Objects;
 
 public class InternalsManager {
 
@@ -26,13 +27,15 @@ public class InternalsManager {
      * @param event The event to look in
      * @return The Auditlog entry of the ban
      */
-    private AuditLogEntry getBanEntries(UserBanEvent event) {
-        return event.getGuild().getAuditLog(ActionType.MEMBER_BAN_ADD)
+    private AuditLogEntry getBanEntries(BanEvent event) {
+        return event.getGuild().map(g -> g.getAuditLog(spec -> spec.setActionType(ActionType.MEMBER_BAN_ADD).setResponsibleUser(event.getUser().getId())).blockLast()).block();
+
+                /*
                 .getEntries()
                 .stream()
-                .sorted(Comparator.comparing(AuditLogEntry::getLongID).reversed())
+                .sorted(Comparator.comparing(AuditLogEntry::getLongId).reversed())
                 .findFirst()
-                .get();
+                .get();*/
     }
 
     /**
@@ -40,9 +43,9 @@ public class InternalsManager {
      * @param event The event to look in
      * @return The user banned
      */
-    public IUser getBanner(UserBanEvent event) {
+    public Member getBanner(BanEvent event) {
         AuditLogEntry entry = getBanEntries(event);
-        return entry.getResponsibleUser();
+        return Objects.requireNonNull(event.getGuild().map(g -> g.getMemberById(entry.getResponsibleUserId())).block()).block();
     }
 
     /**
@@ -50,7 +53,7 @@ public class InternalsManager {
      * @param event The event to look in
      * @return The reason of the ban
      */
-    public String getReason(UserBanEvent event) {
+    public String getReason(BanEvent event) {
         AuditLogEntry entry = getBanEntries(event);
         return entry.getReason().orElse("No reason was provided.");
     }

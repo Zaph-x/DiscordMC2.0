@@ -48,7 +48,7 @@ public class ChannelManager {
      * This method maps all available channels to a map.
      */
     public void mapChannels() {
-        client.getGuildById(Snowflake.of(clientManager.GUILD_ID)).subscribe(guild -> {
+        client.getGuildById(Snowflake.of(clientManager.GUILD_Id)).subscribe(guild -> {
             channelMap.clear();
             guild.getChannels()
                     .filter(guildChannel -> guildChannel instanceof TextChannel)
@@ -86,23 +86,23 @@ public class ChannelManager {
     }
 
     /**
-     * This method gets a channel by its ID, from the THashMap channels.
+     * This method gets a channel by its Id, from the THashMap channels.
      *
-     * @param ID The ID of the channel to look for
-     * @return The channel from the ID provided.
+     * @param Id The Id of the channel to look for
+     * @return The channel from the Id provided.
      */
-    public MessageChannel getChannel(long ID) {
-        return client.getChannelById(Snowflake.of(ID)).cast(TextChannel.class).block();
+    public MessageChannel getChannel(long Id) {
+        return client.getChannelById(Snowflake.of(Id)).cast(TextChannel.class).block();
     }
 
     /**
-     * This method gets a channel by its ID, from the THashMap channels.
+     * This method gets a channel by its Id, from the THashMap channels.
      *
-     * @param ID The ID of the channel to look for
-     * @return The channel from the ID provided.
+     * @param Id The Id of the channel to look for
+     * @return The channel from the Id provided.
      */
-    public MessageChannel getChannel(Snowflake ID) {
-        return client.getChannelById(ID).cast(TextChannel.class).block();
+    public MessageChannel getChannel(Snowflake Id) {
+        return client.getChannelById(Id).cast(TextChannel.class).block();
     }
 
     /**
@@ -112,29 +112,29 @@ public class ChannelManager {
      * @return The channel from name if it exists. Else null
      */
     public MessageChannel getChannel(DiscordChannelTypes types) {
-        return client.getChannelById(Snowflake.of(types.getID())).cast(TextChannel.class).block();
+        return client.getChannelById(Snowflake.of(types.getId())).cast(TextChannel.class).block();
     }
 
     /**
-     * This method checks if the ID provided is the channel also provided
+     * This method checks if the Id provided is the channel also provided
      *
      * @param channel The channel to check
-     * @param ID      The ID to check
-     * @return True if ID and channel match
+     * @param Id      The Id to check
+     * @return True if Id and channel match
      */
-    public boolean isChannel(TextChannel channel, long ID) {
-        return channel.getId().asLong() == ID;
+    public boolean isChannel(TextChannel channel, long Id) {
+        return channel.getId().asLong() == Id;
     }
 
     /**
-     * This method checks if the ID provided is the channel also provided
+     * This method checks if the Id provided is the channel also provided
      *
      * @param snowflake The snowflake to check
-     * @param ID      The ID to check
-     * @return True if ID and channel match
+     * @param Id      The Id to check
+     * @return True if Id and channel match
      */
-    public boolean isChannel(Snowflake snowflake, long ID) {
-        return snowflake.asLong() == ID;
+    public boolean isChannel(Snowflake snowflake, long Id) {
+        return snowflake.asLong() == Id;
     }
 
     /**

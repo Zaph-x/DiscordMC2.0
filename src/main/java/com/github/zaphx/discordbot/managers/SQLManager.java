@@ -8,9 +8,6 @@ import gnu.trove.map.hash.THashMap;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-
 import java.sql.*;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -280,13 +277,13 @@ public class SQLManager {
                 PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM " + prefix + "mutes WHERE expires < UNIX_TIMESTAMP()");
                 ResultSet rs = preparedStatement.executeQuery();
                 while (rs.next()) {
-                    clientManager.getClient().getMemberById(Snowflake.of(clientManager.GUILD_ID),Snowflake.of(rs.getLong("id"))).doOnNext(member -> {
+                    clientManager.getClient().getMemberById(Snowflake.of(clientManager.GUILD_Id),Snowflake.of(rs.getLong("id"))).doOnNext(member -> {
                         try {
                             member.removeRole(Snowflake.of(rs.getLong("type")));
                         } catch (SQLException e) {
                             e.printStackTrace();
                         }
-                    }); // removeRole(clientManager.getClient().getRoleByID(rs.getLong("type")));
+                    }); // removeRole(clientManager.getClient().getRoleById(rs.getLong("type")));
                     executeStatementAndPost("DELETE FROM %smutes WHERE id = %s", prefix, rs.getLong("id"));
                 }
             } catch (SQLException e) {
@@ -304,7 +301,7 @@ public class SQLManager {
     /**
      * This method will get a deleted message and the information associated with that message
      *
-     * @param id The ID of the message
+     * @param id The Id of the message
      * @return A THashMap containing the information about the message
      */
     THashMap<String, String> getDeletedMessage(String id) {
@@ -340,17 +337,17 @@ public class SQLManager {
     /**
      * Checks if a user has linked their discord account to their minecraft account
      *
-     * @param discordID     The string representation of the Discord ID
-     * @param minecraftUUID The UUID of the player we are looking for
+     * @param discordId     The string representation of the Discord Id
+     * @param minecraftUUId The UUId of the player we are looking for
      * @return The truth value of the existence of a link in the database
      */
-    public boolean isUserLinked(String discordID, UUID minecraftUUID) {
+    public boolean isUserLinked(String discordId, UUID minecraftUUId) {
         Connection connection = getConnection();
         Future<Boolean> future = CompletableFuture.supplyAsync(() -> {
             boolean isLinked;
 
             try {
-                PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + prefix + "links WHERE id = '" + minecraftUUID.toString() + "' OR discord = '" + discordID + "'");
+                PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + prefix + "links WHERE id = '" + minecraftUUId.toString() + "' OR discord = '" + discordId + "'");
                 ResultSet resultSet = statement.executeQuery();
 
                 isLinked = resultSet.next();
@@ -372,16 +369,16 @@ public class SQLManager {
     /**
      * Checks if a user has linked their discord account to their minecraft account
      *
-     * @param discordID The string representation of the Discord ID
+     * @param discordId The string representation of the Discord Id
      * @return The truth value of the existence of a link in the database
      */
-    public boolean isUserLinked(String discordID) {
+    public boolean isUserLinked(String discordId) {
         Connection connection = getConnection();
         Future<Boolean> future = CompletableFuture.supplyAsync(() -> {
             boolean isLinked;
 
             try {
-                PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + prefix + "links WHERE discord = '" + discordID + "'");
+                PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + prefix + "links WHERE discord = '" + discordId + "'");
                 ResultSet resultSet = statement.executeQuery();
 
                 isLinked = resultSet.next();

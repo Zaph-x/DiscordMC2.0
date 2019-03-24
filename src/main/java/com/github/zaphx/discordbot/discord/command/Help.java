@@ -3,14 +3,13 @@ package com.github.zaphx.discordbot.discord.command;
 import com.github.zaphx.discordbot.api.commandhandler.CommandExitCode;
 import com.github.zaphx.discordbot.api.commandhandler.CommandHandler;
 import com.github.zaphx.discordbot.api.commandhandler.CommandListener;
+import discord4j.core.event.domain.message.MessageCreateEvent;
+import discord4j.core.object.entity.MessageChannel;
+import discord4j.core.object.entity.User;
 import gnu.trove.map.TMap;
 import org.jetbrains.annotations.NotNull;
-import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedEvent;
-import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IUser;
-import sx.blah.discord.util.EmbedBuilder;
-import sx.blah.discord.util.RequestBuffer;
 
+import java.awt.*;
 import java.time.Instant;
 import java.util.List;
 
@@ -19,25 +18,30 @@ public class Help implements CommandListener {
     private CommandHandler commandHandler = CommandHandler.getInstance();
 
     @Override
-    public CommandExitCode onCommand(IUser sender, String command, List<String> args, IChannel destination, MessageReceivedEvent event) {
-        RequestBuffer.request(() -> event.getMessage().delete());
+    public CommandExitCode onCommand(User sender, String command, List<String> args, MessageChannel destination, MessageCreateEvent event) {
+        event.getMessage().delete().subscribe();
         TMap<String, Object> commands = commandHandler.getCommandMap();
-        EmbedBuilder embedBuilder = new EmbedBuilder().withTimestamp(Instant.now()).withColor(133, 150, 211);
+
         if (args.size() == 0) {
-            embedBuilder.withTitle("Full help list");
-            for (TMap.Entry entry : commands.entrySet()) {
-                embedBuilder.appendField(entry.getKey().toString(), ((CommandListener) entry.getValue()).getCommandDescription()
-                        + "\n" + ((CommandListener) entry.getValue()).getCommandUsage(), false);
-            }
-            RequestBuffer.request(() -> sender.getOrCreatePMChannel().sendMessage(embedBuilder.build()));
+
+            sender.getPrivateChannel().subscribe(channel -> channel.createMessage(messageCreateSpec -> messageCreateSpec.setEmbed(spec -> {
+                spec.setTitle("Full help list").setTimestamp(Instant.now()).setColor(new Color(133, 150, 211));
+                for (TMap.Entry entry : commands.entrySet()) {
+                    spec.addField(entry.getKey().toString(), ((CommandListener) entry.getValue()).getCommandDescription()
+                            + "\n" + ((CommandListener) entry.getValue()).getCommandUsage(), false);
+                }
+            })));
             return CommandExitCode.SUCCESS;
         } else if (args.size() == 1){
             boolean isCommand = commands.get(args.get(0)) != null;
             if (isCommand) {
-                embedBuilder.withTitle("Command help for " + args.get(0))
-                        .withDescription(((CommandListener) commands.get(args.get(0))).getCommandDescription())
-                        .appendField("Usage", ((CommandListener) commands.get(args.get(0))).getCommandUsage(), false);
-                RequestBuffer.request(() -> sender.getOrCreatePMChannel().sendMessage(embedBuilder.build()));
+
+                sender.getPrivateChannel().subscribe(channel -> channel.createMessage(messageCreateSpec -> messageCreateSpec.setEmbed(spec -> {
+                    spec.setTimestamp(Instant.now()).setColor(new Color(133, 150, 211))
+                            .setTitle("Command help for "+ args.get(0))
+                            .setDescription(((CommandListener) commands.get(args.get(0))).getCommandDescription())
+                            .addField("Usage", ((CommandListener) commands.get(args.get(0))).getCommandUsage(), false);
+                })));
                 return CommandExitCode.SUCCESS;
             } else {
                 return CommandExitCode.NO_SUCH_COMMAND;
