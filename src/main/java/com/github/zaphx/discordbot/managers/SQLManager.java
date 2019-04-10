@@ -322,6 +322,7 @@ public class SQLManager {
                     message.put("authorName", set.getString("author_name"));
                     message.put("channel", set.getString("channel"));
                 }
+                c.prepareStatement("DELETE FROM " + prefix + "messages WHERE id = '" + id + "'").execute();
                 connection.close();
             } catch (SQLException e) {
                 e.printStackTrace();

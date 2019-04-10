@@ -15,6 +15,7 @@ import reactor.core.publisher.Mono;
 import java.awt.*;
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 public class EmbedManager {
@@ -133,7 +134,7 @@ public class EmbedManager {
         return embedCreateSpec -> embedCreateSpec
                 .setTimestamp(Instant.now())
                 .setTitle("**A message was deleted**")
-                .addField("Author", author.map(User::getMention) + " (" + author.map(User::getUsername) + ")", true)
+                .addField("Author", Objects.requireNonNull(author.block()).getUsername() + " (" + Objects.requireNonNull(author.block()).getMention() + ")", true)
                 //.addField("Deleter", deleter.getMention(), true)
                 .addField("Channel", targetChannel.map(TextChannel::getMention).blockOptional().orElseThrow(ArgumentException::new), true)
                 .addField("Message id", Id, true)
