@@ -6,20 +6,24 @@ import discord4j.core.DiscordClient;
 import discord4j.core.object.audit.ActionType;
 import discord4j.core.object.audit.AuditLogEntry;
 import discord4j.core.object.entity.*;
+import discord4j.core.object.util.Snowflake;
 import discord4j.core.spec.EmbedCreateSpec;
 import gnu.trove.map.TMap;
 import gnu.trove.map.hash.THashMap;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import reactor.core.publisher.Flux;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 public class MessageManager {
 
     public TMap<Integer, Player> hashes = new THashMap<>();
-    public TMap<Integer, User> discord = new THashMap<>();
+    public TMap<Integer, Member> discord = new THashMap<>();
     private DiscordClientManager clientManager = DiscordClientManager.getInstance();
     private DiscordClient client = clientManager.getClient();
     private FileConfiguration config = Dizcord.getInstance().getConfig();
@@ -99,16 +103,19 @@ public class MessageManager {
      * 200 messages from every channel. This is to retrieve them when a message is deleted
      */
     public void setMessages() {
-        for (Channel channel : Objects.requireNonNull(client.getGuildById(clientManager.GUILD_SNOWFLAKE).flatMap(guild -> guild.getChannels().collectList()).block())) {
-            if (!(channel instanceof TextChannel)) continue;
-            for (Message message : Objects.requireNonNull(((TextChannel) channel).getMessagesBefore(((TextChannel) channel).getLastMessageId().orElseGet(null)).take(200).collectList().block())) {
+        for (TextChannel channel : Objects.requireNonNull(client.getGuildById(clientManager.GUILD_SNOWFLAKE)
+                .flatMap(guild -> guild.getChannels()
+                        .filter(guildChannel -> guildChannel instanceof TextChannel)
+                        .cast(TextChannel.class)
+                        .collectList()).block())) {
+            for (Message message : Objects.requireNonNull(channel.getMessagesBefore(Snowflake.of(Instant.now())).take(200).collectList().block())) {
                 sqlManager.executeStatementAndPost("INSERT INTO " + sqlManager.prefix + "messages (id, content, author, author_name, channel) VALUES ('%s','%s','%s','%s','%s') \nON DUPLICATE KEY UPDATE content = '%s'",
                         message.getId().asString(),
-                        message.getContent().map(m -> m.replaceAll("'","¼")).get(),
+                        message.getContent().orElse("").replaceAll("'", "¼"),
                         message.getAuthor().map(a-> a.getId().asString()).get(),
                         message.getAuthor().map(User::getUsername).get(),
                         Objects.requireNonNull(message.getChannel().block()).getId().asString(),
-                        message.getContent().map(m -> m.replaceAll("'","¼")).get());
+                        message.getContent().orElse("").replaceAll("'", "¼"));
             }
         }
     }

@@ -1,13 +1,18 @@
 package com.github.zaphx.discordbot.managers;
 
 import com.github.zaphx.discordbot.Dizcord;
+import com.github.zaphx.discordbot.utilities.ArgumentException;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.Message;
+import discord4j.core.object.entity.TextChannel;
+import discord4j.core.object.entity.User;
 import discord4j.core.object.util.Snowflake;
 import gnu.trove.map.hash.THashMap;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.intellij.lang.annotations.Language;
 import org.jetbrains.annotations.NotNull;
+import reactor.core.publisher.Mono;
+
 import java.sql.*;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
@@ -277,7 +282,7 @@ public class SQLManager {
                 PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM " + prefix + "mutes WHERE expires < UNIX_TIMESTAMP()");
                 ResultSet rs = preparedStatement.executeQuery();
                 while (rs.next()) {
-                    clientManager.getClient().getMemberById(Snowflake.of(clientManager.GUILD_Id),Snowflake.of(rs.getLong("id"))).doOnNext(member -> {
+                    clientManager.getClient().getMemberById(Snowflake.of(clientManager.GUILD_Id), Snowflake.of(rs.getLong("id"))).doOnNext(member -> {
                         try {
                             member.removeRole(Snowflake.of(rs.getLong("type")));
                         } catch (SQLException e) {
@@ -306,12 +311,10 @@ public class SQLManager {
      */
     THashMap<String, String> getDeletedMessage(String id) {
         Connection connection = getConnection();
-        Future<THashMap<String, String>> future = CompletableFuture.supplyAsync(() -> {
+        Mono<THashMap<String, String>> map = Mono.just(connection).map(c -> {
             THashMap<String, String> message = new THashMap<>();
             try {
-                PreparedStatement statement = connection.prepareStatement("SELECT * FROM " + prefix + "messages WHERE id = '" + id + "'");
-
-                ResultSet set = statement.executeQuery();
+                ResultSet set = c.prepareStatement("SELECT * FROM " + prefix + "messages WHERE id = '" + id + "'").executeQuery();
                 while (set.next()) {
                     message.put("id", id);
                     message.put("content", set.getString("content"));
@@ -320,18 +323,13 @@ public class SQLManager {
                     message.put("channel", set.getString("channel"));
                 }
                 connection.close();
-                return message;
             } catch (SQLException e) {
                 e.printStackTrace();
+
             }
-            return null;
+            return message;
         });
-        try {
-            return future.get();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return map.block();
     }
 
     /**
@@ -429,7 +427,9 @@ public class SQLManager {
      * @param message The message to add
      */
     void addMessage(Message message) {
+        User u = message.getAuthor().orElseThrow(ArgumentException::new);
+        TextChannel c = message.getChannel().filter(ch -> ch instanceof TextChannel).cast(TextChannel.class).block();
         executeStatementAndPost("INSERT INTO " + prefix + "messages (id, content, author, author_name, channel) values ('%s','%s','%s','%s','%s')",
-                message.getId().asString(), message.getContent().get().replaceAll("'", "¼"), message.getAuthor().get().getId().asString(), message.getAuthor().get().getUsername(), message.getChannel().block().getId().asString());
+                message.getId().asString(), message.getContent().get().replaceAll("'", "¼"), u.getId().asString(), u.getUsername(), c.getId().asString());
     }
 }

@@ -112,7 +112,7 @@ public class ChannelManager {
      * @return The channel from name if it exists. Else null
      */
     public MessageChannel getChannel(DiscordChannelTypes types) {
-        return client.getChannelById(Snowflake.of(types.getId())).cast(TextChannel.class).block();
+        return client.getChannelById(types.getId()).cast(TextChannel.class).block();
     }
 
     /**
@@ -135,6 +135,16 @@ public class ChannelManager {
      */
     public boolean isChannel(Snowflake snowflake, long Id) {
         return snowflake.asLong() == Id;
+    }
+    /**
+     * This method checks if the Id provided is the channel also provided
+     *
+     * @param snowflake The snowflake to check
+     * @param Id      The Id to check
+     * @return True if Id and channel match
+     */
+    public boolean isChannel(Snowflake snowflake, Snowflake Id) {
+        return snowflake.asLong() == Id.asLong();
     }
 
     /**

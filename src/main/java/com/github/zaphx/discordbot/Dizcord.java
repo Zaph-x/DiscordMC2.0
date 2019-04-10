@@ -35,8 +35,7 @@ public class Dizcord extends JavaPlugin {
     private static Dizcord dizcord;
     private FileConfiguration config;
     private DiscordClient client;
-    private DiscordClientManager clientManager = DiscordClientManager.getInstance();
-    private AntiSwearManager antiSwearManager = AntiSwearManager.getInstance();
+    private DiscordClientManager clientManager;
 
     @Override
     public void onEnable() {
@@ -45,8 +44,9 @@ public class Dizcord extends JavaPlugin {
 
 
         createConfig();
+        saveDefaultConfig();
         this.config = dizcord.getConfig();
-
+        clientManager = DiscordClientManager.getInstance();
         if (!validateConfig()) {
             log.warning("The bot could not be started. Please fill in the config properly and try again.");
         } else {
@@ -62,17 +62,17 @@ public class Dizcord extends JavaPlugin {
         SQLManager sql = SQLManager.getInstance();
 
         getLogger().log(Level.INFO, "Registering listeners");
-        client.getEventDispatcher().on(ReadyEvent.class).subscribe(event -> new OnReadyEvent().onReady(event));
+        client.getEventDispatcher().on(ReadyEvent.class).subscribe(event -> new OnReadyEvent().onReady());
         client.getEventDispatcher().on(MemberJoinEvent.class).subscribe(event -> new UserJoinEvent().onUserJoinEvent(event));
         client.getEventDispatcher().on(MessageDeleteEvent.class).subscribe(event -> new ChatDeleteEvent().onMessageDelete(event));
         client.getEventDispatcher().on(BanEvent.class).subscribe(event -> new OnUserBanEvent().onUserBan(event));
-        client.getEventDispatcher().on(MessageCreateEvent.class).subscribe(event -> new ChatListener().onChat(event));
-        client.getEventDispatcher().on(TextChannelCreateEvent.class).subscribe(event -> new OnChannelCreateEvent().onChannelCreate(event));
-        client.getEventDispatcher().on(TextChannelDeleteEvent.class).subscribe(event -> new OnChannelDeleteEvent().onChannelDelete(event));
-        client.getEventDispatcher().on(MessageUpdateEvent.class).subscribe(event -> new OnChatEditEvent().onEdit(event));
-        client.getEventDispatcher().on(RoleCreateEvent.class).subscribe(event -> new OnRoleCreateEvent().onCreateEvent(event));
-        client.getEventDispatcher().on(RoleUpdateEvent.class).subscribe(event -> new OnRoleEditEvent().onEditEvent(event));
-        client.getEventDispatcher().on(RoleDeleteEvent.class).subscribe(event -> new OnRoleDeleteEvent().onDeleteEvent(event));
+        client.getEventDispatcher().on(MessageCreateEvent.class).onErrorContinue((t,o) -> {}).subscribe(event -> new ChatListener().onChat(event));
+        client.getEventDispatcher().on(TextChannelCreateEvent.class).onErrorContinue((t,o) -> {}).subscribe(event -> new OnChannelCreateEvent().onChannelCreate(event));
+        client.getEventDispatcher().on(TextChannelDeleteEvent.class).onErrorContinue((t,o) -> {}).subscribe(event -> new OnChannelDeleteEvent().onChannelDelete(event));
+        client.getEventDispatcher().on(MessageUpdateEvent.class).onErrorContinue((t,o) -> {}).subscribe(event -> new OnChatEditEvent().onEdit(event));
+        client.getEventDispatcher().on(RoleCreateEvent.class).onErrorContinue((t,o) -> {}).subscribe(event -> new OnRoleCreateEvent().onCreateEvent(event));
+        client.getEventDispatcher().on(RoleUpdateEvent.class).onErrorContinue((t,o) -> {}).subscribe(event -> new OnRoleEditEvent().onEditEvent(event));
+        client.getEventDispatcher().on(RoleDeleteEvent.class).onErrorContinue((t,o) -> {}).subscribe(event -> new OnRoleDeleteEvent().onDeleteEvent(event));
 
         sql.createMutesIfNotExists();
         sql.createAccountLinkIfNotExists();
@@ -96,12 +96,12 @@ public class Dizcord extends JavaPlugin {
         getLogger().log(Level.INFO, "Loading external bot plugins!");
 
 
-        getLogger().log(Level.INFO, "Dizcord has successfully been enabled!");
+        getLogger().log(Level.INFO, "Dizcord has successfully been enabled!" + (client.isConnected() ? " The client is also connected." : " The client is not connected."));
     }
 
     @Override
     public void onDisable() {
-
+        clientManager.logout(client);
         getLogger().log(Level.INFO, "Dizcord has successfully been disabled!");
     }
 

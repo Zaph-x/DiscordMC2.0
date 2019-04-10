@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="test@localhost" uuid="784008e3-5417-48f7-8c3c-b4c71ef6924a">
+    <data-source source="LOCAL" name="spigot@localhost" uuid="1ae33038-dc40-4989-9e6a-5287fb122bd9">
       <driver-ref>mysql</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://localhost:3306/test</jdbc-url>
+      <jdbc-url>jdbc:mysql://localhost:3306/</jdbc-url>
       <driver-properties>
         <property name="autoReconnect" value="true" />
         <property name="zeroDateTimeBehavior" value="convertToNull" />

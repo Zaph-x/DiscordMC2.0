@@ -15,17 +15,16 @@ public class OnReadyEvent {
     private final RolesManager rolesManager = RolesManager.getInstance();
     private final SQLManager sql = SQLManager.getInstance();
     private final ChannelManager channelManager = ChannelManager.getInstance();
-    private final long interval = Dizcord.getInstance().getConfig().getLong("discord.mute-check-interval",60);
+    private final long interval = Dizcord.getInstance().getConfig().getLong("discord.mute-check-interval", 60);
 
 
-
-    public void onReady(final ReadyEvent event) {
+    public void onReady() {
         messageManager.setMessages();
         inviteManager.update();
         Dizcord.getInstance().getLogger().log(Level.INFO, "Checking for any mutes.");
         Bukkit.getScheduler().runTaskAsynchronously(Dizcord.getInstance(), sql::unmute);
         Dizcord.getInstance().getLogger().log(Level.INFO, "Setting mute check interval to " + interval + " minutes");
-        Bukkit.getScheduler().runTaskTimerAsynchronously(Dizcord.getInstance(), sql::unmute, 20*60L * interval, 20*60L * interval);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(Dizcord.getInstance(), sql::unmute, 20 * 60L * interval, 20 * 60L * interval);
         Dizcord.getInstance().getLog().info("Mapping current channels");
         channelManager.mapChannels();
         Dizcord.getInstance().getLog().info("Mapping current roles");

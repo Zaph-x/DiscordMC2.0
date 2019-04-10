@@ -1,6 +1,7 @@
 package com.github.zaphx.discordbot.minecraft.commands;
 
 import com.github.zaphx.discordbot.managers.ChannelManager;
+import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.entity.TextChannel;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -13,7 +14,7 @@ public class ToDiscord implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        TextChannel channel;
+        MessageChannel channel;
         StringBuilder sb;
         ChannelManager channelManager = ChannelManager.getInstance();
 

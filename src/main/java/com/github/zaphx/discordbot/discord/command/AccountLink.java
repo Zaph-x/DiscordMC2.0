@@ -34,7 +34,7 @@ public class AccountLink implements CommandListener {
                 return CommandExitCode.SUCCESS;
             }
             messageManager.hashes.put(hash, player);
-            messageManager.discord.put(hash, sender);
+            messageManager.discord.put(hash, sender.asMember(clientManager.GUILD_SNOWFLAKE).block());
             TextComponent message = new TextComponent(YELLOW + "/dizcord link " + hash);
             message.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "/dizcord link " + hash));
             player.sendMessage(GREEN + "Someone is trying to link their Discord account to this account!\nIf this is you, type the following command: ");

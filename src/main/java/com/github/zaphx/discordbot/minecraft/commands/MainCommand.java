@@ -44,10 +44,10 @@ public class MainCommand implements CommandExecutor {
                     sql.executeStatementAndPost("INSERT INTO %slinks (id, hash, discord) values ('%s','%s','%s')",
                             sql.prefix, sender_p.getUniqueId().toString(), hash, messageManager.discord.get(hash).getId().asString());
                     sender.sendMessage("Your account was linked!");
-                    if (sender.hasPermission("dizcord.donator")) messageManager.discord.get(hash).addRole(rolesManager.getRole("Donator"));
-                    if (sender.hasPermission("group.builder")) messageManager.discord.get(hash).addRole(rolesManager.getRole("Builder"));
-                    if (sender.hasPermission("group.redstone")) messageManager.discord.get(hash).addRole(rolesManager.getRole("Redstone"));
-                    if (sender.hasPermission("group.advbuilder")) messageManager.discord.get(hash).addRole(rolesManager.getRole("Advanced Builder"));
+                    if (sender.hasPermission("dizcord.donator")) messageManager.discord.get(hash).addRole(rolesManager.getRole("Donator")).subscribe();
+                    if (sender.hasPermission("group.builder")) messageManager.discord.get(hash).addRole(rolesManager.getRole("Builder")).subscribe();
+                    if (sender.hasPermission("group.redstone")) messageManager.discord.get(hash).addRole(rolesManager.getRole("Redstone")).subscribe();
+                    if (sender.hasPermission("group.advbuilder")) messageManager.discord.get(hash).addRole(rolesManager.getRole("Advanced Builder")).subscribe();
                     return true;
                 } else {
                     sender.sendMessage(RED + "Your account is already linked!");

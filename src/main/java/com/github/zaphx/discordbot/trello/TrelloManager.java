@@ -91,7 +91,7 @@ public class TrelloManager {
             isValidReport = true;
 
             // Not sent in the reports channel, thus can be ignored.
-            if (!(message.getChannelId().asLong() == DiscordChannelTypes.REPORTS.getId())) {
+            if (!(message.getChannelId().asLong() == DiscordChannelTypes.REPORTS.getId().asLong())) {
                 return isValidReport;
             }
             // char *string = {'h', 'e', 'l', 'l', 'o', '\0'};
@@ -134,7 +134,7 @@ public class TrelloManager {
 
             isValidReport = true;
 
-            if (!(message.getChannelId().asLong() == DiscordChannelTypes.SUGGESTIONS.getId())) {
+            if (!(message.getChannelId().asLong() == DiscordChannelTypes.SUGGESTIONS.getId().asLong())) {
                 return isValidReport;
             }
             String suggestion = message.getContent().orElseThrow(ArgumentException::new);

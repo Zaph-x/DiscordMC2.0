@@ -16,8 +16,9 @@ public class ChatListener {
     private AntiSwearManager antiSwearManager = AntiSwearManager.getInstance();
 
     public void onChat(final MessageCreateEvent event) {
+
         new AntiAdvertisement().checkAndHandle(event);
-        antiSwearManager.handleMessage(event.getMessage());
+        if (event.getMessage().getContent().orElse("").startsWith("ob!") || event.getMember().get().isBot()) return;
         trelloManager.checkAndSend(event, TrelloType.ISSUE);
         trelloManager.checkAndSend(event, TrelloType.SUGGESTION);
         commandHandler.checkForCommand(event);

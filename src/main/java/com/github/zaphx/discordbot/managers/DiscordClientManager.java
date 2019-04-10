@@ -46,7 +46,7 @@ public class DiscordClientManager {
     public boolean logout(DiscordClient client) {
         Bukkit.getScheduler().cancelTasks(Dizcord.getInstance());
 
-        client.logout().block();
+        client.logout().subscribe();
         return true;
 
     }
@@ -58,7 +58,7 @@ public class DiscordClientManager {
      * @return True when connect was successful, False if otherwise
      */
     public boolean login(DiscordClient client) {
-        client.login().block();
+        client.login().subscribe();
         return true;
 
     }

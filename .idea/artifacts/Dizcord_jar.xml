@@ -1,6 +1,6 @@
 <component name="ArtifactManager">
   <artifact type="jar" build-on-make="true" name="Dizcord:jar">
-    <output-path>E:/Server/Spigot/plugins/update</output-path>
+    <output-path>$PROJECT_DIR$/../Spigot Development/Server/plugins/</output-path>
     <root id="archive" name="Dizcord.jar">
       <element id="module-output" name="Dizcord" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/koloboke/koloboke-impl-common-jdk8/1.0.0/koloboke-impl-common-jdk8-1.0.0.jar" path-in-jar="/" />
@@ -13,7 +13,6 @@
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/eclipse/jetty/jetty-http/9.4.8.v20171121/jetty-http-9.4.8.v20171121.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/googlecode/soundlibs/mp3spi/1.9.5.4/mp3spi-1.9.5.4.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/eclipse/jetty/websocket/websocket-api/9.4.8.v20171121/websocket-api-9.4.8.v20171121.jar" path-in-jar="/" />
-      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/github/austinv11/Discord4J/2.10.1/Discord4j-2.10.1-shaded.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/fasterxml/jackson/core/jackson-annotations/2.9.0/jackson-annotations-2.9.0.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/commons-io/commons-io/2.6/commons-io-2.6.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/eclipse/jetty/jetty-xml/9.4.8.v20171121/jetty-xml-9.4.8.v20171121.jar" path-in-jar="/" />
@@ -44,6 +43,20 @@
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/vdurmont/emoji-java/4.0.0/emoji-java-4.0.0.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/jcraft/jorbis/0.0.17/jorbis-0.0.17.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$MAVEN_REPOSITORY$/junit/junit/4.10/junit-4.10.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/discord4j/discord4j-core/3.0.0/discord4j-core-3.0.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/discord4j/discord4j-common/3.0.0/discord4j-common-3.0.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/discord4j/discord4j-gateway/3.0.0/discord4j-gateway-3.0.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/discord4j/discord4j-rest/3.0.0/discord4j-rest-3.0.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/discord4j/simple-fsm/1.0.1/simple-fsm-1.0.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/io/projectreactor/reactor-core/3.2.6.RELEASE/reactor-core-3.2.6.RELEASE.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/org/reactivestreams/reactive-streams/1.0.2/reactive-streams-1.0.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/fasterxml/jackson/datatype/jackson-datatype-jdk8/2.9.8/jackson-datatype-jdk8-2.9.8.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/io/projectreactor/netty/reactor-netty/0.8.5.RELEASE/reactor-netty-0.8.5.RELEASE.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/io/projectreactor/addons/reactor-extra/3.2.2.RELEASE/reactor-extra-3.2.2.RELEASE.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/discord4j/stores-jdk/1.0.0/stores-jdk-1.0.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/discord4j/stores-api/1.0.0/stores-api-1.0.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/discord4j/stores-common/1.0.0/stores-common-1.0.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$MAVEN_REPOSITORY$/com/discord4j/discord4j-voice/3.0.0/discord4j-voice-3.0.0.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>
