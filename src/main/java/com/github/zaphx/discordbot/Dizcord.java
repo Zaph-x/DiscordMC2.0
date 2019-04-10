@@ -74,6 +74,7 @@ public class Dizcord extends JavaPlugin {
         client.getDispatcher().registerListener(new OnRoleCreateEvent());
         client.getDispatcher().registerListener(new OnRoleDeleteEvent());
         client.getDispatcher().registerListener(new OnRoleEditEvent());
+        client.getDispatcher().registerListener(new AnyEvent());
 
 
         sql.createMutesIfNotExists();

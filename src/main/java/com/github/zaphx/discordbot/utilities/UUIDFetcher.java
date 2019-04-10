@@ -2,7 +2,6 @@ package com.github.zaphx.discordbot.utilities;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.mojang.util.UUIDTypeAdapter;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
