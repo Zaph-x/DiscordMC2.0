@@ -12,6 +12,16 @@ import sx.blah.discord.handle.obj.Permissions;
 import java.util.List;
 
 public class Event implements CommandListener {
+
+    /**
+     * This command will enable tagging of an event role. It will also allow users to join and leave said role
+     * @param sender The command sender.
+     * @param command The command used.
+     * @param args The arguments provided by the sender.
+     * @param destination The channel the message should be sent to. By default this is the channel the command was received in.
+     * @param event The event provided by discord.
+     * @return A {@link CommandExitCode} from the execution result of the command
+     */
     @Override
     public CommandExitCode onCommand(IUser sender, String command, List<String> args, IChannel destination, MessageReceivedEvent event) {
         String name = "Event";
@@ -60,11 +70,19 @@ public class Event implements CommandListener {
         return CommandExitCode.SUCCESS;
     }
 
+    /**
+     * Gets the command description for the help message
+     * @return The command description of what the command does.
+     */
     @Override
     public @NotNull String getCommandDescription() {
         return "Allows a user to join or leave the event ping role";
     }
 
+    /**
+     * Gets the command usage message for the help message
+     * @return The command usage message
+     */
     @Override
     public @NotNull String getCommandUsage() {
         return prefix + "events join|leave\n" + prefix + "events assignall\n" + prefix + "events on|off";

@@ -16,7 +16,13 @@ import java.util.List;
 
 public class DiscordClientManager {
 
+    /**
+     * The discord client object
+     */
     private IDiscordClient client;
+    /**
+     * The instance of the DiscordClientManager
+     */
     private static DiscordClientManager instance;
 
     /**

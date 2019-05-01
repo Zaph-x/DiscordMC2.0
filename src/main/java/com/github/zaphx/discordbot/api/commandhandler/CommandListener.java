@@ -14,14 +14,38 @@ import java.util.List;
  */
 public interface CommandListener {
 
+    /**
+     * Discord client manager
+     */
     DiscordClientManager clientManager = DiscordClientManager.getInstance();
+    /**
+     * The command handler instance
+     */
     CommandHandler commandHandler = CommandHandler.getInstance();
+    /**
+     * The embed manager
+     */
     EmbedManager embedManager = EmbedManager.getInstance();
+    /**
+     * The message manager
+     */
     MessageManager messageManager = MessageManager.getInstance();
+    /**
+     * The channel manager
+     */
     ChannelManager channelManager = ChannelManager.getInstance();
+    /**
+     * The role manager
+     */
     RolesManager rolesManager = RolesManager.getInstance();
+    /**
+     * The SQL manager
+     */
     SQLManager sql = SQLManager.getInstance();
 
+    /**
+     * The bot prefix
+     */
     String prefix = Dizcord.getInstance().getConfig().getString("discord.command-prefix");
     /**
      * The method used whenever a command is executed. This will automatically be called when a command is executed.

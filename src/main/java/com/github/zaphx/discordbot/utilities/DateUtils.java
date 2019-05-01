@@ -7,12 +7,27 @@ import java.util.regex.Pattern;
 
 public class DateUtils {
 
+    /**
+     * A pattern to match dates
+     */
     private static Pattern timePattern = Pattern.compile("(?:([0-9]+)\\s*y[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*mo[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*w[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*d[a-z]*[,\\s]*)?" + "(?:([0-9]+)\\s*h[a-z]*[,\\s]*)?", Pattern.CASE_INSENSITIVE);
 
+    /**
+     * This method will remove the time pattern from a message string
+     * @param reason The string to remove the time pattern froom
+     * @return a string without a time pattern
+     */
     public static String removeTimePattern(String reason) {
         return timePattern.matcher(reason).replaceFirst("").trim();
     }
 
+    /**
+     * This method will get the timestamp from a given time in a string
+     * @param time The time string
+     * @param future Is the timestamp in the future
+     * @return The date difference in milliseconds
+     * @throws Exception if the date is incorrectly formatted
+     */
     public static long parseDateDiff(String time, boolean future) throws Exception {
         Matcher m = timePattern.matcher(time);
         int years = 0;
@@ -77,6 +92,11 @@ public class DateUtils {
         return c.getTimeInMillis();
     }
 
+    /**
+     * This method will return a string with the formatted date difference
+     * @param date The date difference in milliseconds
+     * @return A formatted time string
+     */
     public static String formatDateDiff(long date) {
         Calendar c = new GregorianCalendar();
         c.setTimeInMillis(date);
@@ -84,6 +104,12 @@ public class DateUtils {
         return DateUtils.formatDateDiff(now, c);
     }
 
+    /**
+     * This method will format a date difference as a string
+     * @param fromDate The date going from
+     * @param toDate The date going to
+     * @return The date difference as a formatted string
+     */
     public static String formatDateDiff(Calendar fromDate, Calendar toDate) {
         boolean future = false;
         if (toDate.equals(fromDate)) {
@@ -118,6 +144,14 @@ public class DateUtils {
         return sb.toString().trim();
     }
 
+    /**
+     * This method will calculate the date difference
+     * @param type The type of conversion
+     * @param fromDate The date going from
+     * @param toDate The date going to
+     * @param future Is it in the future
+     * @return The difference
+     */
     static int dateDiff(int type, Calendar fromDate, Calendar toDate, boolean future) {
         int diff = 0;
         long savedDate = fromDate.getTimeInMillis();

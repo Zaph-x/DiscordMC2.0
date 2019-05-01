@@ -19,9 +19,24 @@ import java.util.List;
 
 public class AccountLink implements CommandListener {
 
+    /**
+     * The username of the sender
+     */
     private String username;
+    /**
+     * The player to target
+     */
     private Player player;
 
+    /**
+     * This command will link a discord account with a minecraft account. This is done by saving the discord ID, name and username, along with the minecraft name and {@link java.util.UUID} in a database
+     * @param sender The command sender.
+     * @param command The command used.
+     * @param args The arguments provided by the sender.
+     * @param destination The channel the message should be sent to. By default this is the channel the command was received in.
+     * @param event The event provided by discord.
+     * @return
+     */
     @Override
     public CommandExitCode onCommand(IUser sender, String command, List<String> args, IChannel destination, MessageReceivedEvent event) {
 
@@ -48,11 +63,19 @@ public class AccountLink implements CommandListener {
         return CommandExitCode.SUCCESS;
     }
 
+    /**
+     * Gets the command description for the help message
+     * @return The command description of what the command does.
+     */
     @Override
     public @NotNull String getCommandDescription() {
         return "Allows a user to link their Discord and Minecraft account. This will also sync roles across Discord and Minecraft\n*You can only link one account!*";
     }
 
+    /**
+     * Gets the command usage message for the help message
+     * @return The command usage message
+     */
     @Override
     public @NotNull String getCommandUsage() {
         return prefix + "!linkaccounts <in-game name>";

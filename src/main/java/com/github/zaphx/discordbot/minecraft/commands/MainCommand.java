@@ -17,12 +17,35 @@ import static org.bukkit.ChatColor.*;
 
 public class MainCommand implements CommandExecutor {
 
+    /**
+     * The message manager
+     */
     MessageManager messageManager = MessageManager.getInstance();
+    /**
+     * The client manager
+     */
     DiscordClientManager clientManager = DiscordClientManager.getInstance();
+    /**
+     * The roles manager
+     */
     RolesManager rolesManager = RolesManager.getInstance();
+    /**
+     * The SQL manager
+     */
     SQLManager sql = SQLManager.getInstance();
+    /**
+     * The config of the plugin
+     */
     FileConfiguration config = Dizcord.getInstance().getConfig();
 
+    /**
+     * This is the main minecraft command for the bot. This will allow the owner of the bot to log the bot in and out.
+     * @param sender The sender of the command
+     * @param command The command sent
+     * @param label The command label
+     * @param args The arguments for the command
+     * @return True if the command succeeds, else false
+     */
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (args[0].equalsIgnoreCase("link") && args.length == 2) {

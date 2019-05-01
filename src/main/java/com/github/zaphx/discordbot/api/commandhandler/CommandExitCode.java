@@ -28,12 +28,23 @@ public enum CommandExitCode {
     NO_SUCH_COMMAND(5)
     ;
 
+    /**
+     * The exit code
+     */
     private int code;
 
+    /**
+     * Constructor of the enum
+     * @param code The exit code to exit with
+     */
     CommandExitCode(int code) {
         this.code = code;
     }
 
+    /**
+     * Getter method for the exit code
+     * @return
+     */
     protected int getCode() {
         return this.code;
     }

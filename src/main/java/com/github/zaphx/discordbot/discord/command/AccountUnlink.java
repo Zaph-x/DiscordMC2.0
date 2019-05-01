@@ -13,6 +13,15 @@ import java.util.List;
 
 public class AccountUnlink implements CommandListener {
 
+    /**
+     * This command will unlink a minecraft and a discord account. This can only be done if the {@link AccountLink} command has been executed
+     * @param sender The command sender.
+     * @param command The command used.
+     * @param args The arguments provided by the sender.
+     * @param destination The channel the message should be sent to. By default this is the channel the command was received in.
+     * @param event The event provided by discord.
+     * @return A {@link CommandExitCode} from the execution result of the command
+     */
     @Override
     public CommandExitCode onCommand(IUser sender, String command, List<String> args, IChannel destination, MessageReceivedEvent event) {
         if (args.size() == 1 && sender.getPermissionsForGuild(destination.getGuild()).contains(Permissions.ADMINISTRATOR)) {
@@ -52,11 +61,19 @@ public class AccountUnlink implements CommandListener {
         }
     }
 
+    /**
+     * Gets the command description for the help message
+     * @return The command description of what the command does.
+     */
     @Override
     public @NotNull String getCommandDescription() {
         return "Unlink two linked accounts. This command requires your account to be linked to a minecraft account.";
     }
 
+    /**
+     * Gets the command usage message for the help message
+     * @return The command usage message
+     */
     @Override
     public @NotNull String getCommandUsage() {
         return prefix + "unlinkaccount\n" + prefix + "unlinkacount @<user>";

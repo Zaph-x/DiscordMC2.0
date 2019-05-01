@@ -11,7 +11,14 @@ import static org.bukkit.ChatColor.*;
 
 public class ToDiscord implements CommandExecutor {
 
-
+    /**
+     * This command will send a message to a discord channel
+     * @param sender The sender of the command
+     * @param command The command being sent
+     * @param label The command label
+     * @param args The arguments passed to the command
+     * @return True if command succeeds, else false
+     */
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         IChannel channel;

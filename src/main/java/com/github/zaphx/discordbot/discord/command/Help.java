@@ -16,8 +16,20 @@ import java.util.List;
 
 public class Help implements CommandListener {
 
+    /**
+     * The command handler
+     */
     private CommandHandler commandHandler = CommandHandler.getInstance();
 
+    /**
+     * This command will send a message to the sender, with all commands in the bot.
+     * @param sender The command sender.
+     * @param command The command used.
+     * @param args The arguments provided by the sender.
+     * @param destination The channel the message should be sent to. By default this is the channel the command was received in.
+     * @param event The event provided by discord.
+     * @return A {@link CommandExitCode} from the execution result of the command
+     */
     @Override
     public CommandExitCode onCommand(IUser sender, String command, List<String> args, IChannel destination, MessageReceivedEvent event) {
         RequestBuffer.request(() -> event.getMessage().delete());
@@ -47,11 +59,19 @@ public class Help implements CommandListener {
         }
     }
 
+    /**
+     * Gets the command description for the help message
+     * @return The command description of what the command does.
+     */
     @Override
     public @NotNull String getCommandDescription() {
         return "The base help command. This command will list all other commands in a DM.";
     }
 
+    /**
+     * Gets the command usage message for the help message
+     * @return The command usage message
+     */
     @Override
     public @NotNull String getCommandUsage() {
         return prefix + "help - Provides full help list.\n" + prefix + "help <command> - Provides help message for a command.";

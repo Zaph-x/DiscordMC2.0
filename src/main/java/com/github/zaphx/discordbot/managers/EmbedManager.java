@@ -15,21 +15,57 @@ import java.util.List;
 
 public class EmbedManager {
 
+    /**
+     * The message manager
+     */
     private MessageManager mm = MessageManager.getInstance();
+    /**
+     * The instance of the EmbedManager
+     */
     private static EmbedManager instance;
+    /**
+     * The SQL manager
+     */
     private SQLManager sql = SQLManager.getInstance();
+    /**
+     * The discord client object
+     */
     private Dizcord dizcord = Dizcord.getInstance();
+    /**
+     * The discord config file
+     */
     private FileConfiguration config = dizcord.getConfig();
+    /**
+     * The prefix for the sql database
+     */
     private String prefix = config.getString("sql.prefix");
+    /**
+     * The client manager
+     */
     private DiscordClientManager clientManager = DiscordClientManager.getInstance();
 
+    /**
+     * The default constructor of the embed manager
+     */
     private EmbedManager() {
     }
 
+    /**
+     * A getter method to get the instance of the embed manager
+     * @return The instance of the embed manager
+     */
     public static EmbedManager getInstance() {
         return instance == null ? instance = new EmbedManager() : instance;
     }
 
+    /**
+     * This method will send a warning to the warned user
+     * @param warned The warned user
+     * @param warnee The person warning
+     * @param reason The reason for the warn
+     * @param guild The guild to warn in
+     * @return An {@link EmbedObject} with a warning in it
+     */
     public EmbedObject warningToUser(IUser warned, IUser warnee, String reason, IGuild guild) {
         long ticketID = sql.countTickets("warnings");
         IChannel rulesChan = guild.getChannelByID(DiscordChannelTypes.RULES.getID());
@@ -49,6 +85,14 @@ public class EmbedManager {
         return eb.build();
     }
 
+    /**
+     * This method will log a warning in the log channel
+     * @param warned The warned user
+     * @param warnee The user warning
+     * @param reason The reason for the warn
+     * @param guild The guild to warn in
+     * @return An {@link EmbedObject} with a warning in it
+     */
     public EmbedObject warningToChannel(IUser warned, IUser warnee, String reason, IGuild guild) {
         long ticketID = sql.countTickets("warnings");
         EmbedBuilder eb = new EmbedBuilder();
@@ -67,6 +111,10 @@ public class EmbedManager {
         return eb.build();
     }
 
+    /**
+     * This method will let the command sender know they sent an invalid command
+     * @return An {@link EmbedObject} lettin the sender know the command was invalid
+     */
     public EmbedObject invalidCommandEmbed() {
         return new EmbedBuilder()
                 .withTitle("Invalid command")
@@ -76,6 +124,11 @@ public class EmbedManager {
                 .build();
     }
 
+    /**
+     * This method will let the sender know they used the wrong syntax for their command
+     * @param command The command the user was trying to execute
+     * @return An {@link EmbedObject} telling the user they messed up the syntax
+     */
     public EmbedObject invalidSyntaxEmbed(String command) {
         return new EmbedBuilder()
                 .withTitle("Invalid command format")
@@ -85,6 +138,10 @@ public class EmbedManager {
                 .build();
     }
 
+    /**
+     * This method will let the sender know they don't have permissions to perform the command
+     * @return An {@link EmbedObject} letting the sender know they don't have the required permissions
+     */
     public EmbedObject insufficientPermissions() {
         return new EmbedBuilder()
                 .withTitle("Insufficient permissions")
@@ -94,6 +151,10 @@ public class EmbedManager {
                 .build();
     }
 
+    /**
+     * This method will notify the sender of a command that the client does not have the required permissions to perform an action
+     * @return An {@link EmbedObject} letting the sender know the client doesn't have the required permissions
+     */
     public EmbedObject insufficientClientPermissions() {
         return new EmbedBuilder()
                 .withTitle("Insufficient permissions")
@@ -103,6 +164,10 @@ public class EmbedManager {
                 .build();
     }
 
+    /**
+     * This method will let the sender of a message know they swore
+     * @return An {@link EmbedObject} letting the sender know they swore
+     */
     public EmbedObject swearEmbed() {
         return new EmbedBuilder()
                 .withTitle("Oopsie. That's a no-go!")
@@ -112,6 +177,12 @@ public class EmbedManager {
                 .build();
     }
 
+    /**
+     * This method will send an embed to the log channel, letting the staff know a new person joined the guild. The embed will also say who invited the user as well as what invite was used
+     * @param invite The invite used to join the guild
+     * @param joined The user joining the guild
+     * @return An {@link EmbedObject} letting staff know a new person joined the guild
+     */
     public EmbedObject joinEmbed(IExtendedInvite invite, IUser joined) {
         EmbedBuilder eb = new EmbedBuilder();
         eb.withTimestamp(Instant.now())
@@ -125,6 +196,11 @@ public class EmbedManager {
         return eb.build();
     }
 
+    /**
+     * This method will send an embed to the log channel, with a message that was just deleted
+     * @param message The hashmap containing the message information
+     * @return An {@link EmbedObject} with information on the deleted message
+     */
     public EmbedObject messageDeleteEmbed(THashMap message) {
         EmbedBuilder builder = new EmbedBuilder();
         String content = ((String) message.get("content")).replaceAll("¼", "'");
@@ -146,6 +222,13 @@ public class EmbedManager {
         return builder.build();
     }
 
+    /**
+     * This method will log a ban to the log channel
+     * @param banned The user banned
+     * @param bannee The user banning
+     * @param reason The reason for the ban
+     * @return An {@link EmbedObject} containing information on the ban
+     */
     public EmbedObject banToChannel(IUser banned, IUser bannee, String reason) {
         EmbedBuilder eb = new EmbedBuilder();
         eb.withTitle("**A user was banned**")
@@ -158,6 +241,11 @@ public class EmbedManager {
         return eb.build();
     }
 
+    /**
+     * This method will return an embed containing information that saomeone advertised
+     * @param e The message event
+     * @return An {@link EmbedObject} containing information if the advertisement
+     */
     public EmbedObject reportAdvertisementEmbed(MessageEvent e) {
         EmbedBuilder builder = new EmbedBuilder();
         builder.withTitle("**A user tried to advertise**")
@@ -168,9 +256,11 @@ public class EmbedManager {
         return builder.build();
     }
 
-    /*
-     * Sends a message to a user regarding proper report criteria.
-     * Method used in checkValidity()
+    /**
+     * This method will return an embed stating that a report was incorrectly formatted
+     * @param strings The fields that were incorrectly formatted
+     * @param message The report that was made
+     * @return An {@link EmbedObject} containing information on the incorrect report
      */
     public EmbedObject incorrectReportEmbed(List<String> strings, IMessage message) {
         StringBuilder stringBuilder = new StringBuilder();
@@ -186,9 +276,10 @@ public class EmbedManager {
                 .build();
     }
 
-    /*
-     * Sends a message to a user informing them of a successful report.
-     * Method used in officiallyFileReport()
+    /**
+     * This method will return an embed stating that the report was formatted correct
+     * @param message The report that was made
+     * @return An {@link EmbedObject} stating the correct formatting
      */
     public EmbedObject correctReportEmbed(IMessage message) {
         return new EmbedBuilder().withColor(new Color(120, 193, 82))
@@ -201,6 +292,11 @@ public class EmbedManager {
                 .build();
     }
 
+    /**
+     * This method will return an embed notifying the sender that they could not link their account to the specified player
+     * @param name The name of the player
+     * @return An {@link EmbedObject} with an error message
+     */
     public EmbedObject noPlayerEmbed(String name) {
         return new EmbedBuilder().withColor(new Color(242, 56, 79))
                 .withAuthorName("That player is not present!")

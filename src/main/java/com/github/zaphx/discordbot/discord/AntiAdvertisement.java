@@ -14,12 +14,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AntiAdvertisement {
-
+    /**
+     * A list of users allowed to advertise
+     */
     private static List<IUser> allowedUsers = new ArrayList<>();
+    /**
+     * The discord client instance
+     */
     private static Dizcord dizcord = Dizcord.getInstance();
+    /**
+     * The message manager
+     */
     private MessageManager messageManager = MessageManager.getInstance();
+    /**
+     * The embed manager
+     */
     private EmbedManager embedManager = EmbedManager.getInstance();
 
+    /**
+     * The constructor for the AntiAdvertisement object
+     */
     public AntiAdvertisement() {
     }
 

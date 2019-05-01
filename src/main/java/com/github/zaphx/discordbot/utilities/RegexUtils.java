@@ -8,19 +8,45 @@ import java.util.regex.Pattern;
 
 public class RegexUtils {
 
+    /**
+     * This method checks if there is a suitable match in the string
+     * @param patternToFind The pattern to find
+     * @param stringToMatch The string to find the pattern in
+     * @return True if the pattern is found
+     */
     public static boolean isMatch(Pattern patternToFind, String stringToMatch) {
         return patternToFind.matcher(stringToMatch).find();
     }
 
+    /**
+     * This method checks if there is a suitable match in the string
+     * @param patternToFind The pattern to find
+     * @param stringToMatch The string to find the pattern in
+     * @return True if the pattern is found
+     */
     public static boolean isMatch(RegexPattern patternToFind, String stringToMatch) {
         return patternToFind.getPattern().matcher(stringToMatch).find();
     }
 
+    /**
+     * This method will check if a a pattern occours one or more times
+     * @param length the lower bound
+     * @param patternToFind the pattern to find
+     * @param stringToMatch The string to find the pattern in
+     * @return true if the pattern occours the amount of times
+     */
     public static boolean lesserThanOrEqualOfLength(int length, Pattern patternToFind, String stringToMatch) {
         Matcher m = patternToFind.matcher(stringToMatch);
         return m.find() && m.group(0).split(" ").length <= length;
     }
 
+    /**
+     * This method will remove a string pattern
+     * @param event The event to handle
+     * @param patternToStrip The pattern to find
+     * @param stringToStrip The string to find the pattern in
+     * @return The string with the stripped pattern
+     */
     public static String stripString(MessageEvent event, Pattern patternToStrip, String stringToStrip) {
         Matcher matcher = patternToStrip.matcher(stringToStrip);
         if (matcher.find()) {

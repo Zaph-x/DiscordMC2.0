@@ -22,12 +22,30 @@ import java.util.logging.Logger;
 public class Dizcord extends JavaPlugin {
 
     // PLUGIN DESCRIPTION
+    /**
+     * Minecraft colour prefix
+     */
     private String prefix = "§";
+    /**
+     * The logger used to log in Dizcord
+     */
     private Logger log;
+    /**
+     * The Dizcord instance
+     */
     private static Dizcord dizcord;
+    /**
+     * The object for the configuration file
+     */
     private FileConfiguration config;
+    /**
+     * The Discord client object
+     */
     private IDiscordClient client;
 
+    /**
+     * Override from {@link JavaPlugin}
+     */
     @Override
     public void onEnable() {
         dizcord = this;
@@ -102,12 +120,18 @@ public class Dizcord extends JavaPlugin {
         getLogger().log(Level.INFO, "Dizcord has successfully been enabled!");
     }
 
+    /**
+     * Override from {@link JavaPlugin}
+     */
     @Override
     public void onDisable() {
 
         getLogger().log(Level.INFO, "Dizcord has successfully been disabled!");
     }
 
+    /**
+     * This method is used to create the config for the Dizcord bot.
+     */
     private void createConfig() {
         if (!getDataFolder().exists()) {
             //noinspection ResultOfMethodCallIgnored
@@ -120,11 +144,6 @@ public class Dizcord extends JavaPlugin {
         } else {
             getLogger().log(Level.INFO, "Configuration found for DiscordMC2.0 v" + getDescription().getVersion() + "!");
         }
-    }
-
-
-    public String getDiscordPrefix() {
-        return this.getConfig().getString("discord.command-prefix");
     }
 
     /**
@@ -216,6 +235,10 @@ public class Dizcord extends JavaPlugin {
 
     }
 
+    /**
+     * Getter method to return the minecraft colour prefix
+     * @return minecraft colour prefix
+     */
     public String getPrefix() {
         return prefix;
     }

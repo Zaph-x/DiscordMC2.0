@@ -11,10 +11,23 @@ import sx.blah.discord.handle.obj.IMessage;
 
 public class ChatDeleteEvent {
 
+    /**
+     * The message manager
+     */
     private MessageManager messageManager = MessageManager.getInstance();
+    /**
+     * The embed manager
+     */
     private EmbedManager em = EmbedManager.getInstance();
+    /**
+     * The client manager
+     */
     private DiscordClientManager clientManager = DiscordClientManager.getInstance();
 
+    /**
+     * This event will fire when a message is deleted. If it was not a command or a bot message, the message will be logged
+     * @param event The event to handle
+     */
     @EventSubscriber
     public void onMessageDelete(MessageDeleteEvent event) {
         long id = event.getMessageID();

@@ -9,6 +9,9 @@ import java.util.Comparator;
 
 public class InternalsManager {
 
+    /**
+     * The instance of the InternalsManager
+     */
     private static InternalsManager instance;
 
     private InternalsManager() {

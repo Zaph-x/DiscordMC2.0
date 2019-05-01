@@ -14,11 +14,25 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class UUIDFetcher {
+    /**
+     * The GSON object from the mojang service
+     */
     private static final Gson gson = new GsonBuilder().registerTypeAdapter(UUID.class, new UUIDTypeAdapter()).create();
+    /**
+     * The api to look into for UUID
+     */
     private static final String UUID_URL = "https://api.mojang.com/users/profiles/minecraft/%s?at=%d";
+    /**
+     * The api to look into for the names
+     */
     private static final String NAME_URL = "https://api.mojang.com/user/profiles/%s/names";
-
+    /**
+     * A map of every UUID to name pair
+     */
     private static HashMap<UUID, String> names = new HashMap<>();
+    /**
+     * A map of every name to UUID pair
+     */
     private static HashMap<String, UUID> uuids = new HashMap<>();
 
     public static UUID getUUID(Player p) {
@@ -114,13 +128,27 @@ public class UUIDFetcher {
 
 class PlayerUUID {
 
+    /**
+     * The player name
+     */
     private String name;
+    /**
+     * The player UUID
+     */
     private UUID id;
 
+    /**
+     * This method gets the name of the player
+     * @return The name of the player
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * This method gets the UUID of the player
+     * @return The UUID of the player
+     */
     public UUID getId() {
         return id;
     }

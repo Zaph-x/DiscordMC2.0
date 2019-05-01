@@ -13,11 +13,27 @@ import sx.blah.discord.handle.obj.Permissions;
 
 public class OnUserBanEvent {
 
+    /**
+     * The embed manager
+     */
     private EmbedManager embedManager = EmbedManager.getInstance();
+    /**
+     * The message manager
+     */
     private MessageManager messageManager = MessageManager.getInstance();
+    /**
+     * The client manager
+     */
     private DiscordClientManager clientManager = DiscordClientManager.getInstance();
+    /**
+     * The internals manager
+     */
     private InternalsManager internalsManager = InternalsManager.getInstance();
 
+    /**
+     * The event to handle when a user is banned. This will log the ban to the log channel
+     * @param event the event to handle
+     */
     @EventSubscriber
     public void onUserBan(UserBanEvent event) {
         if (clientManager.clientHasPermission(Permissions.VIEW_AUDIT_LOG)) {

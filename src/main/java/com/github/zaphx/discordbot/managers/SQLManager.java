@@ -18,19 +18,47 @@ import java.util.concurrent.Future;
 
 public class SQLManager {
 
+    /**
+     * The client manager
+     */
     private DiscordClientManager clientManager = DiscordClientManager.getInstance();
-
+    /**
+     * The config file
+     */
     private FileConfiguration config = Dizcord.getInstance().getConfig();
+    /**
+     * The instance of the SQLManager
+     */
     private static SQLManager instance;
+    /**
+     * The SQL prefix
+     */
     public final String prefix = config.getString("sql.prefix");
-
+    /**
+     * The port of the SQL server
+     */
     private final int PORT = config.getInt("sql.port");
+    /**
+     * The username of the SQL server
+     */
     private final String USERNAME = config.getString("sql.username");
+    /**
+     * The password of the SQL server
+     */
     private final String PASSWORD = config.getString("sql.password");
+    /**
+     * The host of the SQL server
+     */
     private final String HOST = config.getString("sql.host");
+    /**
+     * The database to use for the bot
+     */
     private final String DATABASE = config.getString("sql.database");
 
-    // Not public constructor
+
+    /**
+     * The default constructor
+     */
     private SQLManager() {
     }
 
@@ -392,6 +420,11 @@ public class SQLManager {
         return false;
     }
 
+    /**
+     * This method will get the minecraft player name from a discord user, if said user is linked
+     * @param user The user to look up in the database
+     * @return The name of the linked player
+     */
     public String getPlayerFromLink(IUser user) {
         Connection connection = getConnection();
         Future<String> future = CompletableFuture.supplyAsync(() -> {

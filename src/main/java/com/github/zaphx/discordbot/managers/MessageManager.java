@@ -22,16 +22,45 @@ import java.util.TreeMap;
 
 public class MessageManager {
 
+    /**
+     * A map of every player hash
+     */
     public TMap<Integer, Player> hashes = new THashMap<>();
+    /**
+     * A map of every discord user hash
+     */
     public TMap<Integer, IUser> discord = new THashMap<>();
+    /**
+     * The client manager
+     */
     private DiscordClientManager clientManager = DiscordClientManager.getInstance();
+    /**
+     * The discord client object
+     */
     private IDiscordClient client = clientManager.getClient();
+    /**
+     * The configuration file
+     */
     private FileConfiguration config = Dizcord.getInstance().getConfig();
+    /**
+     * A map of every message and its Id
+     */
     private TMap<Long, IMessage> messages = new THashMap<>();
+    /**
+     * The audit log
+     */
     private AuditLog log;
+    /**
+     * The SQL manager
+     */
     private SQLManager sqlManager = SQLManager.getInstance();
-
+    /**
+     * The message manager
+     */
     private static MessageManager instance;
+    /**
+     * The embed manager
+     */
     private EmbedManager embedManager;
 
     private MessageManager() {

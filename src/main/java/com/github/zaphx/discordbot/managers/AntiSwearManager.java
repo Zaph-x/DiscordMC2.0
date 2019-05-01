@@ -12,17 +12,33 @@ import java.net.URLConnection;
 import java.net.URLEncoder;
 
 public class AntiSwearManager {
-
+    /**
+     * The instance of the AntiSwearManager
+     */
     private static AntiSwearManager instance;
+    /**
+     * The embed manager
+     */
     private EmbedManager embedManager = EmbedManager.getInstance();
 
+    /**
+     * The constructor for the AntiSwearManager
+     */
     private AntiSwearManager() {
     }
 
+    /**
+     * The getter for the AntiSwearManager instance
+     * @return The instance of the AntiSwearManager
+     */
     public static AntiSwearManager getInstance() {
         return instance == null ? instance = new AntiSwearManager() : instance;
     }
 
+    /**
+     * This method will handle a message and check for any swears defined by the SQL database of the minecraft server
+     * @param message The message to handle
+     */
     public void handleMessage(IMessage message) {
         String handledMessage;
 

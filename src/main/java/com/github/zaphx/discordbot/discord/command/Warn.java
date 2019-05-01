@@ -16,6 +16,15 @@ import java.util.List;
 
 public class Warn implements CommandListener {
 
+    /**
+     * This command will allow a staff member to warn another user on the discord.
+     * @param sender The command sender.
+     * @param command The command used.
+     * @param args The arguments provided by the sender.
+     * @param destination The channel the message should be sent to. By default this is the channel the command was received in.
+     * @param event The event provided by discord.
+     * @return A {@link CommandExitCode} from the execution result of the command
+     */
     @Override
     public CommandExitCode onCommand(IUser sender, String command, List<String> args, IChannel destination, MessageReceivedEvent event) {
         RequestBuffer.request(() -> event.getMessage().delete());
@@ -46,11 +55,19 @@ public class Warn implements CommandListener {
         return CommandExitCode.INSUFFICIENT_PERMISSIONS;
     }
 
+    /**
+     * Gets the command description for the help message
+     * @return The command description of what the command does.
+     */
     @Override
     public @NotNull String getCommandDescription() {
         return "This command allows a staff member to warn a user for a given reason. The warning will be logged for staff to look at later.";
     }
 
+    /**
+     * Gets the command usage message for the help message
+     * @return The command usage message
+     */
     @Override
     public @NotNull String getCommandUsage() {
         return prefix + "warn @<user> <reason> - Warns a user.";

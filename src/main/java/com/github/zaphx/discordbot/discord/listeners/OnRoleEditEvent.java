@@ -6,8 +6,15 @@ import sx.blah.discord.handle.impl.events.guild.role.RoleUpdateEvent;
 
 public class OnRoleEditEvent {
 
+    /**
+     * The roles manager
+     */
     RolesManager rolesManager = RolesManager.getInstance();
 
+    /**
+     * The event to handle when a role is edited
+     * @param event The event to handle
+     */
     @EventSubscriber
     public void onEditEvent(RoleUpdateEvent event) {
 

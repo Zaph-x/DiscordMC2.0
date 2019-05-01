@@ -11,11 +11,27 @@ import sx.blah.discord.handle.impl.events.guild.channel.message.MessageReceivedE
 
 public class ChatListener {
 
+    /**
+     * The message manager
+     */
     private MessageManager messageManager = MessageManager.getInstance();
+    /**
+     * The trello manager
+     */
     private TrelloManager trelloManager = TrelloManager.getInstance();
+    /**
+     * The command handler
+     */
     private CommandHandler commandHandler = CommandHandler.getInstance();
+    /**
+     * The anti swear manager
+     */
     private AntiSwearManager antiSwearManager = AntiSwearManager.getInstance();
 
+    /**
+     * This event will handle when a message is received. If the message is an issue or a suggestion, it will be sent to the trello board (If enabled). This will also handle commands, swears and advertisements
+     * @param event The event to handle
+     */
     @EventSubscriber
     public void onChat(MessageReceivedEvent event) {
         new AntiAdvertisement().checkAndHandle(event);

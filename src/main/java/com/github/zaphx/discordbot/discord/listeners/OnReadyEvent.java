@@ -10,13 +10,35 @@ import java.util.logging.Level;
 
 public class OnReadyEvent {
 
+    /**
+     * The message manager
+     */
     private MessageManager messageManager = MessageManager.getInstance();
+    /**
+     * The invite manager
+     */
     private InviteManager inviteManager = InviteManager.getInstance();
+    /**
+     * The roles manager
+     */
     private RolesManager rolesManager = RolesManager.getInstance();
+    /**
+     * The SQL manager
+     */
     private SQLManager sql = SQLManager.getInstance();
+    /**
+     * The channel manager
+     */
     private ChannelManager channelManager = ChannelManager.getInstance();
+    /**
+     * The interval to use when checking for mutes
+     */
     private long interval = Dizcord.getInstance().getConfig().getLong("discord.mute-check-interval",60);
 
+    /**
+     * This event will handle when the bot is ready. This involves getting every message on the server, updating the invites, checking for mutes, mapping channels and mapping roles.
+     * @param event
+     */
     @EventSubscriber
     public void onReady(ReadyEvent event) {
         messageManager.setMessages();

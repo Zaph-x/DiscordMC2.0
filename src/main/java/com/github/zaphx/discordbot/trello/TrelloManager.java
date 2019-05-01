@@ -22,16 +22,42 @@ import java.util.Map;
 
 public class TrelloManager {
 
+    /**
+     * The instance of the trello manager
+     */
     private static TrelloManager instance;
+    /**
+     * The sql manager
+     */
     private SQLManager sql = SQLManager.getInstance();
+    /**
+     * The plugin config
+     */
     private FileConfiguration config = Dizcord.getInstance().getConfig();
+    /**
+     * The trello API key
+     */
     private final String API_KEY = config.getString("trello.API-key");
+    /**
+     * The trello API token
+     */
     private final String API_TOKEN = config.getString("trello.API-token");
+    /**
+     * The trello object
+     */
     private Trello botTrello = new TrelloImpl(API_KEY, API_TOKEN);
+    /**
+     * The embed manager
+     */
     private EmbedManager em = EmbedManager.getInstance();
+    /**
+     * The channel manager
+     */
     private ChannelManager channelManager = ChannelManager.getInstance();
 
-
+    /**
+     * The default constructor
+     */
     private TrelloManager() {
     }
     /**
@@ -190,24 +216,7 @@ public class TrelloManager {
                     + fullReport.substring(indexOfUsername, indexOfWorld) + "\n"
                     + fullReport.substring(indexOfWorld, indexOfDescription) + "\n"
                     + fullReport.substring(indexOfDescription));
-            if (eventBuilder.getAttachments().size() > 0) {
-                for (String s : eventBuilder.getAttachments()) {
-                    cardDesc.append("\n").append(s);
-                }
-            }
-
-            /*
-             * Create card in "Player Reports" on the "General Issues" board [no label]
-             * List ID: 5b15ac6db7100d5b46e29774
-             * public static void createCardInReports(String cardName, String cardDesc) {
-             */
-
-            String reportsID = config.getString(type.getBoardID());
-            String desc = cardDesc.toString();
-            Map<String, String> descMap = new HashMap<String, String>();
-            descMap.put("desc", desc);
-            // Create card
-            Card card = botTrello.createCard(reportsID, cardName, descMap);
+            finalizeEvent(eventBuilder, type, cardName, cardDesc);
 
             RequestBuffer.request(() -> eventBuilder.getSender().getOrCreatePMChannel().sendMessage(em.correctReportEmbed(report)));
         } else if (type.equals(TrelloType.SUGGESTION)) {
@@ -224,22 +233,37 @@ public class TrelloManager {
             StringBuilder cardDesc = new StringBuilder(fullSuggestion.substring(indexOfUsername, indexOfRelated)
                     + "\n" + fullSuggestion.substring(indexOfRelated, indexOfDescription)
                     + "\n" + fullSuggestion.substring(indexOfDescription));
-            if (eventBuilder.getAttachments().size() > 0) {
-                for (String s : eventBuilder.getAttachments()) {
-                    cardDesc.append("\n").append(s);
-                }
-            }
-
-            String suggestID = config.getString(type.getBoardID());
-            String desc = cardDesc.toString();
-            Map<String, String> descMap = new HashMap<>();
-            descMap.put("desc", desc);
-
-            Card card = botTrello.createCard(suggestID, cardName, descMap);
+            finalizeEvent(eventBuilder, type, cardName, cardDesc);
             RequestBuffer.request(() -> eventBuilder.getSender().getOrCreatePMChannel().sendMessage(em.correctSuggestionEmbed(suggestion)));
         }
     }
 
+    /**
+     * This method will finalize and file the report or suggestion
+     * @param eventBuilder The trello event builder to use
+     * @param type The event type being handled
+     * @param cardName the name of the card being submitted
+     * @param cardDesc The description of the card being submitted
+     */
+    private void finalizeEvent(TrelloEventBuilder eventBuilder, TrelloType type, String cardName, StringBuilder cardDesc) {
+        if (eventBuilder.getAttachments().size() > 0) {
+            for (String s : eventBuilder.getAttachments()) {
+                cardDesc.append("\n").append(s);
+            }
+        }
+
+        String suggestID = config.getString(type.getBoardID());
+        String desc = cardDesc.toString();
+        Map<String, String> descMap = new HashMap<>();
+        descMap.put("desc", desc);
+
+        Card card = botTrello.createCard(suggestID, cardName, descMap);
+    }
+
+    /**
+     * This method will check if the trello implementation is enabled
+     * @return true if enabled, else false
+     */
     private boolean isEnabled() {
         return config.getBoolean("trello.enabled");
     }

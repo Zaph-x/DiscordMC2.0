@@ -13,7 +13,15 @@ import java.util.UUID;
 
 public class WhoIs implements CommandListener {
 
-
+    /**
+     * This command will allow users to see who another person is ingame. This is only possible if the user has linked their accounts.
+     * @param sender The command sender.
+     * @param command The command used.
+     * @param args The arguments provided by the sender.
+     * @param destination The channel the message should be sent to. By default this is the channel the command was received in.
+     * @param event The event provided by discord.
+     * @return A {@link CommandExitCode} from the execution result of the command
+     */
     @Override
     public CommandExitCode onCommand(IUser sender, String command, List<String> args, IChannel destination, MessageReceivedEvent event) {
 
@@ -32,11 +40,19 @@ public class WhoIs implements CommandListener {
 
     }
 
+    /**
+     * Gets the command description for the help message
+     * @return The command description of what the command does.
+     */
     @Override
     public @NotNull String getCommandDescription() {
         return "Shows who a person is ingame, if they have linked their account.";
     }
 
+    /**
+     * Gets the command usage message for the help message
+     * @return The command usage message
+     */
     @Override
     public @NotNull String getCommandUsage() {
         return prefix + "whois @<user>";

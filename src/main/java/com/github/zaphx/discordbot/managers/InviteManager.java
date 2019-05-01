@@ -14,15 +14,42 @@ import java.util.TreeMap;
 
 public class InviteManager {
 
+    /**
+     * The instance of the InvitesManager
+     */
     private static InviteManager instance;
+    /**
+     * A map of all invites for the guild
+     */
     private Map<String, Integer> inviteMap = new TreeMap<>();
+    /**
+     * A map of every temporary invite
+     */
     private Map<String, Integer> tempInviteMap = new TreeMap<>();
+    /**
+     * A map of all invite objects
+     */
     private Map<String, IExtendedInvite> inviteObjectMap = new TreeMap<>();
+    /**
+     * The client manager
+     */
     private DiscordClientManager clientManager = DiscordClientManager.getInstance();
+    /**
+     * The discord client
+     */
     private IDiscordClient client = clientManager.getClient();
+    /**
+     * The discord bot object
+     */
     private Dizcord dizcord = Dizcord.getInstance();
+    /**
+     * The configuration
+     */
     private FileConfiguration config = dizcord.getConfig();
 
+    /**
+     * The default constructor
+     */
     private InviteManager() {
     }
 

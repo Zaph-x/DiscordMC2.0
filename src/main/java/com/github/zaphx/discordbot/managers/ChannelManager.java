@@ -17,12 +17,30 @@ import sx.blah.discord.util.RequestBuffer;
 
 public class ChannelManager {
 
+    /**
+     * The instance od the ChannelManager
+     */
     private static ChannelManager instance;
+    /**
+     * The client instance
+     */
     private IDiscordClient client = DiscordClientManager.getInstance().getClient();
+    /**
+     * The channel map where channels are mapped
+     */
     private TMap<String, Long> channelMap = new THashMap<>();
+    /**
+     * The discord client instance
+     */
     private Dizcord dizcord = Dizcord.getInstance();
+    /**
+     * The fileconfiguration
+     */
     private FileConfiguration config = dizcord.getConfig();
 
+    /**
+     * The default constructor
+     */
     private ChannelManager() {
     }
 
