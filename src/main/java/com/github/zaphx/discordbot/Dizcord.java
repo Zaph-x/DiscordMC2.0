@@ -8,7 +8,9 @@ import com.github.zaphx.discordbot.managers.DiscordClientManager;
 import com.github.zaphx.discordbot.managers.SQLManager;
 import com.github.zaphx.discordbot.minecraft.commands.MainCommand;
 import com.github.zaphx.discordbot.minecraft.commands.ToDiscord;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import sx.blah.discord.Discord4J;
 import sx.blah.discord.api.IDiscordClient;
@@ -16,6 +18,7 @@ import sx.blah.discord.modules.Configuration;
 import sx.blah.discord.util.DiscordException;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -39,6 +42,10 @@ public class Dizcord extends JavaPlugin {
      */
     private FileConfiguration config;
     /**
+     * The swear configuration
+     */
+    private FileConfiguration swearFile = new YamlConfiguration();
+    /**
      * The Discord client object
      */
     private IDiscordClient client;
@@ -51,12 +58,12 @@ public class Dizcord extends JavaPlugin {
         dizcord = this;
         this.log = this.getLogger();
         DiscordClientManager clientManager = DiscordClientManager.getInstance();
-        AntiSwearManager antiSwearManager = AntiSwearManager.getInstance();
 
         Configuration.LOAD_EXTERNAL_MODULES = false;
         Configuration.AUTOMATICALLY_ENABLE_MODULES = false;
 
         createConfig();
+        createFile("swears.yml", this.swearFile);
         this.config = dizcord.getConfig();
 
         if (!validateConfig()) {
@@ -143,6 +150,19 @@ public class Dizcord extends JavaPlugin {
             saveDefaultConfig();
         } else {
             getLogger().log(Level.INFO, "Configuration found for DiscordMC2.0 v" + getDescription().getVersion() + "!");
+        }
+    }
+
+    private void createFile(String fileName, FileConfiguration yamlFile) {
+        File file = new File(getDataFolder(), fileName);
+        if (!file.exists()) {
+            getLogger().log(Level.INFO, "No swear file found for DiscordMC2.0 " + getDescription().getVersion());
+            this.saveResource(fileName, false);
+        }
+        try {
+            yamlFile.load(file);
+        } catch (InvalidConfigurationException | IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -250,5 +270,9 @@ public class Dizcord extends JavaPlugin {
      */
     public Logger getLog() {
         return this.log;
+    }
+
+    public FileConfiguration getSwearFile() {
+        return this.swearFile;
     }
 }

@@ -168,10 +168,10 @@ public class EmbedManager {
      * This method will let the sender of a message know they swore
      * @return An {@link EmbedObject} letting the sender know they swore
      */
-    public EmbedObject swearEmbed() {
+    public EmbedObject swearEmbed(String matched, String type) {
         return new EmbedBuilder()
                 .withTitle("Oopsie. That's a no-go!")
-                .withDesc("We like to keep a nice tone here. Please do not swear, thank you.")
+                .withDesc("We like to keep a nice tone here. Please do not swear, thank you.\nThe swear captured was: `" + matched + "`\nIt is of type: " + type)
                 .withColor(new Color(242, 56, 79))
                 .withTimestamp(Instant.now())
                 .build();

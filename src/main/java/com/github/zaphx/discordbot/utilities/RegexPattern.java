@@ -50,6 +50,10 @@ public enum RegexPattern {
         this.pattern = Pattern.compile(pattern);
     }
 
+    public static Pattern fromString(String pattern) {
+        return Pattern.compile("\\b"+pattern+"\\b");
+    }
+
     /**
      * Getter method of the pattern
      * @return The regex pattern specified

@@ -41,6 +41,25 @@ public class RegexUtils {
     }
 
     /**
+     * This method will get the matched word from a regex search
+     * @param patternToFind The patther to find
+     * @param stringToMatch The string to find the pattern in
+     * @return The matched string
+     */
+    public static String MatchedString(Pattern patternToFind, String stringToMatch) {
+        return patternToFind.matcher(stringToMatch).group(0);
+    }
+    /**
+     * This method will get the matched word from a regex search
+     * @param patternToFind The patther to find
+     * @param stringToMatch The string to find the pattern in
+     * @return The matched string
+     */
+    public static String MatchedString(RegexPattern patternToFind, String stringToMatch) {
+        return patternToFind.getPattern().matcher(stringToMatch).group(0);
+    }
+
+    /**
      * This method will remove a string pattern
      * @param event The event to handle
      * @param patternToStrip The pattern to find
