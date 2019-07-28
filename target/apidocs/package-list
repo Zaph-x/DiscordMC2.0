@@ -1,0 +1,9 @@
+com.github.zaphx.discordbot
+com.github.zaphx.discordbot.api.commandhandler
+com.github.zaphx.discordbot.discord
+com.github.zaphx.discordbot.discord.command
+com.github.zaphx.discordbot.discord.listeners
+com.github.zaphx.discordbot.managers
+com.github.zaphx.discordbot.minecraft.commands
+com.github.zaphx.discordbot.trello
+com.github.zaphx.discordbot.utilities

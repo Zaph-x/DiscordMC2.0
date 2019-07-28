@@ -1,11 +1,17 @@
 package com.github.zaphx.discordbot.utilities;
 
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class DateUtils {
+
+    public final static String DATE = new SimpleDateFormat("yyyy_MM_dd").format(new Date());
 
     /**
      * A pattern to match dates

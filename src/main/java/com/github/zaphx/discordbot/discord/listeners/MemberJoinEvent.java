@@ -1,5 +1,6 @@
 package com.github.zaphx.discordbot.discord.listeners;
 
+import com.github.zaphx.discordbot.Dizcord;
 import com.github.zaphx.discordbot.managers.*;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.member.UserJoinEvent;
@@ -30,10 +31,13 @@ public class MemberJoinEvent {
     /**
      * The constructor
      */
-    public MemberJoinEvent() {}
+    public MemberJoinEvent() {
+        Dizcord.getInstance().getLog().info("Registering " + getClass().getSimpleName());
+    }
 
     /**
      * This event will handle when a user joins the discord
+     *
      * @param event The event to handle
      */
     @EventSubscriber

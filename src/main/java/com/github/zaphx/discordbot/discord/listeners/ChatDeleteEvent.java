@@ -1,5 +1,6 @@
 package com.github.zaphx.discordbot.discord.listeners;
 
+import com.github.zaphx.discordbot.Dizcord;
 import com.github.zaphx.discordbot.managers.DiscordClientManager;
 import com.github.zaphx.discordbot.managers.EmbedManager;
 import com.github.zaphx.discordbot.managers.MessageManager;
@@ -24,8 +25,13 @@ public class ChatDeleteEvent {
      */
     private DiscordClientManager clientManager = DiscordClientManager.getInstance();
 
+    public ChatDeleteEvent() {
+        Dizcord.getInstance().getLog().info("Registering " + getClass().getSimpleName());
+    }
+
     /**
      * This event will fire when a message is deleted. If it was not a command or a bot message, the message will be logged
+     *
      * @param event The event to handle
      */
     @EventSubscriber

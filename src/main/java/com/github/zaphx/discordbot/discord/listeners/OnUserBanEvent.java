@@ -30,6 +30,9 @@ public class OnUserBanEvent {
      */
     private InternalsManager internalsManager = InternalsManager.getInstance();
 
+    public OnUserBanEvent() {
+        Dizcord.getInstance().getLog().info("Registering " + getClass().getSimpleName());
+    }
     /**
      * The event to handle when a user is banned. This will log the ban to the log channel
      * @param event the event to handle

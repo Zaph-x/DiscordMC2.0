@@ -8,6 +8,8 @@ import com.github.zaphx.discordbot.managers.DiscordClientManager;
 import com.github.zaphx.discordbot.managers.SQLManager;
 import com.github.zaphx.discordbot.minecraft.commands.MainCommand;
 import com.github.zaphx.discordbot.minecraft.commands.ToDiscord;
+import com.github.zaphx.discordbot.utilities.DebugLogger;
+import com.github.zaphx.discordbot.utilities.MultiLogger;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -32,7 +34,7 @@ public class Dizcord extends JavaPlugin {
     /**
      * The logger used to log in Dizcord
      */
-    private Logger log;
+    private MultiLogger log;
     /**
      * The Dizcord instance
      */
@@ -56,15 +58,16 @@ public class Dizcord extends JavaPlugin {
     @Override
     public void onEnable() {
         dizcord = this;
-        this.log = this.getLogger();
+        this.log = new MultiLogger(this.getLogger(), new DebugLogger());
+        log.info("Creating configuration files");
+        createConfig();
+        this.config = dizcord.getConfig();
+        log.info("Configuration files created");
+        log.info("Creating DiscordClientManager");
         DiscordClientManager clientManager = DiscordClientManager.getInstance();
-
+        log.info("Configuring bot");
         Configuration.LOAD_EXTERNAL_MODULES = false;
         Configuration.AUTOMATICALLY_ENABLE_MODULES = false;
-
-        createConfig();
-        createFile("swears.yml", this.swearFile);
-        this.config = dizcord.getConfig();
 
         if (!validateConfig()) {
             log.warning("The bot could not be started. Please fill in the config properly and try again.");
@@ -82,12 +85,14 @@ public class Dizcord extends JavaPlugin {
         }
         log.info("Logging client in");
         clientManager.login(client);
-
         Discord4J.disableAudio();
+        log.info("Created the bot successfully");
+
+        createFile("swears.yml", this.swearFile);
 
         SQLManager sql = SQLManager.getInstance();
 
-        getLogger().log(Level.INFO, "Registering listeners");
+        log.info("Registering listeners");
         client.getDispatcher().registerListener(new OnReadyEvent());
         client.getDispatcher().registerListener(new MemberJoinEvent());
         client.getDispatcher().registerListener(new ChatDeleteEvent());
@@ -100,13 +105,16 @@ public class Dizcord extends JavaPlugin {
         client.getDispatcher().registerListener(new OnRoleDeleteEvent());
         client.getDispatcher().registerListener(new OnRoleEditEvent());
         client.getDispatcher().registerListener(new AnyEvent());
+        log.info("Listeners registered");
 
-
+        log.info("Creating SQL tables if they don't exist");
         sql.createMutesIfNotExists();
         sql.createAccountLinkIfNotExists();
         sql.createWarningsIfNotExists();
         sql.createMessagesIfNotExists();
+        log.info("SQL tables created");
 
+        log.info("registering commands");
         CommandHandler commandHandler = CommandHandler.getInstance();
         commandHandler.registerCommand("help", new Help());
         commandHandler.registerCommand("mute", new Mute());
@@ -117,14 +125,14 @@ public class Dizcord extends JavaPlugin {
         commandHandler.registerCommand("unlinkaccount", new AccountUnlink());
         commandHandler.registerCommand("whois", new WhoIs());
         commandHandler.registerCommand("events", new Event());
+        log.info("Commands registered");
 
+        log.info("Registering in-game commands");
         getCommand("dizcord").setExecutor(new MainCommand());
         getCommand("todiscord").setExecutor(new ToDiscord());
+        log.info("In-game commands registered");
 
-        getLogger().log(Level.INFO, "Loading external bot plugins!");
-
-
-        getLogger().log(Level.INFO, "Dizcord has successfully been enabled!");
+        log.info("Loading external bot plugins!");
     }
 
     /**
@@ -132,7 +140,9 @@ public class Dizcord extends JavaPlugin {
      */
     @Override
     public void onDisable() {
-
+        log.info("Dizcord is shutting down");
+        CommandHandler commandHandler = CommandHandler.getInstance();
+        commandHandler.getCommandMap().clear();
         getLogger().log(Level.INFO, "Dizcord has successfully been disabled!");
     }
 
@@ -146,17 +156,17 @@ public class Dizcord extends JavaPlugin {
         }
         File file = new File(getDataFolder(), "config.yml");
         if (!file.exists()) {
-            getLogger().log(Level.INFO, "No configuration found for DiscordMC2.0 " + getDescription().getVersion());
+            getLogger().log(Level.INFO, "No configuration found for Dizcord v" + getDescription().getVersion());
             saveDefaultConfig();
         } else {
-            getLogger().log(Level.INFO, "Configuration found for DiscordMC2.0 v" + getDescription().getVersion() + "!");
+            getLogger().log(Level.INFO, "Configuration found for Dizcord v" + getDescription().getVersion() + "!");
         }
     }
 
     private void createFile(String fileName, FileConfiguration yamlFile) {
         File file = new File(getDataFolder(), fileName);
         if (!file.exists()) {
-            getLogger().log(Level.INFO, "No swear file found for DiscordMC2.0 " + getDescription().getVersion());
+            getLogger().log(Level.INFO, "No swear file found for Dizcord v" + getDescription().getVersion());
             this.saveResource(fileName, false);
         }
         try {
@@ -251,12 +261,14 @@ public class Dizcord extends JavaPlugin {
             log.warning("You must supply the plugin with a valid sql database");
             return false;
         }
+
         return true;
 
     }
 
     /**
      * Getter method to return the minecraft colour prefix
+     *
      * @return minecraft colour prefix
      */
     public String getPrefix() {
@@ -268,7 +280,7 @@ public class Dizcord extends JavaPlugin {
      *
      * @return The Dizcord logger
      */
-    public Logger getLog() {
+    public MultiLogger getLog() {
         return this.log;
     }
 

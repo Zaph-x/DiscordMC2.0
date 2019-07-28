@@ -1,6 +1,6 @@
 main: com.github.zaphx.discordbot.Dizcord
 name: Dizcord
-version: 2.0.4
+version: ${project.version}
 load: STARTUP
 authors: [Zaphoo, Mobkinz78]
 api-version: 1.13

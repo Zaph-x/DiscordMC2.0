@@ -35,10 +35,17 @@ public class OnReadyEvent {
      */
     private long interval = Dizcord.getInstance().getConfig().getLong("discord.mute-check-interval",60);
 
+    public OnReadyEvent() {
+        Dizcord.getInstance().getLog().info("Registering " + getClass().getSimpleName());
+    }
+
     /**
      * This event will handle when the bot is ready. This involves getting every message on the server, updating the invites, checking for mutes, mapping channels and mapping roles.
      * @param event
      */
+
+
+
     @EventSubscriber
     public void onReady(ReadyEvent event) {
         messageManager.setMessages();

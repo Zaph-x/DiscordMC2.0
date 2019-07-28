@@ -113,6 +113,11 @@ public class MainCommand implements CommandExecutor {
                     sender.sendMessage(GREEN + "Bot already logged out");
                 }
                 break;
+            case "reload":
+                if (sender.hasPermission("*")) {
+                    sender.sendMessage(GREEN + "Reloading config");
+                    Dizcord.getInstance().reloadConfig();
+                }
             default:
                 sender.sendMessage("Invalid command");
         }

@@ -1,5 +1,6 @@
 package com.github.zaphx.discordbot.discord.listeners;
 
+import com.github.zaphx.discordbot.Dizcord;
 import com.github.zaphx.discordbot.managers.RolesManager;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.role.RoleUpdateEvent;
@@ -10,6 +11,10 @@ public class OnRoleEditEvent {
      * The roles manager
      */
     RolesManager rolesManager = RolesManager.getInstance();
+
+    public OnRoleEditEvent() {
+        Dizcord.getInstance().getLog().info("Registering " + getClass().getSimpleName());
+    }
 
     /**
      * The event to handle when a role is edited

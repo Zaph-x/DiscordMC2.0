@@ -1,5 +1,6 @@
 package com.github.zaphx.discordbot.discord.listeners;
 
+import com.github.zaphx.discordbot.Dizcord;
 import com.github.zaphx.discordbot.managers.ChannelManager;
 import sx.blah.discord.api.events.EventSubscriber;
 import sx.blah.discord.handle.impl.events.guild.channel.ChannelDeleteEvent;
@@ -10,6 +11,11 @@ public class OnChannelDeleteEvent {
      * The channel manager
      */
     private ChannelManager channelManager = ChannelManager.getInstance();
+
+    public OnChannelDeleteEvent() {
+
+        Dizcord.getInstance().getLog().info("Registering " + getClass().getSimpleName());
+    }
 
     /**
      * This event will handle when a channel is deleted

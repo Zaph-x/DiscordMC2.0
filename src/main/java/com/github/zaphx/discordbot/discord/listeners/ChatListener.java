@@ -1,5 +1,6 @@
 package com.github.zaphx.discordbot.discord.listeners;
 
+import com.github.zaphx.discordbot.Dizcord;
 import com.github.zaphx.discordbot.discord.AntiAdvertisement;
 import com.github.zaphx.discordbot.api.commandhandler.CommandHandler;
 import com.github.zaphx.discordbot.managers.AntiSwearManager;
@@ -28,8 +29,13 @@ public class ChatListener {
      */
     private AntiSwearManager antiSwearManager = AntiSwearManager.getInstance();
 
+    public ChatListener() {
+        Dizcord.getInstance().getLog().info("Registering " + getClass().getSimpleName());
+    }
+
     /**
      * This event will handle when a message is received. If the message is an issue or a suggestion, it will be sent to the trello board (If enabled). This will also handle commands, swears and advertisements
+     *
      * @param event The event to handle
      */
     @EventSubscriber
