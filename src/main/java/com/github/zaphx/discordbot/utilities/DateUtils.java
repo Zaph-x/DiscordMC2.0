@@ -11,6 +11,9 @@ import java.util.regex.Pattern;
 
 public class DateUtils {
 
+    /**
+     * Today's date formatted for file names.
+     */
     public final static String DATE = new SimpleDateFormat("yyyy_MM_dd").format(new Date());
 
     /**

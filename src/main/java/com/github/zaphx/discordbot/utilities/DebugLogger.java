@@ -11,14 +11,27 @@ import java.time.format.DateTimeFormatter;
 
 public class DebugLogger {
 
-    public static Dizcord instance;
+    /**
+     * The instance of Dizcord
+     */
+    private Dizcord instance;
 
+    /**
+     * The log path to store at
+     */
     private final String LOG_PATH = "debuglog.log";
 
+    /**
+     * The constructor for the debug logger. This will also set the Dizcord instance
+     */
     public DebugLogger() {
         instance = Dizcord.getInstance();
     }
 
+    /**
+     * Logs a message to the debug log if the debug mode is turned on. This is done in the config for Dizcord
+     * @param message The message to log to the debug log
+     */
     public void logToFile(String message) {
         if (instance.getConfig().getBoolean("debug")) {
             File debugLogFile = new File(instance.getDataFolder(), LOG_PATH);
