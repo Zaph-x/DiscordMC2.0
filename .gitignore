@@ -31,3 +31,4 @@ modules.xml
 .idea/misc.xml
 *.ipr
 /src/main/resources/swears.csv
+/target
